@@ -1,9 +1,13 @@
 import LegalLayout from "@/app/legal/LegalLayout";
+import { buildPageMetadata } from "@/app/lib/metadata";
 
-export const metadata = {
-  title: "KVKK Aydınlatma Metni | Memento Mori",
-  description: "Kişisel verilerinizin işlenmesine ilişkin aydınlatma metni.",
-};
+export const metadata = buildPageMetadata({
+  title: "KVKK Aydınlatma Metni",
+  description:
+    "6698 sayılı KVKK kapsamında kişisel verilerinizin işlenmesine ilişkin aydınlatma metni. Memento Mori.",
+  path: "/kvkk",
+  keywords: ["KVKK", "aydınlatma metni", "kişisel veri", "gizlilik", "memento mori"],
+});
 
 export default function KvkkPage() {
   return (

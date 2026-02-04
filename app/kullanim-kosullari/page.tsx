@@ -1,10 +1,14 @@
 import LegalLayout from "@/app/legal/LegalLayout";
 import Link from "next/link";
+import { buildPageMetadata } from "@/app/lib/metadata";
 
-export const metadata = {
-  title: "Kullanım Koşulları | Memento Mori",
-  description: "Memento Mori web sitesi ve hizmet kullanım koşulları.",
-};
+export const metadata = buildPageMetadata({
+  title: "Kullanım Koşulları",
+  description:
+    "Memento Mori web sitesi ve hizmet kullanım koşulları. Hesap, sipariş ve fikri mülkiyet.",
+  path: "/kullanim-kosullari",
+  keywords: ["kullanım koşulları", "şartlar", "memento mori", "e-ticaret"],
+});
 
 export default function KullanimKosullariPage() {
   return (

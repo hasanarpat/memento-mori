@@ -5,10 +5,15 @@ import RitualClient from "./RitualClient";
 
 const ritualProducts = products.filter((p) => p.productType === "ritual");
 
-export const metadata = {
-  title: "Ritual & Altar | Memento Mori",
-  description: "Candles, incense, and sacred objects for your practice and space.",
-};
+import { buildPageMetadata } from "@/app/lib/metadata";
+
+export const metadata = buildPageMetadata({
+  title: "Ritual & Altar",
+  description:
+    "Ritual candles, incense holders, altar cloths, censers. Sacred objects for meditation and practice. Memento Mori ritual collection.",
+  path: "/ritual",
+  keywords: ["ritual candles", "altar supplies", "incense holder", "sacred objects", "ritual tools", "dark ritual"],
+});
 
 export default function RitualPage() {
   return (

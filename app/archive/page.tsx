@@ -6,10 +6,15 @@ import { products } from "@/app/data/shop";
 const archiveLookbooks = lookbookItems.filter((lb) => lb.year === "Archive");
 const limitedProducts = products.filter((p) => p.badge === "LIMITED" || p.badge === "RARE");
 
-export const metadata = {
-  title: "Archive | Memento Mori",
-  description: "Past collections and limited editions. From dust to dust.",
-};
+import { buildPageMetadata } from "@/app/lib/metadata";
+
+export const metadata = buildPageMetadata({
+  title: "Archive",
+  description:
+    "Past lookbooks and limited editions. Archive collection. Rare and discontinued pieces. Memento Mori.",
+  path: "/archive",
+  keywords: ["archive collection", "limited edition", "past collections", "rare gothic fashion", "memento mori archive"],
+});
 
 export default function ArchivePage() {
   return (

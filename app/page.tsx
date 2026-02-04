@@ -2,6 +2,47 @@ import Link from "next/link";
 import { Moon, Zap, Sparkles, ArrowRight, Skull, Droplet } from "lucide-react";
 import { products } from "./data/shop";
 import NewsletterForm from "./components/NewsletterForm";
+import { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE } from "./lib/site";
+import JsonLd from "./components/JsonLd";
+
+export const metadata = {
+  title: "Umbra Aesthetica — Where Shadows Take Form",
+  description:
+    "Dark fashion & subculture apparel. Gothic, steampunk, metal, occult, dark academia. Handmade leather, brass, velvet, ritual objects. Shop Memento Mori.",
+  keywords: [
+    "gothic fashion",
+    "dark fashion",
+    "steampunk",
+    "alternative clothing",
+    "memento mori",
+    "ritual objects",
+    "handmade leather",
+    "subculture fashion",
+  ],
+  openGraph: {
+    title: "Memento Mori — Umbra Aesthetica | Dark Fashion & Subculture",
+    description:
+      "Where shadows take form. Gothic, steampunk, metal, occult. Handmade and limited editions.",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    images: [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630, alt: "Memento Mori — Dark fashion" }],
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image" as const,
+    title: "Memento Mori — Umbra Aesthetica",
+    description: "Dark fashion & subculture. Gothic, steampunk, metal, occult.",
+    images: [DEFAULT_OG_IMAGE],
+  },
+  alternates: { canonical: SITE_URL },
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: SITE_URL }],
+};
 
 export default function HomePage() {
   const newArrivals = products.filter((p) => p.new).length >= 8
@@ -10,7 +51,8 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Section 1: Hero — Claude tasarımı birebir */}
+      <JsonLd data={breadcrumbJsonLd} />
+      {/* Section 1: Hero */}
       <section className="hero" aria-label="Hero">
         <Skull className="hero-skull" aria-hidden="true" />
         <Moon className="hero-moon" aria-hidden="true" />

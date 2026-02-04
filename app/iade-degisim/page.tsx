@@ -1,10 +1,14 @@
 import LegalLayout from "@/app/legal/LegalLayout";
 import Link from "next/link";
+import { buildPageMetadata } from "@/app/lib/metadata";
 
-export const metadata = {
-  title: "İade ve Değişim | Memento Mori",
-  description: "İade ve değişim koşulları ile süreç.",
-};
+export const metadata = buildPageMetadata({
+  title: "İade ve Değişim",
+  description:
+    "Memento Mori iade ve değişim koşulları. 30 gün içinde iade, süreç ve kargo. Cayma hakkı.",
+  path: "/iade-degisim",
+  keywords: ["iade", "değişim", "iade koşulları", "cayma hakkı", "memento mori"],
+});
 
 export default function IadeDegisimPage() {
   return (

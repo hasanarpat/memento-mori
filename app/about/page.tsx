@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { Shield, Star, Heart } from "lucide-react";
 import NewsletterForm from "../components/NewsletterForm";
+import { buildPageMetadata } from "../lib/metadata";
+
+export const metadata = buildPageMetadata({
+  title: "About Us",
+  description:
+    "Memento Mori — Craftsmanship, sustainability, and community. Our story, values, and mission. Dark fashion with purpose.",
+  path: "/about",
+  keywords: ["about memento mori", "dark fashion brand", "craftsmanship", "sustainability", "gothic fashion brand"],
+});
 
 export default function AboutPage() {
   const values = [

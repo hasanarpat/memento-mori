@@ -13,10 +13,15 @@ const iconMap = {
   Droplets,
 } as const;
 
-export const metadata = {
-  title: "Worlds | Memento Mori",
-  description: "Explore subcultures: Gothic, Steampunk, Metal, Occult, Dark Academia, Industrial, Deathrock, Ritual.",
-};
+import { buildPageMetadata } from "@/app/lib/metadata";
+
+export const metadata = buildPageMetadata({
+  title: "Worlds",
+  description:
+    "Explore 8 subculture worlds: Gothic, Steampunk, Metal, Occult, Dark Academia, Industrial, Deathrock, Ritual. Dark fashion categories at Memento Mori.",
+  path: "/worlds",
+  keywords: ["gothic fashion", "steampunk", "metal fashion", "occult", "dark academia", "industrial fashion", "deathrock", "ritual", "subculture worlds"],
+});
 
 export default function WorldsPage() {
   return (

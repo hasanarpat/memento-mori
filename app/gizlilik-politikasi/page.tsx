@@ -1,10 +1,14 @@
 import LegalLayout from "@/app/legal/LegalLayout";
 import Link from "next/link";
+import { buildPageMetadata } from "@/app/lib/metadata";
 
-export const metadata = {
-  title: "Gizlilik Politikası | Memento Mori",
-  description: "Memento Mori gizlilik politikası ve kişisel verilerin korunması.",
-};
+export const metadata = buildPageMetadata({
+  title: "Gizlilik Politikası",
+  description:
+    "Memento Mori gizlilik politikası. Kişisel verilerin toplanması, kullanımı ve korunması. Çerezler ve haklarınız.",
+  path: "/gizlilik-politikasi",
+  keywords: ["gizlilik politikası", "kişisel veri", "çerez", "KVKK", "memento mori"],
+});
 
 export default function GizlilikPolitikasiPage() {
   return (
