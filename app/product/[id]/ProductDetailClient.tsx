@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Heart, Minus, Plus, ChevronDown, ChevronUp, Star } from "lucide-react";
-import { useCart } from "@/app/components/ShopLayout";
+import { useCart, useWishlist } from "@/app/components/ShopLayout";
 
 const PLACEHOLDER_IMAGES = 4;
 const COLORS = ["#1a0a1f", "#2b0d0d", "#3d1f1f", "#4a2c2a"];
@@ -32,6 +32,8 @@ export default function ProductDetailClient({
   const [qty, setQty] = useState(1);
   const [openAccordion, setOpenAccordion] = useState<string | null>("details");
   const { addToCart } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const inWishlist = isInWishlist(product.id);
 
   const stock = 12;
   const inStock = stock > 0;
@@ -212,9 +214,14 @@ export default function ProductDetailClient({
             <Link href="/checkout" className="product-detail-btn-outline">
               Buy Now
             </Link>
-            <button type="button" className="product-detail-btn-ghost">
-              <Heart size={20} />
-              Add to Wishlist
+            <button
+              type="button"
+              className={`product-detail-btn-ghost ${inWishlist ? "in-wishlist" : ""}`}
+              onClick={() => toggleWishlist(product.id)}
+              aria-pressed={inWishlist}
+            >
+              <Heart size={20} fill={inWishlist ? "currentColor" : "none"} />
+              {inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
             </button>
           </div>
 

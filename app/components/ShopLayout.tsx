@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ShoppingCart, Search, Heart } from "lucide-react";
@@ -14,6 +14,22 @@ export function useCart() {
   return useContext(CartContext);
 }
 
+type WishlistContextType = {
+  wishlistIds: number[];
+  toggleWishlist: (id: number) => void;
+  isInWishlist: (id: number) => boolean;
+};
+
+const WishlistContext = createContext<WishlistContextType>({
+  wishlistIds: [],
+  toggleWishlist: () => {},
+  isInWishlist: () => false,
+});
+
+export function useWishlist() {
+  return useContext(WishlistContext);
+}
+
 export default function ShopLayout({
   children,
 }: {
@@ -21,6 +37,18 @@ export default function ShopLayout({
 }) {
   const pathname = usePathname();
   const [cartCount, setCartCount] = useState(0);
+  const [wishlistIds, setWishlistIds] = useState<number[]>([]);
+
+  const toggleWishlist = useCallback((id: number) => {
+    setWishlistIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  }, []);
+
+  const isInWishlist = useCallback(
+    (id: number) => wishlistIds.includes(id),
+    [wishlistIds]
+  );
 
   return (
     <CartContext.Provider
@@ -28,6 +56,9 @@ export default function ShopLayout({
         cartCount,
         addToCart: () => setCartCount((c) => c + 1),
       }}
+    >
+    <WishlistContext.Provider
+      value={{ wishlistIds, toggleWishlist, isInWishlist }}
     >
       <div className="dark-cult-shop">
         <div className="grain-overlay" />
@@ -92,9 +123,12 @@ export default function ShopLayout({
                   className="search-input"
                 />
               </div>
-              <button type="button" className="icon-button">
+              <Link href="/wishlist" className="icon-button" aria-label={`Wishlist, ${wishlistIds.length} items`}>
                 <Heart size={20} />
-              </button>
+                {wishlistIds.length > 0 && (
+                  <span className="cart-badge">{wishlistIds.length}</span>
+                )}
+              </Link>
               <Link href="/cart" className="icon-button" aria-label={`Cart, ${cartCount} items`}>
                 <ShoppingCart size={20} />
                 {cartCount > 0 && (
@@ -169,6 +203,7 @@ export default function ShopLayout({
           </div>
         </footer>
       </div>
+    </WishlistContext.Provider>
     </CartContext.Provider>
   );
 }

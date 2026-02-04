@@ -1688,6 +1688,22 @@
         .cart-continue-link:hover { color: var(--bone); }
         .cart-trust { display: flex; justify-content: center; gap: 2rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(139,115,85,0.2); font-size: 0.9rem; color: var(--aged-silver); }
 
+        /* ========== WISHLIST ========== */
+        .wishlist-page { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .wishlist-count { color: var(--aged-silver); font-family: 'Crimson Text', serif; margin-bottom: 2rem; }
+        .wishlist-empty { text-align: center; padding: 4rem 2rem; }
+        .wishlist-empty-icon { color: var(--aged-brass); opacity: 0.5; margin-bottom: 1.5rem; }
+        .wishlist-empty-title { font-family: 'Cinzel', serif; font-size: 2rem; color: var(--bone); margin-bottom: 0.75rem; }
+        .wishlist-empty-desc { color: var(--aged-silver); margin-bottom: 2rem; max-width: 400px; margin-left: auto; margin-right: auto; }
+        .wishlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
+        .wishlist-card { display: flex; flex-direction: column; }
+        .wishlist-card .home-product-info { flex: 1; display: flex; flex-direction: column; }
+        .wishlist-card-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+        .wishlist-card-actions .product-detail-btn-primary { flex: 1; min-width: 140px; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        .wishlist-remove { color: var(--aged-silver); }
+        .wishlist-remove:hover { color: var(--blood-red); }
+        .product-detail-btn-ghost.in-wishlist { color: var(--accent); }
+
         /* ========== CHECKOUT (SAYFA 7) ========== */
         .checkout-page { max-width: 1100px; margin: 0 auto; padding: 2rem; }
         .checkout-progress { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; }
@@ -1876,4 +1892,91 @@
           .masonry-grid { column-count: 1; }
           .blog-grid, .products-grid { grid-template-columns: 1fr; }
           .collections-page { padding: 2rem 1rem; }
+        }
+
+        /* ========== IMAGE VIEWER (LIGHTBOX) ========== */
+        .image-viewer-backdrop {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.92);
+          z-index: 10000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 4rem;
+        }
+        .image-viewer-close {
+          position: absolute;
+          top: 1.5rem;
+          right: 1.5rem;
+          background: transparent;
+          border: none;
+          color: var(--bone);
+          cursor: pointer;
+          padding: 0.5rem;
+          z-index: 10002;
+        }
+        .image-viewer-close:hover { color: var(--accent); }
+        .image-viewer-toolbar {
+          position: absolute;
+          bottom: 2rem;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 0.75rem 1.25rem;
+          background: rgba(26,10,31,0.8);
+          border: 2px solid rgba(139,115,85,0.3);
+          border-radius: 4px;
+          z-index: 10002;
+        }
+        .image-viewer-toolbar button {
+          background: none;
+          border: none;
+          color: var(--bone);
+          cursor: pointer;
+          padding: 0.25rem;
+        }
+        .image-viewer-toolbar button:hover:not(:disabled) { color: var(--accent); }
+        .image-viewer-toolbar button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .image-viewer-zoom-label { font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--aged-silver); min-width: 3rem; text-align: center; }
+        .image-viewer-content {
+          max-width: 90vw;
+          max-height: 85vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          user-select: none;
+        }
+        .image-viewer-transform { transition: transform 0.1s ease-out; }
+        .image-viewer-img {
+          max-width: 90vw;
+          max-height: 85vh;
+          object-fit: contain;
+          pointer-events: none;
+        }
+        .image-viewer-nav {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background: rgba(26,10,31,0.6);
+          border: 2px solid rgba(139,115,85,0.3);
+          color: var(--bone);
+          cursor: pointer;
+          padding: 1rem;
+          z-index: 10002;
+        }
+        .image-viewer-nav:hover { color: var(--accent); border-color: var(--accent); }
+        .image-viewer-prev { left: 1.5rem; }
+        .image-viewer-next { right: 1.5rem; }
+        .image-viewer-counter {
+          position: absolute;
+          bottom: 2rem;
+          right: 2rem;
+          font-family: 'Cinzel', serif;
+          font-size: 0.9rem;
+          color: var(--aged-silver);
+          z-index: 10002;
         }
