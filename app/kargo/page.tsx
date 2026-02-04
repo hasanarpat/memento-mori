@@ -1,10 +1,14 @@
 import LegalLayout from "@/app/legal/LegalLayout";
 import Link from "next/link";
+import { buildPageMetadata } from "@/app/lib/metadata";
 
-export const metadata = {
-  title: "Kargo ve Teslimat | Memento Mori",
-  description: "Kargo seçenekleri, teslimat süreleri ve ücretler.",
-};
+export const metadata = buildPageMetadata({
+  title: "Kargo ve Teslimat",
+  description:
+    "Memento Mori kargo ve teslimat. Süreler, ücretler, takip. Ücretsiz kargo fırsatları.",
+  path: "/kargo",
+  keywords: ["kargo", "teslimat", "gönderi süresi", "ücretsiz kargo", "memento mori"],
+});
 
 export default function KargoPage() {
   return (

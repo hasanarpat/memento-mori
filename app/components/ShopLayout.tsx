@@ -1,9 +1,10 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ShoppingCart, Search, Heart } from "lucide-react";
+import SearchModal from "./SearchModal";
 
 const CartContext = createContext<{ cartCount: number; addToCart: () => void }>({
   cartCount: 0,
@@ -38,6 +39,18 @@ export default function ShopLayout({
   const pathname = usePathname();
   const [cartCount, setCartCount] = useState(0);
   const [wishlistIds, setWishlistIds] = useState<number[]>([]);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setSearchOpen((open) => !open);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
 
   const toggleWishlist = useCallback((id: number) => {
     setWishlistIds((prev) =>
@@ -133,14 +146,16 @@ export default function ShopLayout({
               </Link>
             </nav>
             <div className="header-actions">
-              <div className="search-box">
-                <Search className="search-icon" size={16} />
-                <input
-                  type="text"
-                  placeholder="seek..."
-                  className="search-input"
-                />
-              </div>
+              <button
+                type="button"
+                className="search-trigger"
+                onClick={() => setSearchOpen(true)}
+                aria-label="Open search (⌘K)"
+              >
+                <Search size={20} />
+                <span className="search-trigger-kbd">⌘K</span>
+              </button>
+              <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
               <Link href="/wishlist" className="icon-button" aria-label={`Wishlist, ${wishlistIds.length} items`}>
                 <Heart size={20} />
                 {wishlistIds.length > 0 && (
