@@ -1,65 +1,139 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Shield, Zap, Sparkles, ArrowRight, Skull, Moon, Droplet } from "lucide-react";
+import { products } from "./data/shop";
+import NewsletterForm from "./components/NewsletterForm";
 
-export default function Home() {
+export default function HomePage() {
+  const newArrivals = products.filter((p) => p.new).length >= 8
+    ? products.filter((p) => p.new)
+    : [...products].slice(0, 8);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <>
+      {/* Section 1: Hero — Claude tasarımı birebir */}
+      <section className="hero" aria-label="Hero">
+        <Skull className="hero-skull" aria-hidden="true" />
+        <Moon className="hero-moon" aria-hidden="true" />
+        <div className="hero-content">
+          <h1 className="hero-title">
+            Umbra
+            <br />
+            Aesthetica
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+          <p className="hero-subtitle">Where Shadows Take Form</p>
+          <Link href="/collections" className="hero-cta">
+            <Droplet size={18} aria-hidden="true" />
+            Enter The Sanctum
+          </Link>
+        </div>
+      </section>
+
+      {/* Section 2: Featured Categories */}
+      <section className="home-categories" aria-labelledby="explore-heading">
+        <h2 id="explore-heading" className="home-section-title">
+          Explore Our Universe
+        </h2>
+        <div className="home-categories-grid">
+          <Link href="/collections?cat=cyber-gothic" className="home-category-card">
+            <Shield className="home-category-icon" size={48} />
+            <h3 className="home-category-name">Cyber Gothic</h3>
+            <p className="home-category-desc">
+              Where dark aesthetics meet futuristic edge. Armor for the digital age.
+            </p>
+            <span className="home-category-link">
+              Shop Now
+              <ArrowRight className="home-category-arrow" size={18} />
+            </span>
+          </Link>
+          <Link href="/collections?cat=steampunk" className="home-category-card">
+            <Zap className="home-category-icon" size={48} />
+            <h3 className="home-category-name">Steam Punk</h3>
+            <p className="home-category-desc">
+              Brass, leather, and clockwork. Victorian industrial revolution reborn.
+            </p>
+            <span className="home-category-link">
+              Shop Now
+              <ArrowRight className="home-category-arrow" size={18} />
+            </span>
+          </Link>
+          <Link href="/collections?cat=metallic-y2k" className="home-category-card">
+            <Sparkles className="home-category-icon" size={48} />
+            <h3 className="home-category-name">Metallic Y2K</h3>
+            <p className="home-category-desc">
+              Chrome dreams and silver linings. Bold, shiny, unapologetic.
+            </p>
+            <span className="home-category-link">
+              Shop Now
+              <ArrowRight className="home-category-arrow" size={18} />
+            </span>
+          </Link>
+        </div>
+      </section>
+
+      {/* Section 3: New Arrivals */}
+      <section className="home-new-arrivals-wrap" aria-labelledby="new-arrivals-heading">
+        <div className="home-new-arrivals-header">
+          <h2 id="new-arrivals-heading" className="home-new-arrivals-title">
+            New Arrivals
+          </h2>
+          <Link href="/new-arrivals" className="home-view-all">
+            View All
+          </Link>
+        </div>
+        <div className="home-products-grid">
+          {newArrivals.map((product) => (
+            <Link
+              key={product.id}
+              href={`/product/${product.id}`}
+              className="home-product-card"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+              <div className="home-product-image">
+                {product.badge && (
+                  <span className="home-product-badge">{product.badge}</span>
+                )}
+                {!product.badge && product.new && (
+                  <span className="home-product-badge">NEW</span>
+                )}
+              </div>
+              <div className="home-product-info">
+                <h3 className="home-product-name">{product.name}</h3>
+                <p className="home-product-category">{product.category}</p>
+                <p className="home-product-price">₺{product.price}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Section 4: Manifesto */}
+      <section className="home-manifesto" aria-labelledby="manifesto-heading">
+        <div className="home-manifesto-inner">
+          <h2 id="manifesto-heading" className="home-manifesto-title">
+            The Nexus Manifesto
+          </h2>
+          <p>
+            We believe in the fusion of past and future—where Victorian elegance
+            meets industrial grit, and gothic shadows embrace metallic light.
+            Every piece we forge is armor for those who refuse to blend in.
           </p>
+          <p>
+            Our mission is to create wearable art that tells a story: of rebellion,
+            craftsmanship, and the eternal dance between darkness and chrome.
+            Join the collective. Forge your future.
+          </p>
+          <Link href="/about" className="home-manifesto-cta">
+            Read Our Story
+          </Link>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </section>
+
+      {/* Section 5: Newsletter */}
+      <section className="home-newsletter" aria-labelledby="newsletter-heading">
+        <h2 id="newsletter-heading" className="home-newsletter-title">
+          Join the Collective
+        </h2>
+        <NewsletterForm />
+      </section>
+    </>
   );
 }
