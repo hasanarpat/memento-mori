@@ -8,7 +8,7 @@ import { products } from "@/app/data/shop";
 export default function WishlistPage() {
   const { wishlistIds, toggleWishlist } = useWishlist();
   const { addToCart } = useCart();
-  const items = products.filter((p) => wishlistIds.includes(p.id));
+  const items = products.filter((p) => wishlistIds.includes(String(p.id)));
 
   if (items.length === 0) {
     return (

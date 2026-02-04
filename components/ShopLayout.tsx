@@ -27,8 +27,8 @@ export function useCart() {
 
 const WishlistContext = createContext<{
   wishlistIds: string[];
-  toggleWishlist: (id: string) => void;
-  isInWishlist: (id: string) => boolean;
+  toggleWishlist: (id: string | number) => void;
+  isInWishlist: (id: string | number) => boolean;
 }>({
   wishlistIds: [],
   toggleWishlist: () => {},
@@ -70,14 +70,15 @@ export default function ShopLayout({
     localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlistIds));
   }, [wishlistIds]);
 
-  const toggleWishlist = useCallback((id: string) => {
+  const toggleWishlist = useCallback((id: string | number) => {
+    const sid = String(id);
     setWishlistIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      prev.includes(sid) ? prev.filter((x) => x !== sid) : [...prev, sid]
     );
   }, []);
 
   const isInWishlist = useCallback(
-    (id: string) => wishlistIds.includes(id),
+    (id: string | number) => wishlistIds.includes(String(id)),
     [wishlistIds]
   );
 
