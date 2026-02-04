@@ -1,13 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
-import { Heart, Minus, Plus, ChevronDown, ChevronUp, Star } from "lucide-react";
+import { Heart, Minus, Plus, ChevronDown, ChevronUp, Star, ImagePlus, X } from "lucide-react";
 import { useCart, useWishlist } from "@/app/components/ShopLayout";
+import ImageViewer from "@/app/components/ImageViewer";
 
 const PLACEHOLDER_IMAGES = 4;
 const COLORS = ["#1a0a1f", "#2b0d0d", "#3d1f1f", "#4a2c2a"];
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+
+type Review = {
+  id: string;
+  author: string;
+  rating: number;
+  date: string;
+  text: string;
+  photos: string[];
+};
+
+const DEMO_REVIEWS: Review[] = [
+  {
+    id: "1",
+    author: "Lilith V.",
+    rating: 5,
+    date: "Jan 2024",
+    text: "Stunning craftsmanship. The leather ages beautifully. Exactly the dark aesthetic I was looking for.",
+    photos: ["https://picsum.photos/400/400?random=10", "https://picsum.photos/400/400?random=11"],
+  },
+  {
+    id: "2",
+    author: "Corvus",
+    rating: 5,
+    date: "Dec 2023",
+    text: "Worth every penny. Wore it to a ritual and got so many compliments.",
+    photos: ["https://picsum.photos/400/400?random=12"],
+  },
+  {
+    id: "3",
+    author: "M.",
+    rating: 4,
+    date: "Dec 2023",
+    text: "Sizing was spot on. Only minor note: brass could be slightly heavier. Still love it.",
+    photos: [],
+  },
+];
 
 type Product = {
   id: number;
@@ -34,6 +71,53 @@ export default function ProductDetailClient({
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const inWishlist = isInWishlist(product.id);
+  const [reviews, setReviews] = useState<Review[]>(DEMO_REVIEWS);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerImages, setViewerImages] = useState<string[]>([]);
+  const [viewerIndex, setViewerIndex] = useState(0);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewPhotos, setReviewPhotos] = useState<string[]>([]);
+  const [reviewPhotoFiles, setReviewPhotoFiles] = useState<File[]>([]);
+
+  const openPhotoViewer = useCallback((images: string[], index: number) => {
+    setViewerImages(images);
+    setViewerIndex(index);
+    setViewerOpen(true);
+  }, []);
+
+  const handleReviewPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    if (files.length + reviewPhotoFiles.length > 5) return;
+    setReviewPhotoFiles((prev) => [...prev, ...files].slice(0, 5));
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => setReviewPhotos((prev) => [...prev, reader.result as string].slice(0, 5));
+      reader.readAsDataURL(file);
+    });
+  };
+  const removeReviewPhoto = (i: number) => {
+    setReviewPhotoFiles((prev) => prev.filter((_, j) => j !== i));
+    setReviewPhotos((prev) => prev.filter((_, j) => j !== i));
+  };
+  const submitReview = () => {
+    if (!reviewRating || !reviewText.trim()) return;
+    setReviews((prev) => [
+      {
+        id: String(Date.now()),
+        author: "You",
+        rating: reviewRating,
+        date: "Just now",
+        text: reviewText.trim(),
+        photos: [...reviewPhotos],
+      },
+      ...prev,
+    ]);
+    setReviewRating(0);
+    setReviewText("");
+    setReviewPhotos([]);
+    setReviewPhotoFiles([]);
+  };
 
   const stock = 12;
   const inStock = stock > 0;
@@ -56,11 +140,6 @@ export default function ProductDetailClient({
       title: "Shipping & Returns",
       content:
         "Free shipping on orders over ₺500. Standard delivery 5-7 business days. 30-day return policy for unworn items.",
-    },
-    {
-      id: "reviews",
-      title: "Reviews",
-      content: "24 reviews. Average rating 4.8/5.",
     },
   ];
 
@@ -119,7 +198,7 @@ export default function ProductDetailClient({
             {[1, 2, 3, 4, 5].map((i) => (
               <Star key={i} size={18} fill="var(--accent)" color="var(--accent)" />
             ))}
-            <span className="product-detail-reviews">(24 reviews)</span>
+            <span className="product-detail-reviews">({reviews.length} reviews)</span>
           </div>
           <p className="product-detail-desc">
             A statement piece that blends gothic elegance with industrial edge.
@@ -256,8 +335,134 @@ export default function ProductDetailClient({
               </div>
             ))}
           </div>
+
+          <section className="product-reviews" aria-labelledby="reviews-heading">
+            <h2 id="reviews-heading" className="product-reviews-title">
+              Reviews ({reviews.length})
+            </h2>
+            <ul className="product-reviews-list">
+              {reviews.map((r) => (
+                <li key={r.id} className="product-review-item">
+                  <div className="product-review-header">
+                    <span className="product-review-author">{r.author}</span>
+                    <span className="product-review-date">{r.date}</span>
+                  </div>
+                  <div className="product-review-stars">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <Star
+                        key={i}
+                        size={16}
+                        fill={i <= r.rating ? "var(--accent)" : "none"}
+                        color="var(--accent)"
+                      />
+                    ))}
+                  </div>
+                  <p className="product-review-text">{r.text}</p>
+                  {r.photos.length > 0 && (
+                    <div className="product-review-photos">
+                      {r.photos.map((src, i) => (
+                        <button
+                          key={i}
+                          type="button"
+                          className="product-review-photo-thumb"
+                          onClick={() => openPhotoViewer(r.photos, i)}
+                          aria-label={`View photo ${i + 1}`}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={src} alt="" />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <div className="product-review-form">
+              <h3 className="product-review-form-title">Write a review</h3>
+              <div className="product-review-form-rating">
+                <span className="product-review-form-label">Rating</span>
+                <div className="product-review-stars product-review-form-stars">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setReviewRating(i)}
+                      aria-label={`${i} star`}
+                      aria-pressed={reviewRating === i}
+                    >
+                      <Star
+                        size={24}
+                        fill={i <= reviewRating ? "var(--accent)" : "none"}
+                        color="var(--accent)"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <label className="product-review-form-label">
+                Your review
+                <textarea
+                  className="product-review-form-textarea"
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  rows={4}
+                  placeholder="Share your experience..."
+                />
+              </label>
+              <div className="product-review-form-photos">
+                <span className="product-review-form-label">Photos (optional, max 5)</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleReviewPhotoChange}
+                  className="product-review-form-file"
+                  id="review-photos"
+                />
+                <label htmlFor="review-photos" className="product-review-form-upload">
+                  <ImagePlus size={20} />
+                  Add photos
+                </label>
+                {reviewPhotos.length > 0 && (
+                  <div className="product-review-form-preview">
+                    {reviewPhotos.map((src, i) => (
+                      <div key={i} className="product-review-form-preview-item">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={src} alt="" />
+                        <button
+                          type="button"
+                          onClick={() => removeReviewPhoto(i)}
+                          className="product-review-form-preview-remove"
+                          aria-label="Remove photo"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <button
+                type="button"
+                className="product-detail-btn-primary"
+                onClick={submitReview}
+                disabled={!reviewRating || !reviewText.trim()}
+              >
+                Submit review
+              </button>
+            </div>
+          </section>
         </div>
       </div>
+
+      {viewerOpen && viewerImages.length > 0 && (
+        <ImageViewer
+          images={viewerImages}
+          currentIndex={viewerIndex}
+          onClose={() => setViewerOpen(false)}
+          onNavigate={setViewerIndex}
+        />
+      )}
 
       {related.length > 0 && (
         <section className="product-detail-related" aria-labelledby="related-heading">

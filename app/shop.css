@@ -1148,6 +1148,57 @@
           line-height: 1.6;
         }
         .product-detail-size-link { color: var(--accent); margin-left: 0.25rem; }
+        .product-reviews { margin-top: 2.5rem; padding-top: 2rem; border-top: 2px solid rgba(139, 115, 85, 0.2); }
+        .product-reviews-title { font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--bone); margin-bottom: 1.5rem; }
+        .product-reviews-list { list-style: none; display: flex; flex-direction: column; gap: 1.5rem; }
+        .product-review-item {
+          padding: 1.25rem;
+          background: rgba(26, 10, 31, 0.3);
+          border: 1px solid rgba(139, 115, 85, 0.2);
+        }
+        .product-review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+        .product-review-author { font-family: 'Cinzel', serif; color: var(--bone); }
+        .product-review-date { font-size: 0.85rem; color: var(--aged-silver); }
+        .product-review-stars { display: flex; gap: 0.25rem; margin-bottom: 0.5rem; }
+        .product-review-stars button { background: none; border: none; cursor: pointer; padding: 0; }
+        .product-review-text { font-family: 'Crimson Text', serif; color: var(--aged-silver); line-height: 1.6; font-size: 0.95rem; }
+        .product-review-photos { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+        .product-review-photo-thumb {
+          width: 72px; height: 72px;
+          padding: 0; border: 2px solid rgba(139, 115, 85, 0.3);
+          background: transparent; cursor: pointer; overflow: hidden;
+        }
+        .product-review-photo-thumb:hover { border-color: var(--accent); }
+        .product-review-photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .product-review-form { margin-top: 2rem; padding: 1.5rem; background: rgba(26, 10, 31, 0.4); border: 2px solid rgba(139, 115, 85, 0.3); }
+        .product-review-form-title { font-family: 'Cinzel', serif; font-size: 1.25rem; color: var(--bone); margin-bottom: 1rem; }
+        .product-review-form-label { display: block; font-family: 'Crimson Text', serif; color: var(--aged-silver); margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .product-review-form-stars { margin-top: 0.25rem; }
+        .product-review-form-textarea {
+          width: 100%; margin-top: 0.35rem; padding: 0.75rem;
+          background: rgba(13, 10, 15, 0.8); border: 2px solid rgba(139, 115, 85, 0.3);
+          color: var(--bone); font-family: 'Crimson Text', serif; font-size: 1rem; resize: vertical;
+        }
+        .product-review-form-photos { margin-top: 1rem; }
+        .product-review-form-file { position: absolute; width: 0; height: 0; opacity: 0; }
+        .product-review-form-upload {
+          display: inline-flex; align-items: center; gap: 0.5rem;
+          padding: 0.6rem 1rem; border: 2px dashed rgba(139, 115, 85, 0.4);
+          color: var(--aged-brass); cursor: pointer; font-family: 'Crimson Text', serif; font-size: 0.9rem;
+        }
+        .product-review-form-upload:hover { border-color: var(--accent); color: var(--accent); }
+        .product-review-form-preview { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+        .product-review-form-preview-item {
+          position: relative; width: 64px; height: 64px;
+          border: 2px solid rgba(139, 115, 85, 0.3); overflow: hidden;
+        }
+        .product-review-form-preview-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .product-review-form-preview-remove {
+          position: absolute; top: 2px; right: 2px;
+          width: 22px; height: 22px; padding: 0;
+          background: var(--blood-red); border: none; color: var(--bone); cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .product-review-form-preview-remove:hover { background: #7a0a0a; }
         .product-detail-related { margin-top: 4rem; padding-top: 2rem; border-top: 2px solid rgba(139, 115, 85, 0.2); }
         .product-detail-related-scroll {
           display: flex;
@@ -1980,3 +2031,16 @@
           color: var(--aged-silver);
           z-index: 10002;
         }
+
+        /* ========== LEGAL PAGES ========== */
+        .legal-page { max-width: 800px; margin: 0 auto; padding: 2rem; }
+        .legal-breadcrumb { font-family: 'Crimson Text', serif; font-size: 0.9rem; color: var(--aged-silver); margin-bottom: 1.5rem; }
+        .legal-breadcrumb a { color: var(--aged-brass); text-decoration: none; }
+        .legal-breadcrumb a:hover { color: var(--accent); }
+        .legal-updated { font-size: 0.9rem; color: var(--aged-silver); margin-bottom: 2rem; }
+        .legal-content { font-family: 'Crimson Text', serif; color: var(--aged-silver); line-height: 1.75; }
+        .legal-content p { margin-bottom: 1.25rem; }
+        .legal-content h2 { font-family: 'Cinzel', serif; font-size: 1.35rem; color: var(--bone); margin-top: 2rem; margin-bottom: 0.75rem; }
+        .legal-content a { color: var(--accent); text-decoration: none; }
+        .legal-content a:hover { text-decoration: underline; }
+        .legal-contact { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(139, 115, 85, 0.2); }

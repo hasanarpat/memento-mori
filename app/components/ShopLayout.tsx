@@ -172,16 +172,35 @@ export default function ShopLayout({
               <Link href="/account" className="footer-link">
                 Account
               </Link>
+              <Link href="/wishlist" className="footer-link">
+                Wishlist
+              </Link>
             </div>
             <div className="footer-section">
               <h3>Codex</h3>
               <Link href="/size-guide" className="footer-link">
                 Sizing
               </Link>
-              <a href="#">Shipping</a>
-              <a href="#">Returns</a>
+              <Link href="/kargo" className="footer-link">
+                Kargo
+              </Link>
+              <Link href="/iade-degisim" className="footer-link">
+                İade & Değişim
+              </Link>
               <Link href="/contact" className="footer-link">
                 Contact
+              </Link>
+            </div>
+            <div className="footer-section">
+              <h3>Yasal</h3>
+              <Link href="/kvkk" className="footer-link">
+                KVKK
+              </Link>
+              <Link href="/gizlilik-politikasi" className="footer-link">
+                Gizlilik Politikası
+              </Link>
+              <Link href="/kullanim-kosullari" className="footer-link">
+                Kullanım Koşulları
               </Link>
             </div>
             <div className="footer-section">
