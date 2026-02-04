@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import Link from "next/link";
 import { Heart, Minus, Plus, ChevronDown, ChevronUp, Star, ImagePlus, X } from "lucide-react";
-import { useCart, useWishlist } from "@/app/components/ShopLayout";
+import { useCart, useWishlist } from "@/components/ShopLayout";
 import ImageViewer from "@/app/components/ImageViewer";
 
 const PLACEHOLDER_IMAGES = 4;

@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { Heart, ShoppingBag } from "lucide-react";
-import { useWishlist } from "@/app/components/ShopLayout";
-import { useCart } from "@/app/components/ShopLayout";
+import { useWishlist, useCart } from "@/components/ShopLayout";
 import { products } from "@/app/data/shop";
 
 export default function WishlistPage() {

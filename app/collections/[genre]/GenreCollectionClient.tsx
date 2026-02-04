@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useWishlist, useCart } from "@/app/components/ShopLayout";
+import { useWishlist, useCart } from "@/components/ShopLayout";
 import type { Product } from "@/app/data/shop";
 
 export default function GenreCollectionClient({

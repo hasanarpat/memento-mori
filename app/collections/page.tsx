@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Heart, Eye, Guitar, Skull, Moon, Cog, Flame, Sparkles, BookOpen, Box, Zap, Droplets } from "lucide-react";
 import { products, genres } from "@/app/data/shop";
 import type { Product } from "@/app/data/shop";
-import { useCart, useWishlist } from "@/app/components/ShopLayout";
+import { useCart, useWishlist } from "@/components/ShopLayout";
 
 const themeIcons: Record<string, React.ComponentType<{ size?: number }>> = {
   gothic: Moon,

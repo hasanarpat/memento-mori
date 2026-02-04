@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ShoppingBag, X, Minus, Plus } from "lucide-react";
-import { useCart } from "../components/ShopLayout";
+import { useCart } from "@/components/ShopLayout";
 import { products } from "../data/shop";
 
 function CartSummaryContent({ total }: { total: number }) {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCart, useWishlist } from "@/app/components/ShopLayout";
+import { useCart, useWishlist } from "@/components/ShopLayout";
 import type { Product } from "@/app/data/shop";
 
 export default function RitualClient({ products: ritualProducts }: { products: Product[] }) {

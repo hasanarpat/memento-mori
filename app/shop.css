@@ -271,6 +271,58 @@
         }
         .nav-link:hover::after { width: 100%; }
 
+        .nav-codex {
+          position: relative;
+        }
+        .nav-link-button {
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+        }
+        .codex-dropdown {
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          margin-top: 0.5rem;
+          min-width: 180px;
+          padding: 0.75rem 0;
+          background: linear-gradient(180deg, rgba(26, 10, 31, 0.98) 0%, rgba(13, 10, 15, 0.98) 100%);
+          border: 2px solid rgba(139, 115, 85, 0.4);
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+          display: flex;
+          flex-direction: column;
+          gap: 0.25rem;
+          z-index: 100;
+        }
+        .codex-dropdown a {
+          display: block;
+          padding: 0.5rem 1.25rem;
+          font-family: 'Crimson Text', serif;
+          font-size: 0.95rem;
+          color: var(--aged-silver);
+          text-decoration: none;
+          transition: color 0.2s, background 0.2s;
+        }
+        .codex-dropdown a:hover {
+          color: var(--bone);
+          background: rgba(184, 134, 11, 0.15);
+        }
+        .header-login {
+          font-family: 'IM Fell DW Pica', serif;
+          font-size: 1rem;
+          color: var(--aged-silver);
+          text-decoration: none;
+          letter-spacing: 0.15em;
+          transition: color 0.2s;
+        }
+        .header-login:hover { color: var(--bone); }
+        .search-trigger-text {
+          font-size: 0.9rem;
+          color: var(--aged-silver);
+        }
+
         .header-actions {
           display: flex;
           gap: 1.5rem;
