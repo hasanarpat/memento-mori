@@ -1,9 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingCart, Search, Heart } from "lucide-react";
+import { ShoppingCart, Search, Heart, Menu, X, ChevronDown } from "lucide-react";
 import SearchModal from "./SearchModal";
 
 const CartContext = createContext<{ cartCount: number; addToCart: () => void }>({
@@ -40,6 +40,9 @@ export default function ShopLayout({
   const [cartCount, setCartCount] = useState(0);
   const [wishlistIds, setWishlistIds] = useState<number[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [codexOpen, setCodexOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const codexRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -51,6 +54,21 @@ export default function ShopLayout({
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
+
+  useEffect(() => {
+    if (!codexOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (codexRef.current && !codexRef.current.contains(e.target as Node)) setCodexOpen(false);
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [codexOpen]);
+
+  useEffect(() => {
+    if (mobileOpen) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
 
   const toggleWishlist = useCallback((id: number) => {
     setWishlistIds((prev) =>
@@ -80,71 +98,49 @@ export default function ShopLayout({
 
         <header className="header">
           <div className="header-content">
-            <Link href="/" className="logo logo-umbra">
-              memento mori
+            <Link href="/" className="logo">
+              Memento Mori
             </Link>
-            <nav className="nav">
-              <Link
-                href="/"
-                className={`nav-link ${pathname === "/" ? "active" : ""}`}
-              >
+
+            <nav className="nav" aria-label="Main">
+              <Link href="/" className={`nav-link ${pathname === "/" ? "active" : ""}`}>
                 HOME
               </Link>
-              <Link
-                href="/lookbook"
-                className={`nav-link ${pathname === "/lookbook" ? "active" : ""}`}
-              >
-                LOOKBOOK
-              </Link>
-              <Link
-                href="/collections"
-                className={`nav-link ${pathname === "/collections" ? "active" : ""}`}
-              >
+              <Link href="/collections" className={`nav-link ${pathname === "/collections" ? "active" : ""}`}>
                 COLLECTIONS
               </Link>
-              <Link
-                href="/worlds"
-                className={`nav-link ${pathname === "/worlds" ? "active" : ""}`}
-              >
-                WORLDS
-              </Link>
-              <Link
-                href="/ritual"
-                className={`nav-link ${pathname === "/ritual" ? "active" : ""}`}
-              >
-                RITUAL
-              </Link>
-              <Link
-                href="/journal"
-                className={`nav-link ${pathname === "/journal" ? "active" : ""}`}
-              >
-                JOURNAL
-              </Link>
-              <Link
-                href="/new-arrivals"
-                className={`nav-link ${pathname === "/new-arrivals" ? "active" : ""}`}
-              >
+              <Link href="/new-arrivals" className={`nav-link ${pathname === "/new-arrivals" ? "active" : ""}`}>
                 NEW ARRIVALS
               </Link>
-              <Link
-                href="/archive"
-                className={`nav-link ${pathname === "/archive" ? "active" : ""}`}
-              >
-                ARCHIVE
+              <Link href="/journal" className={`nav-link ${pathname === "/journal" ? "active" : ""}`}>
+                JOURNAL
               </Link>
-              <Link
-                href="/about"
-                className={`nav-link ${pathname === "/about" ? "active" : ""}`}
-              >
+              <div className="nav-dropdown" ref={codexRef}>
+                <button
+                  type="button"
+                  className={`nav-dropdown-trigger ${codexOpen ? "open" : ""}`}
+                  onClick={() => setCodexOpen((o) => !o)}
+                  aria-expanded={codexOpen}
+                  aria-haspopup="true"
+                >
+                  CODEX
+                  <ChevronDown size={16} />
+                </button>
+                <div className={`nav-dropdown-panel ${codexOpen ? "open" : ""}`}>
+                  <Link href="/lookbook" onClick={() => setCodexOpen(false)}>Lookbook</Link>
+                  <Link href="/worlds" onClick={() => setCodexOpen(false)}>Worlds</Link>
+                  <Link href="/ritual" onClick={() => setCodexOpen(false)}>Ritual</Link>
+                  <Link href="/archive" onClick={() => setCodexOpen(false)}>Archive</Link>
+                </div>
+              </div>
+              <Link href="/about" className={`nav-link ${pathname === "/about" ? "active" : ""}`}>
                 ABOUT
               </Link>
-              <Link
-                href="/contact"
-                className={`nav-link ${pathname === "/contact" ? "active" : ""}`}
-              >
+              <Link href="/contact" className={`nav-link ${pathname === "/contact" ? "active" : ""}`}>
                 CONTACT
               </Link>
             </nav>
+
             <div className="header-actions">
               <button
                 type="button"
@@ -158,17 +154,64 @@ export default function ShopLayout({
               <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
               <Link href="/wishlist" className="icon-button" aria-label={`Wishlist, ${wishlistIds.length} items`}>
                 <Heart size={20} />
-                {wishlistIds.length > 0 && (
-                  <span className="cart-badge">{wishlistIds.length}</span>
-                )}
+                {wishlistIds.length > 0 && <span className="cart-badge">{wishlistIds.length}</span>}
               </Link>
               <Link href="/cart" className="icon-button" aria-label={`Cart, ${cartCount} items`}>
                 <ShoppingCart size={20} />
-                {cartCount > 0 && (
-                  <span className="cart-badge">{cartCount}</span>
-                )}
+                {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+              </Link>
+
+              <button
+                type="button"
+                className="mobile-menu-btn"
+                onClick={() => setMobileOpen(true)}
+                aria-label="Open menu"
+              >
+                <Menu size={24} />
+              </button>
+            </div>
+          </div>
+
+          {/* Mobile menu */}
+          <div
+            className={`mobile-menu-backdrop ${mobileOpen ? "open" : ""}`}
+            aria-hidden
+            onClick={() => setMobileOpen(false)}
+          />
+          <div className={`mobile-menu-drawer ${mobileOpen ? "open" : ""}`} role="dialog" aria-modal="true" aria-label="Menu">
+            <div className="mobile-menu-header">
+              <span className="mobile-menu-title">Menu</span>
+              <button type="button" className="mobile-menu-close" onClick={() => setMobileOpen(false)} aria-label="Close menu">
+                <X size={24} />
+              </button>
+            </div>
+            <nav className="mobile-menu-nav" aria-label="Mobile">
+              <Link href="/" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Home</Link>
+              <Link href="/collections" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Collections</Link>
+              <Link href="/new-arrivals" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>New Arrivals</Link>
+              <Link href="/lookbook" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Lookbook</Link>
+              <Link href="/worlds" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Worlds</Link>
+              <Link href="/ritual" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Ritual</Link>
+              <Link href="/archive" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Archive</Link>
+              <Link href="/journal" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Journal</Link>
+              <Link href="/about" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>About</Link>
+              <Link href="/contact" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Contact</Link>
+            </nav>
+            <div className="mobile-menu-actions">
+              <button type="button" className="mobile-menu-action" onClick={() => { setSearchOpen(true); setMobileOpen(false); }}>
+                <Search size={20} />
+                Search
+              </button>
+              <Link href="/wishlist" className="mobile-menu-action" onClick={() => setMobileOpen(false)}>
+                <Heart size={20} />
+                Wishlist {wishlistIds.length > 0 && `(${wishlistIds.length})`}
+              </Link>
+              <Link href="/cart" className="mobile-menu-action" onClick={() => setMobileOpen(false)}>
+                <ShoppingCart size={20} />
+                Cart {cartCount > 0 && `(${cartCount})`}
               </Link>
             </div>
+            <p className="mobile-menu-tagline">In darkness we find beauty.</p>
           </div>
         </header>
 
