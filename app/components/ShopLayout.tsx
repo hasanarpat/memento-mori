@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ShoppingCart, Search, Heart, Menu, X, ChevronDown } from "lucide-react";
+import { ShoppingCart, Search, Heart, Menu, X, ChevronDown, User } from "lucide-react";
 import SearchModal from "./SearchModal";
 
 const CartContext = createContext<{ cartCount: number; addToCart: () => void }>({
@@ -99,6 +99,7 @@ export default function ShopLayout({
         <header className="header">
           <div className="header-content">
             <Link href="/" className="logo">
+              <span className="logo-symbol" aria-hidden>†</span>
               Memento Mori
             </Link>
 
@@ -123,6 +124,7 @@ export default function ShopLayout({
                   aria-expanded={codexOpen}
                   aria-haspopup="true"
                 >
+                  <span className="nav-dropdown-symbol" aria-hidden>☗</span>
                   CODEX
                   <ChevronDown size={16} />
                 </button>
@@ -160,6 +162,9 @@ export default function ShopLayout({
                 <ShoppingCart size={20} />
                 {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
               </Link>
+              <Link href="/login" className="icon-button" aria-label="Giriş / Kayıt">
+                <User size={20} />
+              </Link>
 
               <button
                 type="button"
@@ -180,20 +185,25 @@ export default function ShopLayout({
           />
           <div className={`mobile-menu-drawer ${mobileOpen ? "open" : ""}`} role="dialog" aria-modal="true" aria-label="Menu">
             <div className="mobile-menu-header">
-              <span className="mobile-menu-title">Menu</span>
+              <span className="mobile-menu-title">
+                <span className="mobile-menu-title-symbol" aria-hidden>☗</span>
+                CODEX
+              </span>
               <button type="button" className="mobile-menu-close" onClick={() => setMobileOpen(false)} aria-label="Close menu">
                 <X size={24} />
               </button>
             </div>
+            <div className="mobile-menu-divider" aria-hidden><span>— † —</span></div>
             <nav className="mobile-menu-nav" aria-label="Mobile">
-              <Link href="/" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Home</Link>
-              <Link href="/collections" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Collections</Link>
-              <Link href="/new-arrivals" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>New Arrivals</Link>
-              <Link href="/lookbook" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Lookbook</Link>
-              <Link href="/worlds" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Worlds</Link>
-              <Link href="/ritual" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Ritual</Link>
-              <Link href="/archive" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Archive</Link>
-              <Link href="/journal" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Journal</Link>
+              <Link href="/" className="mobile-menu-link" onClick={() => setMobileOpen(false)}><span className="mobile-menu-num">I</span> Home</Link>
+              <Link href="/collections" className="mobile-menu-link" onClick={() => setMobileOpen(false)}><span className="mobile-menu-num">II</span> Collections</Link>
+              <Link href="/new-arrivals" className="mobile-menu-link" onClick={() => setMobileOpen(false)}><span className="mobile-menu-num">III</span> New Arrivals</Link>
+              <Link href="/lookbook" className="mobile-menu-link" onClick={() => setMobileOpen(false)}><span className="mobile-menu-num">IV</span> Lookbook</Link>
+              <Link href="/worlds" className="mobile-menu-link" onClick={() => setMobileOpen(false)}><span className="mobile-menu-num">V</span> Worlds</Link>
+              <Link href="/ritual" className="mobile-menu-link" onClick={() => setMobileOpen(false)}><span className="mobile-menu-num">VI</span> Ritual</Link>
+              <Link href="/archive" className="mobile-menu-link" onClick={() => setMobileOpen(false)}><span className="mobile-menu-num">VII</span> Archive</Link>
+              <Link href="/journal" className="mobile-menu-link" onClick={() => setMobileOpen(false)}><span className="mobile-menu-num">VIII</span> Journal</Link>
+              <div className="mobile-menu-divider" aria-hidden><span>— † —</span></div>
               <Link href="/about" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>About</Link>
               <Link href="/contact" className="mobile-menu-link" onClick={() => setMobileOpen(false)}>Contact</Link>
             </nav>
@@ -210,8 +220,13 @@ export default function ShopLayout({
                 <ShoppingCart size={20} />
                 Cart {cartCount > 0 && `(${cartCount})`}
               </Link>
+              <Link href="/login" className="mobile-menu-action mobile-menu-action-accent" onClick={() => setMobileOpen(false)}>
+                <User size={20} />
+                Giriş / Kayıt
+              </Link>
             </div>
-            <p className="mobile-menu-tagline">In darkness we find beauty.</p>
+            <div className="mobile-menu-divider" aria-hidden><span>— † —</span></div>
+            <p className="mobile-menu-tagline">In darkness we find beauty. In leather and brass, our armor.</p>
           </div>
         </header>
 

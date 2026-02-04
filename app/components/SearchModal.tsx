@@ -8,7 +8,6 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Search, X, ArrowRight, Package, Layers } from "lucide-react";
 import { products, genres } from "@/app/data/shop";
 import type { Product } from "@/app/data/shop";
