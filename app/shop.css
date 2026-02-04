@@ -509,14 +509,30 @@
           transition: color 0.3s ease;
         }
         .filter-option:hover { color: var(--bone); }
-        .filter-option input[type="checkbox"] {
+        .filter-option input[type="checkbox"],
+        .filter-option input[type="radio"] {
           width: 18px;
           height: 18px;
           border: 1px solid rgba(139, 115, 85, 0.5);
           background: transparent;
           cursor: pointer;
         }
-        .price-slider { width: 100%; margin-top: 1rem; }
+        .filter-price-display {
+          font-family: 'Crimson Text', serif;
+          color: var(--aged-silver);
+          margin-bottom: 0.5rem;
+          font-size: 0.9rem;
+        }
+        .price-slider { width: 100%; margin-top: 0.5rem; }
+        .collections-worlds-link {
+          display: block;
+          margin-top: 1rem;
+          color: var(--accent);
+          font-family: 'Cinzel', serif;
+          font-size: 0.9rem;
+          text-decoration: none;
+        }
+        .collections-worlds-link:hover { color: var(--bone); }
         .clear-filters {
           width: 100%;
           background: transparent;
@@ -1486,6 +1502,9 @@
           font-weight: 600;
         }
         .home-category-arrow { transition: transform 0.3s ease; }
+        .home-categories-more { text-align: center; margin-top: 1.5rem; }
+        .home-categories-more a { color: var(--aged-brass); font-family: 'Cinzel', serif; text-decoration: none; }
+        .home-categories-more a:hover { color: var(--accent); }
         .home-new-arrivals-wrap {
           padding: 5rem 2rem;
           max-width: 1400px;
@@ -1933,6 +1952,118 @@
         .new-arrivals-group-title { margin: 0; font-size: inherit; font-weight: 700; }
         .new-arrivals-grid { margin-top: 1rem; }
         .new-arrivals-empty { font-family: 'Crimson Text', serif; color: var(--aged-silver); padding: 1rem 0; }
+
+        /* ========== WORLDS (SUBCULTURE LANDING) ========== */
+        .worlds-page { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .worlds-hero { text-align: center; margin-bottom: 3rem; }
+        .worlds-hero-desc { font-family: 'Crimson Text', serif; color: var(--aged-silver); font-size: 1.15rem; max-width: 560px; margin: 1rem auto 0; }
+        .worlds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; }
+        .worlds-card {
+          background: linear-gradient(180deg, rgba(43, 13, 13, 0.25) 0%, rgba(26, 10, 31, 0.5) 100%);
+          border: 2px solid rgba(139, 115, 85, 0.25);
+          padding: 2rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          text-decoration: none;
+          color: inherit;
+          transition: all 0.3s ease;
+        }
+        .worlds-card:hover {
+          border-color: var(--world-accent, var(--accent));
+          box-shadow: 0 0 28px rgba(0,0,0,0.4);
+          transform: translateY(-4px);
+        }
+        .worlds-card-icon-wrap {
+          width: 4.5rem; height: 4.5rem;
+          display: flex; align-items: center; justify-content: center;
+          color: var(--world-accent, var(--aged-brass));
+          margin-bottom: 1.25rem;
+          transition: transform 0.3s ease;
+        }
+        .worlds-card:hover .worlds-card-icon-wrap { transform: scale(1.1); color: var(--world-accent, var(--accent)); }
+        .worlds-card-name { font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--bone); margin-bottom: 0.35rem; }
+        .worlds-card-tagline { font-size: 0.8rem; color: var(--world-accent, var(--accent)); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+        .worlds-card-desc { font-family: 'Crimson Text', serif; font-size: 0.9rem; color: var(--aged-silver); line-height: 1.5; margin-bottom: 1rem; flex: 1; }
+        .worlds-card-link {
+          display: inline-flex; align-items: center; gap: 0.5rem;
+          font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--world-accent, var(--aged-brass));
+        }
+        .worlds-card:hover .worlds-card-link { color: var(--bone); }
+
+        /* ========== GENRE COLLECTION PAGE ========== */
+        .genre-page { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .genre-hero {
+          padding: 3rem 2rem;
+          margin-bottom: 2.5rem;
+          background: linear-gradient(135deg, rgba(26, 10, 31, 0.6) 0%, rgba(43, 13, 13, 0.4) 100%);
+          border: 2px solid rgba(139, 115, 85, 0.25);
+          text-align: center;
+        }
+        .genre-hero-title { font-family: 'Cinzel', serif; font-size: clamp(2rem, 5vw, 3.5rem); color: var(--bone); margin-bottom: 0.5rem; }
+        .genre-hero-tagline { font-size: 1rem; color: var(--genre-accent, var(--accent)); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 1rem; }
+        .genre-hero-desc { font-family: 'Crimson Text', serif; color: var(--aged-silver); max-width: 640px; margin: 0 auto; line-height: 1.65; }
+        .genre-products { margin-top: 2rem; }
+        .genre-count { font-family: 'Crimson Text', serif; color: var(--aged-silver); margin-bottom: 1.5rem; font-size: 0.95rem; }
+        .genre-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+        .genre-product-card { display: flex; flex-direction: column; }
+        .genre-product-card .home-product-info { flex: 1; display: flex; flex-direction: column; }
+        .genre-card-image-wrap { position: relative; display: block; }
+        .genre-card-image-wrap .product-badge { top: 0.75rem; right: 0.75rem; }
+        .genre-card-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+        .genre-card-actions .product-detail-btn-primary { flex: 1; }
+        .genre-empty { text-align: center; padding: 4rem 2rem; }
+        .genre-empty p { color: var(--aged-silver); margin-bottom: 1.5rem; }
+
+        /* ========== RITUAL PAGE ========== */
+        .ritual-page { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+        .ritual-hero { text-align: center; padding: 2rem 0 3rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(139, 115, 85, 0.2); }
+        .ritual-hero-tagline { font-size: 1rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.15em; margin: 0.5rem 0 1rem; }
+        .ritual-hero-desc { font-family: 'Crimson Text', serif; color: var(--aged-silver); max-width: 560px; margin: 0 auto 1.5rem; line-height: 1.65; }
+        .ritual-hero-icons { display: flex; justify-content: center; gap: 2rem; color: var(--aged-brass); opacity: 0.8; }
+        .ritual-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+        .ritual-card { display: flex; flex-direction: column; }
+        .ritual-card .home-product-info { flex: 1; display: flex; flex-direction: column; }
+        .ritual-card-image { position: relative; display: block; }
+        .ritual-card-actions { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+        .ritual-card-actions .product-detail-btn-primary { flex: 1; }
+        .ritual-empty { text-align: center; padding: 4rem 2rem; }
+        .ritual-empty p { color: var(--aged-silver); margin-bottom: 1.5rem; }
+        .ritual-cta { text-align: center; padding: 3rem 2rem; margin-top: 3rem; border: 2px solid rgba(139, 115, 85, 0.25); }
+        .ritual-cta-title { font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--bone); margin-bottom: 0.5rem; }
+        .ritual-cta-desc { color: var(--aged-silver); margin-bottom: 1.5rem; }
+        .ritual-products { margin-top: 1rem; }
+
+        /* ========== ARCHIVE PAGE ========== */
+        .archive-page { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+        .archive-hero { text-align: center; padding: 2rem 0 3rem; }
+        .archive-hero-icon { color: var(--aged-brass); opacity: 0.7; margin-bottom: 1rem; }
+        .archive-hero-desc { font-family: 'Crimson Text', serif; color: var(--aged-silver); max-width: 480px; margin: 0 auto; line-height: 1.6; }
+        .archive-section { margin-bottom: 3rem; }
+        .archive-section-title {
+          display: flex; align-items: center; gap: 0.75rem;
+          font-family: 'Cinzel', serif; font-size: 1.5rem; color: var(--bone); margin-bottom: 0.5rem;
+        }
+        .archive-section-title svg { color: var(--accent); }
+        .archive-section-desc { font-family: 'Crimson Text', serif; color: var(--aged-silver); margin-bottom: 1.5rem; font-size: 0.95rem; }
+        .archive-lookbook-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
+        .archive-lookbook-card {
+          background: rgba(26, 10, 31, 0.4);
+          border: 2px solid rgba(139, 115, 85, 0.25);
+          padding: 0;
+          text-decoration: none;
+          color: inherit;
+          transition: all 0.3s ease;
+        }
+        .archive-lookbook-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+        .archive-lookbook-image { aspect-ratio: 3/4; background: linear-gradient(135deg, rgba(43, 13, 13, 0.5), rgba(26, 10, 31, 0.6)); }
+        .archive-lookbook-name { font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--bone); padding: 1rem; margin: 0; }
+        .archive-lookbook-meta { font-size: 0.85rem; color: var(--aged-silver); padding: 0 1rem 1rem; margin: 0; }
+        .archive-products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
+        .archive-product-card { min-width: 0; }
+        .archive-empty { font-family: 'Crimson Text', serif; color: var(--aged-silver); padding: 1rem 0; }
+        .archive-back { text-align: center; margin-top: 2rem; }
 
         @media (max-width: 768px) {
           .nav { display: none; }

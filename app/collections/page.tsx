@@ -1,33 +1,49 @@
 "use client";
 
 import { useState } from "react";
-import { Heart, Eye, Guitar, Skull } from "lucide-react";
-import { products } from "../data/shop";
-import { useCart } from "../../components/ShopLayout";
+import Link from "next/link";
+import { Heart, Eye, Guitar, Skull, Moon, Cog, Flame, Sparkles, BookOpen, Box, Zap, Droplets } from "lucide-react";
+import { products, genres } from "@/app/data/shop";
+import type { Product } from "@/app/data/shop";
+import { useCart, useWishlist } from "@/app/components/ShopLayout";
+
+const themeIcons: Record<string, React.ComponentType<{ size?: number }>> = {
+  gothic: Moon,
+  steampunk: Cog,
+  metal: Flame,
+  occult: Sparkles,
+  "dark-academia": BookOpen,
+  industrial: Box,
+  deathrock: Zap,
+  ritual: Droplets,
+};
+
+const productTypeLabels: Record<string, string> = {
+  apparel: "Apparel",
+  outerwear: "Outerwear",
+  jewelry: "Jewelry",
+  accessories: "Accessories",
+  footwear: "Footwear",
+  ritual: "Ritual",
+  harness: "Harness",
+};
 
 export default function CollectionsPage() {
-  const [likedProducts, setLikedProducts] = useState<Set<number>>(new Set());
-  const [categoryFilter, setCategoryFilter] = useState("all");
-  const [priceRange, setPriceRange] = useState([0, 1000]);
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [priceRange, setPriceRange] = useState([0, 700]);
   const [sortBy, setSortBy] = useState("new");
   const { addToCart } = useCart();
-
-  const toggleLike = (productId: number) => {
-    setLikedProducts((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(productId)) newSet.delete(productId);
-      else newSet.add(productId);
-      return newSet;
-    });
-  };
+  const { toggleWishlist, isInWishlist } = useWishlist();
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
-      categoryFilter === "all" ||
-      product.category.includes(categoryFilter);
+      categoryFilter === "all" || product.theme === categoryFilter;
+    const matchesType =
+      typeFilter === "all" || product.productType === typeFilter;
     const matchesPrice =
       product.price >= priceRange[0] && product.price <= priceRange[1];
-    return matchesCategory && matchesPrice;
+    return matchesCategory && matchesType && matchesPrice;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -41,55 +57,60 @@ export default function CollectionsPage() {
     <div className="collections-page">
       <aside className="filters-sidebar">
         <div className="filter-section">
-          <h3 className="filter-title">Category</h3>
+          <h3 className="filter-title">World</h3>
           <label className="filter-option">
             <input
-              type="checkbox"
+              type="radio"
+              name="genre"
               checked={categoryFilter === "all"}
               onChange={() => setCategoryFilter("all")}
             />
-            All Categories
+            All Worlds
           </label>
-          <label className="filter-option">
-            <input
-              type="checkbox"
-              checked={categoryFilter === "Gothic"}
-              onChange={() => setCategoryFilter("Gothic")}
-            />
-            Gothic
-          </label>
-          <label className="filter-option">
-            <input
-              type="checkbox"
-              checked={categoryFilter === "Metal"}
-              onChange={() => setCategoryFilter("Metal")}
-            />
-            Metal
-          </label>
-          <label className="filter-option">
-            <input
-              type="checkbox"
-              checked={categoryFilter === "Steampunk"}
-              onChange={() => setCategoryFilter("Steampunk")}
-            />
-            Steampunk
-          </label>
+          {genres.map((g) => (
+            <label key={g.slug} className="filter-option">
+              <input
+                type="radio"
+                name="genre"
+                checked={categoryFilter === g.slug}
+                onChange={() => setCategoryFilter(g.slug)}
+              />
+              {g.name}
+            </label>
+          ))}
         </div>
         <div className="filter-section">
-          <h3 className="filter-title">Price Range</h3>
-          <div
-            style={{
-              fontFamily: "'Crimson Text', serif",
-              color: "var(--aged-silver)",
-              marginBottom: "0.5rem",
-            }}
-          >
-            ${priceRange[0]} - ${priceRange[1]}
+          <h3 className="filter-title">Type</h3>
+          <label className="filter-option">
+            <input
+              type="radio"
+              name="type"
+              checked={typeFilter === "all"}
+              onChange={() => setTypeFilter("all")}
+            />
+            All Types
+          </label>
+          {Object.entries(productTypeLabels).map(([value, label]) => (
+            <label key={value} className="filter-option">
+              <input
+                type="radio"
+                name="type"
+                checked={typeFilter === value}
+                onChange={() => setTypeFilter(value)}
+              />
+              {label}
+            </label>
+          ))}
+        </div>
+        <div className="filter-section">
+          <h3 className="filter-title">Price (₺)</h3>
+          <div className="filter-price-display">
+            ₺{priceRange[0]} – ₺{priceRange[1]}
           </div>
           <input
             type="range"
             min={0}
-            max={1000}
+            max={700}
             value={priceRange[1]}
             onChange={(e) =>
               setPriceRange([0, parseInt(e.target.value, 10)])
@@ -98,15 +119,19 @@ export default function CollectionsPage() {
             style={{ width: "100%", accentColor: "var(--blood-red)" }}
           />
         </div>
+        <Link href="/worlds" className="collections-worlds-link">
+          Explore all Worlds →
+        </Link>
         <button
           type="button"
           className="clear-filters"
           onClick={() => {
             setCategoryFilter("all");
-            setPriceRange([0, 1000]);
+            setTypeFilter("all");
+            setPriceRange([0, 700]);
           }}
         >
-          Clear All Filters
+          Clear Filters
         </button>
       </aside>
       <div className="collections-main">
@@ -114,7 +139,7 @@ export default function CollectionsPage() {
           <div>
             <div className="breadcrumb">Home / Collections</div>
             <div className="product-count" style={{ marginTop: "0.5rem" }}>
-              Showing {sortedProducts.length} of {products.length} artifacts
+              {sortedProducts.length} of {products.length} artifacts
             </div>
           </div>
           <select
@@ -122,66 +147,70 @@ export default function CollectionsPage() {
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
           >
-            <option value="new">New Arrivals</option>
+            <option value="new">New First</option>
             <option value="price-low">Price: Low to High</option>
             <option value="price-high">Price: High to Low</option>
           </select>
         </div>
         <div className="products-grid">
-          {sortedProducts.map((product) => (
-            <div key={product.id} className="product-card">
-              <div className="product-image">
-                <div className="product-placeholder">
-                  {product.theme === "metal" && <Guitar />}
-                  {product.theme === "gothic" && <Eye />}
-                  {product.theme === "steampunk" && <Skull />}
-                </div>
-                {product.badge && (
-                  <div
-                    className={`product-badge ${product.badge.toLowerCase()}`}
-                  >
-                    {product.badge}
+          {sortedProducts.map((product) => {
+            const Icon = themeIcons[product.theme] ?? Skull;
+            const inWishlist = isInWishlist(product.id);
+            return (
+              <div key={product.id} className="product-card">
+                <div className="product-image">
+                  <div className="product-placeholder">
+                    <Icon size={36} />
                   </div>
-                )}
-                <div className="product-actions">
-                  <button
-                    type="button"
-                    className={`action-button ${likedProducts.has(product.id) ? "liked" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleLike(product.id);
-                    }}
-                  >
-                    <Heart
-                      size={18}
-                      fill={
-                        likedProducts.has(product.id)
-                          ? "currentColor"
-                          : "none"
-                      }
-                    />
-                  </button>
-                  <button type="button" className="action-button">
-                    <Eye size={18} />
-                  </button>
+                  {product.badge && (
+                    <div
+                      className={`product-badge ${product.badge.toLowerCase().replace(/\s/g, "-")}`}
+                    >
+                      {product.badge}
+                    </div>
+                  )}
+                  <div className="product-actions">
+                    <button
+                      type="button"
+                      className={`action-button ${inWishlist ? "liked" : ""}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleWishlist(product.id);
+                      }}
+                    >
+                      <Heart
+                        size={18}
+                        fill={inWishlist ? "currentColor" : "none"}
+                      />
+                    </button>
+                    <Link
+                      href={`/product/${product.id}`}
+                      className="action-button"
+                      aria-label="View product"
+                    >
+                      <Eye size={18} />
+                    </Link>
+                  </div>
+                </div>
+                <div className="product-info">
+                  <div className="product-category">{product.category}</div>
+                  <h3 className="product-name">
+                    <Link href={`/product/${product.id}`}>{product.name}</Link>
+                  </h3>
+                  <div className="product-footer">
+                    <div className="product-price">₺{product.price}</div>
+                    <button
+                      type="button"
+                      className="add-to-cart"
+                      onClick={() => addToCart()}
+                    >
+                      Acquire
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="product-info">
-                <div className="product-category">{product.category}</div>
-                <h3 className="product-name">{product.name}</h3>
-                <div className="product-footer">
-                  <div className="product-price">${product.price}</div>
-                  <button
-                    type="button"
-                    className="add-to-cart"
-                    onClick={() => addToCart()}
-                  >
-                    Acquire
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

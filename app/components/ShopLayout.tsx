@@ -90,6 +90,18 @@ export default function ShopLayout({
                 COLLECTIONS
               </Link>
               <Link
+                href="/worlds"
+                className={`nav-link ${pathname === "/worlds" ? "active" : ""}`}
+              >
+                WORLDS
+              </Link>
+              <Link
+                href="/ritual"
+                className={`nav-link ${pathname === "/ritual" ? "active" : ""}`}
+              >
+                RITUAL
+              </Link>
+              <Link
                 href="/journal"
                 className={`nav-link ${pathname === "/journal" ? "active" : ""}`}
               >
@@ -100,6 +112,12 @@ export default function ShopLayout({
                 className={`nav-link ${pathname === "/new-arrivals" ? "active" : ""}`}
               >
                 NEW ARRIVALS
+              </Link>
+              <Link
+                href="/archive"
+                className={`nav-link ${pathname === "/archive" ? "active" : ""}`}
+              >
+                ARCHIVE
               </Link>
               <Link
                 href="/about"
@@ -154,8 +172,17 @@ export default function ShopLayout({
               <Link href="/collections" className="footer-link">
                 Collections
               </Link>
+              <Link href="/worlds" className="footer-link">
+                Worlds
+              </Link>
+              <Link href="/ritual" className="footer-link">
+                Ritual
+              </Link>
               <Link href="/new-arrivals" className="footer-link">
                 New Arrivals
+              </Link>
+              <Link href="/archive" className="footer-link">
+                Archive
               </Link>
               <Link href="/journal" className="footer-link">
                 Journal

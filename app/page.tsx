@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Shield, Zap, Sparkles, ArrowRight, Skull, Moon, Droplet } from "lucide-react";
+import { Moon, Zap, Sparkles, ArrowRight, Skull, Droplet } from "lucide-react";
 import { products } from "./data/shop";
 import NewsletterForm from "./components/NewsletterForm";
 
@@ -28,46 +28,49 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Section 2: Featured Categories */}
+      {/* Section 2: Worlds / Subcultures */}
       <section className="home-categories" aria-labelledby="explore-heading">
         <h2 id="explore-heading" className="home-section-title">
-          Explore Our Universe
+          Explore Our Worlds
         </h2>
         <div className="home-categories-grid">
-          <Link href="/collections?cat=cyber-gothic" className="home-category-card">
-            <Shield className="home-category-icon" size={48} />
-            <h3 className="home-category-name">Cyber Gothic</h3>
+          <Link href="/collections/gothic" className="home-category-card">
+            <Moon className="home-category-icon" size={48} />
+            <h3 className="home-category-name">Gothic</h3>
             <p className="home-category-desc">
-              Where dark aesthetics meet futuristic edge. Armor for the digital age.
+              Victorian shadows, velvet decay. Mourning elegance and timeless darkness.
             </p>
             <span className="home-category-link">
-              Shop Now
+              Enter
               <ArrowRight className="home-category-arrow" size={18} />
             </span>
           </Link>
-          <Link href="/collections?cat=steampunk" className="home-category-card">
+          <Link href="/collections/steampunk" className="home-category-card">
             <Zap className="home-category-icon" size={48} />
-            <h3 className="home-category-name">Steam Punk</h3>
+            <h3 className="home-category-name">Steampunk</h3>
             <p className="home-category-desc">
-              Brass, leather, and clockwork. Victorian industrial revolution reborn.
+              Brass, gears, and clockwork. Victorian industry reimagined.
             </p>
             <span className="home-category-link">
-              Shop Now
+              Enter
               <ArrowRight className="home-category-arrow" size={18} />
             </span>
           </Link>
-          <Link href="/collections?cat=metallic-y2k" className="home-category-card">
+          <Link href="/collections/occult" className="home-category-card">
             <Sparkles className="home-category-icon" size={48} />
-            <h3 className="home-category-name">Metallic Y2K</h3>
+            <h3 className="home-category-name">Occult</h3>
             <p className="home-category-desc">
-              Chrome dreams and silver linings. Bold, shiny, unapologetic.
+              Symbols, sigils, and sacred dark. Ritual jewelry and the unseen.
             </p>
             <span className="home-category-link">
-              Shop Now
+              Enter
               <ArrowRight className="home-category-arrow" size={18} />
             </span>
           </Link>
         </div>
+        <p className="home-categories-more">
+          <Link href="/worlds">View all 8 worlds →</Link>
+        </p>
       </section>
 
       {/* Section 3: New Arrivals */}
