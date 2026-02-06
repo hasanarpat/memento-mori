@@ -6032,26 +6032,38 @@ body {
   z-index: 1;
 }
 
-/* The Animation State */
-.quickview-card-flip.animating {
-  animation: cardDealFlip 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+/* The Animation Phases */
+/* Separation of Arrival and Flip for stability */
+.quickview-container.phase-dealing {
+  animation: cardArrival 0.7s cubic-bezier(0.165, 1, 0.44, 1) forwards;
 }
 
-.quickview-card-flip.flipped {
+.quickview-card-flip {
+  width: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 560px;
+  background: transparent;
+  will-change: transform;
+}
+
+.quickview-card-flip.phase-dealing {
   transform: rotateY(180deg);
 }
 
-@keyframes cardDealFlip {
+.quickview-card-flip.phase-open {
+  transform: rotateY(180deg);
+}
+
+@keyframes cardArrival {
   0% {
-    transform: translate(-30%, 50%) rotateY(0deg) rotateZ(-20deg) scale(0.6);
+    transform: translate(-20%, 20%) scale(0.8);
     opacity: 0;
   }
-  60% {
-    opacity: 1;
-    transform: translate(0, 0) rotateY(180deg) rotateZ(0deg) scale(1.05);
-  }
   100% {
-    transform: translate(0, 0) rotateY(180deg) rotateZ(0deg) scale(1);
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
   }
 }
 

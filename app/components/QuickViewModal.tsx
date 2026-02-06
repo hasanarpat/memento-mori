@@ -50,7 +50,7 @@ export default function QuickViewModal({
   onToggleWishlist,
   isInWishlist,
 }: QuickViewModalProps) {
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [phase, setPhase] = useState<'hidden' | 'dealing' | 'open'>('hidden');
   const [selectedSize, setSelectedSize] = useState('M');
   const [selectedColor, setSelectedColor] = useState('Onyx');
 
@@ -63,15 +63,17 @@ export default function QuickViewModal({
 
   useEffect(() => {
     if (isOpen) {
-      // Small delay to ensure it's not synchronous
-      const animTimer = setTimeout(() => setIsAnimating(true), 10);
-      const timer = setTimeout(() => {
-        setIsAnimating(false);
-      }, 1200);
+      const dealTimer = setTimeout(() => setPhase('dealing'), 10);
+      const openTimer = setTimeout(() => {
+        setPhase('open');
+      }, 710);
       return () => {
-        clearTimeout(animTimer);
-        clearTimeout(timer);
+        clearTimeout(dealTimer);
+        clearTimeout(openTimer);
       };
+    } else {
+      const hideTimer = setTimeout(() => setPhase('hidden'), 0);
+      return () => clearTimeout(hideTimer);
     }
   }, [isOpen]);
 
@@ -85,11 +87,12 @@ export default function QuickViewModal({
       className={`quickview-backdrop ${isOpen ? 'active' : ''}`}
       onClick={onClose}
     >
-      <div className='quickview-container' onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`quickview-container phase-${phase}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* The Card Flip Entry Container */}
-        <div
-          className={`quickview-card-flip ${isAnimating ? 'animating' : ''} ${!isAnimating && isOpen ? 'flipped' : ''}`}
-        >
+        <div className={`quickview-card-flip phase-${phase}`}>
           {/* Front Side (Card Back Style) */}
           <div className='quickview-card-side quickview-card-front'>
             <div className='memento-card-back'>
