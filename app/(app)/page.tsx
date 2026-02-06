@@ -1,5 +1,7 @@
+import React from 'react';
 import Link from 'next/link';
-import { Moon, Zap, Sparkles, ArrowRight, Skull, Droplet } from 'lucide-react';
+import Image from 'next/image';
+import { Moon, Zap, Sparkles, ArrowRight } from 'lucide-react';
 import { products } from '../data/shop';
 import NewsletterForm from '../components/NewsletterForm';
 import { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE } from '../lib/site';
@@ -64,19 +66,84 @@ export default function HomePage() {
       <JsonLd data={breadcrumbJsonLd} />
       {/* Section 1: Hero */}
       <section className='hero' aria-label='Hero'>
-        <Skull className='hero-skull' aria-hidden='true' />
-        <Moon className='hero-moon' aria-hidden='true' />
-        <div className='hero-content'>
-          <h1 className='hero-title'>
-            Umbra
-            <br />
-            Aesthetica
-          </h1>
-          <p className='hero-subtitle'>Where Shadows Take Form</p>
-          <Link href='/collections' className='hero-cta'>
-            <Droplet size={18} aria-hidden='true' />
-            Enter The Sanctum
-          </Link>
+        <div className='hero-grid'>
+          <div className='hero-left'>
+            <div className='hero-title-group'>
+              <h1 className='hero-title-large'>
+                <span className='hero-accent-text'>GOTHIC</span>
+                <br />
+                <span className='hero-main-text'>AESTHETICA</span>
+              </h1>
+            </div>
+
+            <div className='hero-passages'>
+              <div className='hero-passage-item'>
+                <p>
+                  Memento Mori — a visceral reminder that beauty resides in the
+                  ephemeral and the shadows.
+                </p>
+              </div>
+              <div className='hero-passage-item passage-secondary'>
+                <p>
+                  The creations forged in the Umbra style are a cross between
+                  modern elegance and ancient icons.
+                </p>
+              </div>
+            </div>
+
+            <Link href='/collections' className='hero-discover-btn'>
+              <div className='hero-discover-inner'>
+                <span className='hero-discover-text'>DISCOVER</span>
+                <div className='hero-discover-circle-anim' />
+              </div>
+            </Link>
+          </div>
+
+          <div className='hero-right'>
+            <div className='hero-frame-container'>
+              <div className='hero-oval-frame'>
+                <Image
+                  src='/media/atlas-conan.jpg'
+                  alt='Gothic Art'
+                  fill
+                  className='hero-frame-img'
+                  priority
+                />
+              </div>
+              <div className='hero-frame-decoration' />
+            </div>
+            <div className='hero-artwork-info'>
+              <h2 className='artwork-title'>THE CULT OF CONAN</h2>
+              <p className='artwork-subtitle'>ATLAS CHRONICLES</p>
+              <div className='artwork-line' />
+              <p className='artwork-artist'>MEMENTO MORI ARCHIVE</p>
+            </div>
+          </div>
+        </div>
+
+        <div className='hero-footer-strip'>
+          <div className='strip-rolling-content'>
+            {[...Array(6)].map((_, i) => (
+              <React.Fragment key={i}>
+                <span>MEMENTO MORI</span>
+                <span className='strip-symbol'>✦</span>
+                <div className='strip-image-wrap'>
+                  <Image
+                    src='/media/English_School_-_The_Chateau_of_Blois_(showing_Latest_Phase_of_French_Gothic)_(engraving)_-_(MeisterDrucke-1649376).jpg'
+                    alt='Gothic Arc'
+                    width={100}
+                    height={40}
+                    className='strip-img'
+                  />
+                </div>
+                <span className='strip-symbol'>✦</span>
+                <span>UMBRA AESTHETICA</span>
+                <span className='strip-symbol'>✦</span>
+                <span>THE DARK CULT</span>
+                <span className='strip-symbol'>✦</span>
+              </React.Fragment>
+            ))}
+          </div>
         </div>
       </section>
 
