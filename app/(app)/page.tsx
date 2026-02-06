@@ -1,7 +1,15 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Moon, Zap, Sparkles, ArrowRight } from 'lucide-react';
+import {
+  Moon,
+  Zap,
+  Sparkles,
+  ArrowRight,
+  Compass,
+  Sun,
+  Flower,
+} from 'lucide-react';
 import { products } from '../data/shop';
 import NewsletterForm from '../components/NewsletterForm';
 import { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE } from '../lib/site';
@@ -101,21 +109,28 @@ export default function HomePage() {
 
           <div className='hero-right'>
             <div className='hero-frame-container'>
+              {/* Renaissance Symbols */}
+              <Compass className='hero-symbol symbol-1' size={40} />
+              <Sun className='hero-symbol symbol-2' size={32} />
+              <Flower className='hero-symbol symbol-3' size={36} />
+
               <div className='hero-oval-frame'>
                 <Image
-                  src='/media/atlas-conan.jpg'
+                  src='/atlas-conan.jpg'
                   alt='Gothic Art'
                   fill
                   className='hero-frame-img'
+                  sizes='(max-width: 768px) 85vw, 440px'
                   priority
+                  unoptimized
                 />
               </div>
               <div className='hero-frame-decoration' />
+              <div className='hero-frame-decoration decoration-inner' />
             </div>
             <div className='hero-artwork-info'>
               <h2 className='artwork-title'>THE CULT OF CONAN</h2>
               <p className='artwork-subtitle'>ATLAS CHRONICLES</p>
-              <div className='artwork-line' />
               <p className='artwork-artist'>MEMENTO MORI ARCHIVE</p>
             </div>
           </div>
@@ -124,24 +139,51 @@ export default function HomePage() {
         <div className='hero-footer-strip'>
           <div className='strip-rolling-content'>
             {[...Array(6)].map((_, i) => (
-              <React.Fragment key={i}>
+              <Fragment key={i}>
                 <span>MEMENTO MORI</span>
-                <span className='strip-symbol'>✦</span>
-                <div className='strip-image-wrap'>
-                  <Image
-                    src='/media/English_School_-_The_Chateau_of_Blois_(showing_Latest_Phase_of_French_Gothic)_(engraving)_-_(MeisterDrucke-1649376).jpg'
-                    alt='Gothic Arc'
-                    width={100}
-                    height={40}
-                    className='strip-img'
+                <div className='strip-symbol-img-wrap'>
+                  <img
+                    src={`/symbol.png?v=${i}`}
+                    alt=''
+                    className='strip-symbol-img'
+                    style={{ width: '40px', height: '40px', display: 'block' }}
                   />
                 </div>
-                <span className='strip-symbol'>✦</span>
+                <div className='strip-image-wrap'>
+                  <img
+                    src={`/chateau.jpg?v=${i}`}
+                    alt=''
+                    className='strip-img'
+                    style={{ width: '240px', height: '80px', display: 'block' }}
+                  />
+                </div>
+                <div className='strip-symbol-img-wrap'>
+                  <img
+                    src={`/symbol.png?v=${i}`}
+                    alt=''
+                    className='strip-symbol-img'
+                    style={{ width: '40px', height: '40px', display: 'block' }}
+                  />
+                </div>
                 <span>UMBRA AESTHETICA</span>
-                <span className='strip-symbol'>✦</span>
+                <div className='strip-symbol-img-wrap'>
+                  <img
+                    src={`/symbol.png?v=${i}`}
+                    alt=''
+                    className='strip-symbol-img'
+                    style={{ width: '40px', height: '40px', display: 'block' }}
+                  />
+                </div>
                 <span>THE DARK CULT</span>
-                <span className='strip-symbol'>✦</span>
-              </React.Fragment>
+                <div className='strip-symbol-img-wrap'>
+                  <img
+                    src={`/symbol.png?v=${i}`}
+                    alt=''
+                    className='strip-symbol-img'
+                    style={{ width: '40px', height: '40px', display: 'block' }}
+                  />
+                </div>
+              </Fragment>
             ))}
           </div>
         </div>
