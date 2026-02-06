@@ -10,25 +10,25 @@ export default function SettingsPage() {
       <form className='settings-form' onSubmit={(e) => e.preventDefault()}>
         <div className='form-group'>
           <label>Full Name</label>
-          <input type='text' placeholder='Guest' className='form-input' />
+          <input type='text' placeholder='Guest' className='cult-input' />
         </div>
         <div className='form-group'>
           <label>Email Address</label>
           <input
             type='email'
             placeholder='guest@example.com'
-            className='form-input'
+            className='cult-input'
           />
         </div>
 
         <h4 className='mt-8 mb-4'>Change Password</h4>
         <div className='form-group'>
           <label>Current Password</label>
-          <input type='password' className='form-input' />
+          <input type='password' className='cult-input' />
         </div>
         <div className='form-group'>
           <label>New Password</label>
-          <input type='password' className='form-input' />
+          <input type='password' className='cult-input' />
         </div>
 
         <button type='submit' className='account-btn-primary mt-6'>

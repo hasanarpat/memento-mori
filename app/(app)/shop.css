@@ -4665,3 +4665,25 @@
     margin-bottom: 1rem;
   }
 }
+
+/* INPUTS */
+.cult-input {
+  width: 100%;
+  background: rgba(13, 10, 15, 0.8);
+  border: 1px solid rgba(139, 115, 85, 0.4);
+  color: var(--bone);
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: all 0.25s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+.cult-input:focus {
+  border-color: var(--aged-brass);
+  background: rgba(26, 10, 31, 1);
+  box-shadow: 0 0 0 1px rgba(139, 115, 85, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+.cult-input::placeholder {
+  color: rgba(232, 220, 196, 0.3);
+}

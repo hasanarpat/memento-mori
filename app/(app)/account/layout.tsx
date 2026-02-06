@@ -30,7 +30,6 @@ export default function AccountLayout({
 
   return (
     <div className='account-page'>
-      <h1 className='home-section-title'>My Account</h1>
       <div className='account-layout'>
         <aside className='account-sidebar'>
           <div className='account-user'>
