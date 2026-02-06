@@ -22,7 +22,7 @@ const categories = Array.from(
 
 export default function NewArrivalsPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [priceMax, setPriceMax] = useState(1000);
+  const [priceRange, setPriceRange] = useState([0, 1000]);
   const [newThisWeekOnly, setNewThisWeekOnly] = useState(false);
   const [openSection, setOpenSection] = useState<DateGroup | null>('this-week');
 
@@ -30,7 +30,7 @@ export default function NewArrivalsPage() {
     const matchCat =
       categoryFilter === 'all' ||
       p.category.toLowerCase().includes(categoryFilter.toLowerCase());
-    const matchPrice = p.price <= priceMax;
+    const matchPrice = p.price >= priceRange[0] && p.price <= priceRange[1];
     const matchWeek = !newThisWeekOnly || thisWeek.some((t) => t.id === p.id);
     return matchCat && matchPrice && matchWeek;
   };
@@ -86,16 +86,56 @@ export default function NewArrivalsPage() {
             </select>
           </div>
           <div className='filter-section'>
-            <span className='filter-label'>Price max (₺)</span>
-            <input
-              type='number'
-              min={0}
-              max={2000}
-              value={priceMax}
-              onChange={(e) => setPriceMax(Number(e.target.value) || 1000)}
-              className='filter-input'
-              aria-label='Maximum price'
-            />
+            <span className='filter-label'>Price</span>
+            <div className='filter-price-display'>
+              ₺{priceRange[0]} – ₺{priceRange[1]}
+            </div>
+
+            <div className='dual-slider-container'>
+              <div className='slider-track'></div>
+              <input
+                type='range'
+                min={0}
+                max={1000}
+                value={priceRange[0]}
+                onChange={(e) => {
+                  const val = Math.min(
+                    parseInt(e.target.value, 10),
+                    priceRange[1] - 50,
+                  );
+                  setPriceRange([val, priceRange[1]]);
+                }}
+                className='price-slider min-slider'
+                style={{ zIndex: priceRange[0] > 500 ? 5 : 3 }}
+              />
+              <input
+                type='range'
+                min={0}
+                max={1000}
+                value={priceRange[1]}
+                onChange={(e) => {
+                  const val = Math.max(
+                    parseInt(e.target.value, 10),
+                    priceRange[0] + 50,
+                  );
+                  setPriceRange([priceRange[0], val]);
+                }}
+                className='price-slider max-slider'
+                style={{ zIndex: priceRange[0] > 500 ? 3 : 5 }}
+              />
+            </div>
+
+            <div className='price-inputs-row'>
+              <div className='price-input-wrap static'>
+                <span className='price-currency'>₺</span>
+                <span className='price-value'>{priceRange[0]}</span>
+              </div>
+              <span className='price-separator'>-</span>
+              <div className='price-input-wrap static'>
+                <span className='price-currency'>₺</span>
+                <span className='price-value'>{priceRange[1]}</span>
+              </div>
+            </div>
           </div>
           <label className='filter-checkbox'>
             <input
@@ -124,7 +164,7 @@ export default function NewArrivalsPage() {
                 <ChevronDown size={20} />
               )}
             </button>
-            {(openSection === 'this-week' || !openSection) && (
+            {openSection === 'this-week' && (
               <div className='home-products-grid new-arrivals-grid'>
                 {thisWeekFiltered.length ? (
                   thisWeekFiltered.map((p) => (
@@ -153,7 +193,7 @@ export default function NewArrivalsPage() {
                 <ChevronDown size={20} />
               )}
             </button>
-            {(openSection === 'last-week' || !openSection) && (
+            {openSection === 'last-week' && (
               <div className='home-products-grid new-arrivals-grid'>
                 {lastWeekFiltered.length ? (
                   lastWeekFiltered.map((p) => (
@@ -184,7 +224,7 @@ export default function NewArrivalsPage() {
                 <ChevronDown size={20} />
               )}
             </button>
-            {(openSection === 'this-month' || !openSection) && (
+            {openSection === 'this-month' && (
               <div className='home-products-grid new-arrivals-grid'>
                 {thisMonthFiltered.length ? (
                   thisMonthFiltered.map((p) => (

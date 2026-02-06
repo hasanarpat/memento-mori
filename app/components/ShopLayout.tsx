@@ -60,7 +60,7 @@ export default function ShopLayout({
   const [wishlistIds, setWishlistIds] = useState<string[]>([]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [codexOpen, setCodexOpen] = useState(false);
-  const [shopOpen, setShopOpen] = useState(false);
+  const [shopOpen, setShopOpen] = useState(true);
   const [exploreOpen, setExploreOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileShopOpen, setMobileShopOpen] = useState(false);
@@ -164,6 +164,7 @@ export default function ShopLayout({
                     type='button'
                     className={`nav-link nav-link-button ${shopOpen ? 'active' : ''}`}
                     aria-expanded={shopOpen}
+                    onClick={() => setShopOpen((open) => !open)}
                   >
                     SHOP
                   </button>
@@ -189,6 +190,7 @@ export default function ShopLayout({
                     type='button'
                     className={`nav-link nav-link-button ${exploreOpen ? 'active' : ''}`}
                     aria-expanded={exploreOpen}
+                    onClick={() => setExploreOpen((open) => !open)}
                   >
                     EXPLORE
                   </button>
@@ -208,6 +210,7 @@ export default function ShopLayout({
                     type='button'
                     className={`nav-link nav-link-button ${codexOpen ? 'active' : ''}`}
                     aria-expanded={codexOpen}
+                    onClick={() => setCodexOpen((open) => !open)}
                   >
                     CODEX
                   </button>
