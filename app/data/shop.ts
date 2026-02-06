@@ -18,6 +18,18 @@ export type ProductType =
   | 'ritual'
   | 'harness';
 
+export type LookbookItem = {
+  id: number;
+  slug: string;
+  season: string;
+  year: string;
+  category: string;
+  size: 'small' | 'medium' | 'large';
+  tagline: string;
+  description: string;
+  details: string;
+};
+
 export const genres: {
   slug: GenreSlug;
   name: string;
@@ -565,73 +577,133 @@ export const products: Product[] = [
 export const lookbookItems = [
   {
     id: 1,
+    slug: 'industrial-romance',
     season: 'Industrial Romance',
     year: 'F/W 2023',
     category: 'Gothic × Steampunk',
     size: 'large' as const,
+    tagline: 'Where Victorian elegance meets grimy machinery',
+    description:
+      'A exploration of steampunks deepest fantasy: the marriage of aged brass and delicate lace. Industrial Revolution revisited through a gothic lens, where corsetry meets hydraulics and velvet drapes across cold, austere frames.',
+    details:
+      'Featuring our Brass Skull Pauldrons, Victorian Mourning Coats, and custom-aged leather pieces. The palette: deep blacks, tarnished coppers, and blood reds. Each piece tells a story of decay and reconstruction.',
   },
   {
     id: 2,
+    slug: 'leather-and-iron',
     season: 'Leather & Iron',
     year: 'S/S 2024',
     category: 'Metal × Gothic',
     size: 'medium' as const,
+    tagline: 'The intersection of armor and elegance',
+    description:
+      'Raw, uncompromising, and deeply beautiful. This collection embraces the brutal grace of leather and iron—the tools of both ritual and rebellion. Studs and spikes arranged with surgical precision. Hardware as decoration. Darkness as the ultimate luxury.',
+    details:
+      'Showcasing Oxidized Chain Harnesses, Riveted Leather Gauntlets, and custom metallurgy. Built not just to look formidable, but to be worn as declaration of intent.',
   },
   {
     id: 3,
+    slug: 'brass-shadows',
     season: 'Brass Shadows',
     year: 'F/W 2024',
     category: 'Steampunk',
     size: 'medium' as const,
+    tagline: 'Mechanical dreams in aged metal and leather',
+    description:
+      'A gentle exploration of steampunks more refined side. Goggles and gears become jewelry. Pocket watches become talismans. The aesthetic is less dystopian workshop and more curious inventors attic—a place where beauty and function merge.',
+    details:
+      'Featuring Gear & Goggle Sets, Pocket Watch Chain Bracelets, and our signature Aviator Leather Jackets. Each piece is aged to perfection, creating patinas that look found rather than made.',
   },
   {
     id: 4,
+    slug: 'velvet-decay',
     season: 'Velvet Decay',
     year: 'S/S 2023',
     category: 'Gothic',
     size: 'small' as const,
+    tagline: 'Mourning silk meets romantic darkness',
+    description:
+      'Lace and velvet in their most dramatic arrangement. This collection is a love letter to Victorian mourning wear, reimagined for those who understand that darkness need not be loud to be powerful. Whisper-soft fabrics in absolute black.',
+    details:
+      'Tattered Lace Shrouds, Crimson Velvet Cloaks, and delicate Black Lace Gloves. A study in what happens when textile meets tradition. Wearable poetry in every stitch.',
   },
   {
     id: 5,
+    slug: 'rust-and-bones',
     season: 'Rust & Bones',
     year: 'F/W 2023',
     category: 'Metal × Steampunk',
     size: 'large' as const,
+    tagline: 'The beauty of decay and transformation',
+    description:
+      'Where steampunk meets post-apocalyptic fantasy. Salvaged materials, aged metals, and bones arranged into wearable art. Utilitarian hardware becomes ornamental. The broken becomes beautiful.',
+    details:
+      'A collection of bold pieces: Brass-studded vests, iron-reinforced boots, and handmade harnesses. Each item bears the marks of age—intentional patina that speaks to a world where history is worn on the body.',
   },
   {
     id: 6,
+    slug: 'mourning-ritual',
     season: 'Mourning Ritual',
     year: 'Archive',
     category: 'Gothic',
     size: 'medium' as const,
+    tagline: 'Ceremonial darkness and sacred mourning',
+    description:
+      'Our most iconic collection. A deep dive into the ritualistic aspects of gothic fashion. Every piece is a meditation on loss, remembrance, and the profound beauty found in the act of mourning.',
+    details:
+      'Featuring pieces pulled from our archive—our original Velvet & Bones Chokers, hand-oxidized chain pieces, and bespoke mourning garments created in collaboration with dark academia scholars and ritual practitioners.',
   },
   {
     id: 7,
+    slug: 'chrome-nightmares',
     season: 'Chrome Nightmares',
     year: 'S/S 2024',
     category: 'Metal',
     size: 'small' as const,
+    tagline: 'Metallic visions of industrial terror',
+    description:
+      'Uncompromising metal aesthetic. This collection takes inspiration from the stage—the armor of performers who reject safety and polish for raw power. Chrome, steel, and provocation.',
+    details:
+      'Spike Chokers, Battle Vests, and Chainmail Necklaces rendered in their most aggressive form. Designed for those who live for the mosh pit and midnight rebellion.',
   },
   {
     id: 8,
+    slug: 'victorian-requiem',
     season: 'Victorian Requiem',
     year: 'Archive',
     category: 'Gothic × Steampunk',
     size: 'large' as const,
+    tagline: 'The ghost of elegance in a fallen age',
+    description:
+      'Our definitive statement piece collection. Victorian tailoring meets steampunk rebellion. Every element is intentional: the fall of the fabric, the placement of each button, the weight of brass.It is a collection about privilege and its dissolution, elegance and its corruption.',
+    details:
+      'Custom-tailored coats with hand-aged brass hardware, velvet piecing in unexpected places, and intricate beadwork that catches light like distant stars. These pieces were crafted to last generations.',
   },
   {
     id: 9,
+    slug: 'dark-academia',
     season: 'Dark Academia',
     year: 'F/W 2024',
     category: 'Dark Academia',
     size: 'medium' as const,
+    tagline: 'The romance of musty libraries and old secrets',
+    description:
+      'For those who live in tweed and aged leather, in the shadows of historic buildings. This collection draws from the aesthetics of old academia—the quiet rebellion of wearing tradition as armor.',
+    details:
+      'Tweed Blazers with brass buttons, Leather Satchels worn with intention, and Vintage Library Cufflinks sourced from actual estate sales. A collection about intellect, history, and the beauty of wearing your lineage.',
   },
   {
     id: 10,
+    slug: 'sigils',
     season: 'Sigils',
     year: 'Archive',
     category: 'Occult',
     size: 'small' as const,
+    tagline: 'Sacred symbols rendered in precious metals',
+    description:
+      'Our most spiritual collection. Each piece bears a sigil—a mark of power, protection, or intention. This is jewelry as amulet, fashion as ritual practice.',
+    details:
+      'Pentacle Pendants, Moon Phase Ring Sets, and Ritual Dagger Pendant crafted in collaboration with practicing occultists and spiritual leaders. Every piece is blessed and carries intention.',
   },
 ];
 

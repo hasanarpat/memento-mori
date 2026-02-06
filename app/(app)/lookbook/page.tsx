@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Moon } from 'lucide-react';
 import { lookbookItems } from '../../data/shop';
 
@@ -50,7 +51,11 @@ export default function LookbookPage() {
       </div>
       <div className='masonry-grid'>
         {filteredLookbook.map((item) => (
-          <div key={item.id} className={`lookbook-item ${item.size}`}>
+          <Link
+            key={item.id}
+            href={`/lookbook/${item.slug}`}
+            className={`lookbook-item ${item.size}`}
+          >
             <div
               className='lookbook-image'
               style={{
@@ -69,7 +74,7 @@ export default function LookbookPage() {
                 <p className='lookbook-category'>{item.category}</p>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

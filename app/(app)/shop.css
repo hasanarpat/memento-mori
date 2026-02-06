@@ -6824,3 +6824,203 @@ body {
     text-align: left;
   }
 }
+
+/* Lookbook Detail Page */
+.lookbook-post-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  font-family: 'Crimson Text', serif;
+}
+
+.lookbook-container {
+  width: 100%;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--aged-brass);
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  margin-bottom: 2rem;
+}
+
+.back-link:hover {
+  color: var(--bone);
+  transform: translateX(-4px);
+}
+
+.lookbook-header {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid rgba(139, 115, 85, 0.2);
+}
+
+.lookbook-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.5rem;
+  color: var(--bone);
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.lookbook-year-display {
+  color: var(--aged-brass);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+.lookbook-meta-category {
+  color: var(--aged-silver);
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+.lookbook-tagline {
+  font-family: 'IM Fell DW Pica', serif;
+  font-size: 1.2rem;
+  color: var(--aged-brass);
+  text-align: center;
+  margin-bottom: 3rem;
+  font-style: italic;
+  letter-spacing: 0.5px;
+}
+
+.lookbook-content {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: var(--foreground);
+  margin-bottom: 4rem;
+}
+
+.lookbook-description {
+  margin-bottom: 2.5rem;
+  padding: 2rem;
+  background: rgba(92, 10, 10, 0.1);
+  border-left: 3px solid var(--aged-brass);
+}
+
+.lookbook-description p {
+  margin: 0;
+  text-align: justify;
+  color: var(--bone);
+}
+
+.lookbook-details {
+  margin-bottom: 3rem;
+}
+
+.lookbook-subheading {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  color: var(--bone);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+}
+
+.lookbook-paragraph {
+  margin-bottom: 1.5rem;
+  text-align: justify;
+}
+
+.lookbook-list-item {
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+  position: relative;
+  list-style: none;
+}
+
+.lookbook-list-item::before {
+  content: '▪';
+  position: absolute;
+  left: 0;
+  color: var(--aged-brass);
+  font-size: 0.8rem;
+}
+
+.lookbook-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 4rem;
+  padding-top: 3rem;
+  border-top: 1px solid rgba(139, 115, 85, 0.2);
+}
+
+.lookbook-nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--aged-brass);
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  padding: 1rem 2rem;
+  border: 1px solid rgba(139, 115, 85, 0.3);
+  flex: 1;
+}
+
+.lookbook-nav-link:hover {
+  color: var(--bone);
+  border-color: var(--aged-brass);
+  background: rgba(139, 115, 85, 0.1);
+}
+
+.lookbook-nav-link.prev {
+  justify-content: flex-start;
+}
+
+.lookbook-nav-link.next {
+  justify-content: flex-end;
+}
+
+.not-found {
+  max-width: 800px;
+  margin: 4rem auto;
+  padding: 2rem;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  color: var(--bone);
+}
+
+@media (max-width: 768px) {
+  .lookbook-post-page {
+    padding: 2rem 1rem;
+  }
+
+  .lookbook-title {
+    font-size: 1.75rem;
+  }
+
+  .lookbook-tagline {
+    font-size: 1rem;
+  }
+
+  .lookbook-content {
+    font-size: 1rem;
+  }
+
+  .lookbook-paragraph {
+    text-align: left;
+  }
+
+  .lookbook-nav {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .nav-link {
+    width: 100%;
+  }
+}
