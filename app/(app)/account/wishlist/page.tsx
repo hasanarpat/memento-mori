@@ -13,7 +13,12 @@ export default function AccountWishlistPage() {
   if (items.length === 0) {
     return (
       <div className='account-section'>
-        <h3>Wishlist</h3>
+        <div className='account-header'>
+          <h1 className='account-title'>My Wishlist</h1>
+          <p className='account-subtitle'>
+            Manage the items you love and wish to possess.
+          </p>
+        </div>
         <div className='wishlist-empty'>
           <Heart size={48} strokeWidth={1} className='wishlist-empty-icon' />
           <p className='wishlist-empty-title'>Your wishlist is empty</p>
@@ -30,7 +35,12 @@ export default function AccountWishlistPage() {
 
   return (
     <div className='account-section'>
-      <h3>Wishlist ({items.length})</h3>
+      <div className='account-header'>
+        <h1 className='account-title'>My Wishlist ({items.length})</h1>
+        <p className='account-subtitle'>
+          Keep track of items you plan to acquire.
+        </p>
+      </div>
       <div
         className='wishlist-grid'
         style={{

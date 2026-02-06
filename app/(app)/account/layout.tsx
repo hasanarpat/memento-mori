@@ -10,11 +10,13 @@ import {
   Heart,
   Settings,
   LogOut,
+  Ruler,
 } from 'lucide-react';
 
 const MENU = [
   { href: '/account', icon: User, label: 'Dashboard' },
   { href: '/account/orders', icon: Package, label: 'Orders' },
+  { href: '/account/size-profile', icon: Ruler, label: 'Size Profile' },
   { href: '/account/addresses', icon: MapPin, label: 'Addresses' },
   { href: '/account/payment', icon: CreditCard, label: 'Payment Methods' },
   { href: '/account/wishlist', icon: Heart, label: 'Wishlist' },

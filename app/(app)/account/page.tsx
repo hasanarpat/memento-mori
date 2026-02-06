@@ -5,9 +5,11 @@ import Link from 'next/link';
 export default function AccountPage() {
   return (
     <>
-      <div className='account-welcome'>
-        <h2>Welcome back, Guest</h2>
-        <p>Manage your orders, addresses, and preferences.</p>
+      <div className='account-header'>
+        <h1 className='account-title'>Dashboard</h1>
+        <p className='account-subtitle'>
+          Welcome back. Manage your orders, addresses, and account details.
+        </p>
       </div>
       <div className='account-cards'>
         <div className='account-card'>

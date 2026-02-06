@@ -10,8 +10,20 @@ export default function PaymentMethodsPage() {
 
   return (
     <div className='account-section'>
-      <div className='account-section-header'>
-        <h3>Payment Methods</h3>
+      <div
+        className='account-header'
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+        }}
+      >
+        <div>
+          <h1 className='account-title'>Payment Methods</h1>
+          <p className='account-subtitle'>
+            Securely manage your saved cards and payment options.
+          </p>
+        </div>
         <button
           className='account-btn-primary'
           onClick={() => setIsModalOpen(true)}

@@ -5,7 +5,12 @@ import { Save } from 'lucide-react';
 export default function SettingsPage() {
   return (
     <div className='account-section'>
-      <h3>Settings</h3>
+      <div className='account-header'>
+        <h1 className='account-title'>Account Settings</h1>
+        <p className='account-subtitle'>
+          Update your personal details and security preferences.
+        </p>
+      </div>
 
       <form className='settings-form' onSubmit={(e) => e.preventDefault()}>
         <div className='form-group'>

@@ -4653,23 +4653,77 @@
   display: grid;
   grid-template-columns: 280px 1fr;
   gap: 2rem;
-  margin-top: 2rem;
+  margin-top: 1rem;
+  align-items: start;
 }
 @media (max-width: 768px) {
+  .account-page {
+    padding: 1rem;
+  }
   .account-layout {
     grid-template-columns: 1fr;
+    margin-top: 0;
+    gap: 1.5rem;
+  }
+  .account-sidebar {
+    position: sticky;
+    top: 60px; /* Adjust based on navbar height */
+    z-index: 100;
+    padding: 0.75rem;
+    margin: 0 -1rem;
+    border-left: none;
+    border-right: none;
+    background: rgba(13, 10, 15, 0.95);
+    backdrop-filter: blur(10px);
+  }
+  .account-user {
+    display: none; /* Hide user info in mobile nav to save space */
+  }
+  .account-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    gap: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .account-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .account-nav-link {
+    white-space: nowrap;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background: rgba(139, 115, 85, 0.1);
+    border: 1px solid rgba(139, 115, 85, 0.2);
+  }
+  .account-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .account-header[style] {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1.5rem;
+    text-align: center;
+  }
+  .account-header div {
+    text-align: center;
   }
 }
+
+/* DESKTOP SIDEBAR */
 .account-sidebar {
   background: rgba(26, 10, 31, 0.4);
   border: 2px solid rgba(139, 115, 85, 0.3);
-  padding: 1.5rem;
+  padding: 0.5rem 1.5rem 1.5rem;
+  position: sticky;
+  top: 100px;
 }
 .account-user {
   display: flex;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 1.5rem;
 }
 .account-name {
   font-family: 'Cinzel', serif;
@@ -4699,6 +4753,31 @@
 .account-nav-link.active {
   background: rgba(184, 134, 11, 0.2);
   color: var(--bone);
+}
+
+/* UNIFIED ACCOUNT HEADERS */
+.account-header {
+  margin-bottom: 3rem;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+  padding-bottom: 1.5rem;
+  width: 100%;
+}
+
+.account-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  color: var(--bone);
+  margin-bottom: 0.5rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.account-subtitle {
+  font-family: 'IM Fell DW Pica', serif;
+  font-style: italic;
+  color: var(--aged-silver);
+  font-size: 1.1rem;
+  margin: 0;
 }
 .account-welcome h2 {
   font-family: 'Cinzel', serif;

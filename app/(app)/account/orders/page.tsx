@@ -5,7 +5,12 @@ import Link from 'next/link';
 export default function OrdersPage() {
   return (
     <div className='account-section'>
-      <h3>My Orders</h3>
+      <div className='account-header'>
+        <h1 className='account-title'>Your Orders</h1>
+        <p className='account-subtitle'>
+          History of your past orders and status.
+        </p>
+      </div>
       <div className='orders-list'>
         <p className='account-empty'>You haven&apos;t placed any orders yet.</p>
         <Link href='/collections' className='home-cta-outline'>

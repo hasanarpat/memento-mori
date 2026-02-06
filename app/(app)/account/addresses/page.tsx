@@ -10,8 +10,20 @@ export default function AddressesPage() {
 
   return (
     <div className='account-section'>
-      <div className='account-section-header'>
-        <h3>Addresses</h3>
+      <div
+        className='account-header'
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+        }}
+      >
+        <div>
+          <h1 className='account-title'>My Addresses</h1>
+          <p className='account-subtitle'>
+            Manage your saved shipping and billing locations.
+          </p>
+        </div>
         <button
           className='account-btn-primary'
           onClick={() => setIsModalOpen(true)}
