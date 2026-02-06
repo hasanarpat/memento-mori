@@ -1153,8 +1153,8 @@
 
 .hero-oval-frame {
   position: relative;
-  width: min(440px, 85vw); /* Widen the frame */
-  aspect-ratio: 1.1 / 1; /* More horizontal/square aspect ratio */
+  width: min(380px, 80vw); /* Narrower for taller look */
+  aspect-ratio: 0.85 / 1; /* Taller aspect ratio */
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
   overflow: hidden;
   border: 1px solid rgba(184, 134, 11, 0.6);
@@ -1270,7 +1270,7 @@
   background: #050406;
   overflow: hidden;
   position: absolute;
-  bottom: -40px; /* Restore original tilted overlap */
+  bottom: -60px; /* Moved slightly lower */
   left: -50%;
   transform: rotate(3deg);
   z-index: 1000;
@@ -1313,6 +1313,13 @@
   gap: 4rem;
   white-space: nowrap;
   animation: rollContent 50s linear infinite;
+}
+
+/* Slightly faster speed for 1920px and below screens */
+@media (max-width: 1920px) {
+  .strip-rolling-content {
+    animation-duration: 40s;
+  }
 }
 
 .strip-rolling-content span,
@@ -1379,6 +1386,10 @@
   }
   .hero-discover-btn {
     margin-top: 3rem;
+  }
+  .hero-footer-strip {
+    bottom: -80px; /* Even lower on mobile to avoid info overlap */
+    transform: rotate(2deg); /* Slightly less tilt on mobile */
   }
 }
 
