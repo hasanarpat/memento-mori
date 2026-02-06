@@ -5611,7 +5611,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1rem 2rem;
   position: relative;
 }
 .auth-bg {
@@ -5661,7 +5661,7 @@
     rgba(26, 10, 31, 0.92) 0%,
     rgba(13, 10, 15, 0.95) 100%
   );
-  padding: 3rem 2.5rem;
+  padding: 2rem 2.5rem;
   box-shadow:
     0 0 0 2px rgba(139, 115, 85, 0.25),
     0 0 0 4px rgba(92, 10, 10, 0.2),
@@ -5684,24 +5684,24 @@
 }
 .auth-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 .auth-symbol {
   display: block;
   font-family: 'Cinzel', serif;
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: var(--accent);
   text-shadow: 0 0 24px var(--accent-glow);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 .auth-title {
   font-family: 'Cinzel', serif;
-  font-size: 2.25rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: var(--bone);
   letter-spacing: 0.2em;
   text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 .auth-subtitle {
   font-family: 'Crimson Text', serif;
@@ -5711,7 +5711,7 @@
 .auth-tabs {
   display: flex;
   gap: 0;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   border-bottom: 2px solid rgba(139, 115, 85, 0.3);
 }
 .auth-tab {
@@ -5747,7 +5747,7 @@
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 .auth-label {
   display: block;
@@ -5815,8 +5815,8 @@
 }
 .auth-footer {
   text-align: center;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
   border-top: 1px solid rgba(139, 115, 85, 0.25);
 }
 .auth-footer a {
@@ -5829,7 +5829,7 @@
 }
 .auth-tagline {
   text-align: center;
-  margin-top: 2rem;
+  margin-top: 1rem;
   font-family: 'IM Fell DW Pica', serif;
   font-size: 0.9rem;
   font-style: italic;
