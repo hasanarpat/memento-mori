@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, ZoomIn, ZoomOut, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
 
 type ImageViewerProps = {
@@ -87,7 +88,7 @@ export default function ImageViewer({
   const handleMouseUp = () => setIsDragging(false);
   const handleMouseLeave = () => setIsDragging(false);
 
-  return (
+  const viewerContent = (
     <div
       className="image-viewer-backdrop"
       role="dialog"
@@ -167,4 +168,7 @@ export default function ImageViewer({
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") return null;
+  return createPortal(viewerContent, document.body);
 }

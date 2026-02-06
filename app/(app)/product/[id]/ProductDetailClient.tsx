@@ -2,13 +2,19 @@
 
 import { useState, useCallback } from "react";
 import Link from "next/link";
-import { Heart, Minus, Plus, ChevronDown, ChevronUp, Star, ImagePlus, X } from "lucide-react";
+import { Heart, Minus, Plus, ChevronDown, ChevronUp, Star, ImagePlus, X, ZoomIn } from "lucide-react";
 import { useCart, useWishlist } from "@/components/ShopLayout";
 import ImageViewer from "@/app/components/ImageViewer";
 
 const PLACEHOLDER_IMAGES = 4;
 const COLORS = ["#1a0a1f", "#2b0d0d", "#3d1f1f", "#4a2c2a"];
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
+const PRODUCT_GALLERY_IMAGES = [
+  "https://picsum.photos/800/800?random=1",
+  "https://picsum.photos/800/800?random=2",
+  "https://picsum.photos/800/800?random=3",
+  "https://picsum.photos/800/800?random=4",
+];
 
 type Review = {
   id: string;
@@ -75,6 +81,7 @@ export default function ProductDetailClient({
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerImages, setViewerImages] = useState<string[]>([]);
   const [viewerIndex, setViewerIndex] = useState(0);
+  const [viewerIsProductGallery, setViewerIsProductGallery] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [reviewPhotos, setReviewPhotos] = useState<string[]>([]);
@@ -83,8 +90,21 @@ export default function ProductDetailClient({
   const openPhotoViewer = useCallback((images: string[], index: number) => {
     setViewerImages(images);
     setViewerIndex(index);
+    setViewerIsProductGallery(false);
     setViewerOpen(true);
   }, []);
+
+  const openProductGalleryViewer = useCallback(() => {
+    setViewerImages(PRODUCT_GALLERY_IMAGES);
+    setViewerIndex(mainImage);
+    setViewerIsProductGallery(true);
+    setViewerOpen(true);
+  }, [mainImage]);
+
+  const handleViewerNavigate = useCallback((index: number) => {
+    setViewerIndex(index);
+    if (viewerIsProductGallery) setMainImage(index);
+  }, [viewerIsProductGallery]);
 
   const handleReviewPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : [];
@@ -157,21 +177,29 @@ export default function ProductDetailClient({
 
       <div className="product-detail-grid">
         <div className="product-detail-gallery">
-          <div
-            className="product-detail-main-image"
-            style={{ aspectRatio: "1", background: "rgba(26,10,31,0.6)", border: "2px solid rgba(139,115,85,0.3)" }}
-            role="img"
-            aria-label={`Product view ${mainImage + 1}`}
+          <button
+            type="button"
+            className="product-detail-main-image-wrap"
+            onClick={openProductGalleryViewer}
+            aria-label="Open image viewer to zoom and browse images"
           >
             <div
-              style={{
-                width: "100%",
-                height: "100%",
-                background: COLORS[mainImage % COLORS.length],
-                opacity: 0.8,
-              }}
-            />
-          </div>
+              className="product-detail-main-image"
+              role="img"
+              aria-label={`Product view ${mainImage + 1}`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={PRODUCT_GALLERY_IMAGES[mainImage]}
+                alt={`${product.name} view ${mainImage + 1}`}
+                className="product-detail-main-img"
+              />
+            </div>
+            <span className="product-detail-main-image-zoom-hint">
+              <ZoomIn size={24} aria-hidden />
+              <span>Click to zoom</span>
+            </span>
+          </button>
           <div className="product-detail-thumbs">
             {Array.from({ length: PLACEHOLDER_IMAGES }).map((_, i) => (
               <button
@@ -179,13 +207,15 @@ export default function ProductDetailClient({
                 type="button"
                 className={`product-detail-thumb ${mainImage === i ? "active" : ""}`}
                 onClick={() => setMainImage(i)}
-                style={{
-                  aspectRatio: "1",
-                  background: COLORS[i % COLORS.length],
-                  border: mainImage === i ? "2px solid var(--accent)" : "2px solid rgba(139,115,85,0.3)",
-                }}
                 aria-label={`View image ${i + 1}`}
-              />
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={PRODUCT_GALLERY_IMAGES[i]}
+                  alt=""
+                  className="product-detail-thumb-img"
+                />
+              </button>
             ))}
           </div>
         </div>
@@ -460,7 +490,7 @@ export default function ProductDetailClient({
           images={viewerImages}
           currentIndex={viewerIndex}
           onClose={() => setViewerOpen(false)}
-          onNavigate={setViewerIndex}
+          onNavigate={handleViewerNavigate}
         />
       )}
 
