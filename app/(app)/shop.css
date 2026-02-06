@@ -3701,6 +3701,331 @@
   color: var(--aged-silver);
 }
 
+/* Saved Items UI for Checkout */
+.saved-items-container {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(139, 115, 85, 0.05);
+  border: 1px solid rgba(139, 115, 85, 0.2);
+}
+
+.saved-items-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--aged-brass);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 1.5rem;
+}
+
+.saved-items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.saved-item-card {
+  padding: 1.25rem;
+  background: rgba(13, 10, 15, 0.6);
+  border: 1px solid rgba(139, 115, 85, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.saved-item-card:hover {
+  border-color: var(--aged-brass);
+  background: rgba(13, 10, 15, 0.9);
+}
+
+.saved-item-card.active {
+  border-color: var(--accent);
+  background: rgba(184, 134, 11, 0.1);
+  box-shadow: 0 0 15px rgba(184, 134, 11, 0.1);
+}
+
+.saved-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  color: var(--bone);
+}
+
+.saved-item-card p {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.85rem;
+  color: var(--aged-silver);
+  margin: 0;
+}
+
+.add-new-item-btn {
+  border: 1px dashed rgba(139, 115, 85, 0.4);
+  background: transparent;
+  color: var(--aged-silver);
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.add-new-item-btn:hover {
+  border-color: var(--accent);
+  color: var(--bone);
+  background: rgba(139, 115, 85, 0.05);
+}
+
+.form-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.form-header-row h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: var(--bone);
+  margin: 0;
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: 'IM Fell DW Pica', serif;
+  font-size: 0.9rem;
+  font-style: italic;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.checkout-primary-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: #0d0a0f;
+  color: var(--bone);
+  border: 1px solid rgba(139, 115, 85, 0.4);
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  text-transform: uppercase;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkout-primary-btn:hover:not(:disabled) {
+  background: #1a151c;
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+.checkout-primary-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.checkout-primary-btn::before,
+.checkout-primary-btn::after {
+  display: none; /* Removed heavy decorations for minimalism */
+}
+
+/* Order Review (Step 3) Styles */
+.review-items-list {
+  margin-bottom: 2rem;
+  background: rgba(13, 10, 15, 0.4);
+  border: 1px solid rgba(139, 115, 85, 0.2);
+}
+
+.review-item {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.1);
+}
+
+.review-item:last-child {
+  border-bottom: none;
+}
+
+.review-item-img-placeholder {
+  width: 80px;
+  height: 100px;
+  background: rgba(26, 10, 31, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(184, 134, 11, 0.2);
+  font-size: 1.5rem;
+}
+
+.review-item-info {
+  flex: 1;
+}
+
+.review-item-info h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: var(--bone);
+  margin-bottom: 0.25rem;
+}
+
+.review-item-info p {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.9rem;
+  color: var(--aged-silver);
+  margin-bottom: 0.75rem;
+}
+
+.review-item-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Cinzel', serif;
+  font-size: 0.95rem;
+  color: var(--aged-brass);
+}
+
+.review-summary-recap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.recap-box {
+  background: rgba(139, 115, 85, 0.03);
+  border: 1px solid rgba(139, 115, 85, 0.15);
+  padding: 1.25rem;
+}
+
+.recap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.recap-header h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  color: var(--aged-brass);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.recap-box p {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.95rem;
+  color: var(--bone);
+}
+
+/* MEMENTO CUSTOM CHECKBOX */
+.legal-agreements {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 3rem;
+  padding: 1.5rem;
+  background: rgba(92, 10, 10, 0.05);
+  border: 1px solid rgba(92, 10, 10, 0.2);
+}
+
+.memento-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+
+.memento-checkbox-input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.memento-checkbox-custom {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  background-color: rgba(13, 10, 15, 0.8);
+  border: 2px solid rgba(139, 115, 85, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  top: 2px;
+}
+
+.memento-checkbox-label:hover .memento-checkbox-custom {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(184, 134, 11, 0.2);
+}
+
+.memento-checkbox-input:checked ~ .memento-checkbox-custom {
+  background-color: var(--blood-red);
+  border-color: var(--blood-red);
+}
+
+.memento-checkbox-custom:after {
+  content: '';
+  position: absolute;
+  display: none;
+  left: 7px;
+  top: 3px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.memento-checkbox-input:checked ~ .memento-checkbox-custom:after {
+  display: block;
+}
+
+.memento-checkbox-text {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.95rem;
+  color: var(--aged-silver);
+  line-height: 1.4;
+}
+
+.confirm-order-btn {
+  font-size: 1.2rem;
+  padding: 1.5rem;
+}
+
+.checkout-sidebar-actions {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(139, 115, 85, 0.2);
+}
+
+.checkout-sidebar-note {
+  font-family: 'IM Fell DW Pica', serif;
+  font-size: 0.8rem;
+  color: var(--aged-silver);
+  font-style: italic;
+  text-align: center;
+  margin-top: 1rem;
+  opacity: 0.7;
+}
+
 /* ========== ABOUT (SAYFA 8) ========== */
 .about-page {
   max-width: 1000px;
