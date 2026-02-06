@@ -2884,68 +2884,110 @@
   letter-spacing: 2px;
 }
 .home-categories {
-  background: rgba(26, 10, 31, 0.5);
-  padding: 6rem 2rem;
+  padding: 8rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  background-image:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(184, 134, 11, 0.03) 0%,
+      transparent 70%
+    ),
+    linear-gradient(rgba(13, 10, 15, 0.8), rgba(13, 10, 15, 0.8)),
+    repeating-linear-gradient(
+      45deg,
+      rgba(184, 134, 11, 0.02) 0px,
+      rgba(184, 134, 11, 0.02) 1px,
+      transparent 1px,
+      transparent 15px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(184, 134, 11, 0.02) 0px,
+      rgba(184, 134, 11, 0.02) 1px,
+      transparent 1px,
+      transparent 15px
+    );
+}
+.home-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: var(--bone);
+  text-align: center;
+  margin-bottom: 4rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  position: relative;
+}
+.home-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 2px;
+  background: var(--blood-red);
 }
 .home-categories-grid {
-  max-width: 1200px;
-  margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-}
-@media (max-width: 768px) {
-  .home-categories-grid {
-    grid-template-columns: 1fr;
-  }
+  gap: 2.5rem;
 }
 .home-category-card {
-  height: 24rem;
-  background: linear-gradient(
-    180deg,
-    rgba(43, 13, 13, 0.3) 0%,
-    rgba(26, 10, 31, 0.6) 100%
-  );
-  border: 2px solid rgba(139, 115, 85, 0.2);
-  padding: 2.5rem;
+  text-decoration: none;
+  background: rgba(26, 10, 31, 0.6);
+  border: 1px solid rgba(139, 115, 85, 0.3);
+  padding: 3.5rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.home-category-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(184, 134, 11, 0.1);
+  margin: 10px;
+  pointer-events: none;
 }
 .home-category-card:hover {
+  transform: translateY(-8px);
   border-color: var(--accent);
-  box-shadow: 0 0 25px var(--accent-glow);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(184, 134, 11, 0.1);
 }
 .home-category-card:hover .home-category-icon {
-  transform: scale(1.1);
-}
-.home-category-card:hover .home-category-arrow {
-  transform: translateX(6px);
+  transform: scale(1.1) rotate(5deg);
+  color: var(--bone);
 }
 .home-category-icon {
-  width: 3rem;
-  height: 3rem;
-  margin-bottom: 1.5rem;
-  color: var(--aged-brass);
-  transition: transform 0.3s ease;
+  margin-bottom: 2rem;
+  color: var(--accent);
+  transition: all 0.5s ease;
 }
 .home-category-name {
   font-family: 'Cinzel', serif;
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--bone);
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
+  letter-spacing: 3px;
 }
 .home-category-desc {
-  font-family: 'Crimson Text', serif;
-  font-size: 0.95rem;
+  font-family: 'IM Fell DW Pica', serif;
+  font-size: 1rem;
   color: var(--aged-silver);
-  margin-bottom: 1.5rem;
-  flex: 1;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  font-style: italic;
 }
 .home-category-link {
   display: inline-flex;
@@ -2972,36 +3014,65 @@
   color: var(--accent);
 }
 .home-new-arrivals-wrap {
-  padding: 5rem 2rem;
+  padding: 8rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  position: relative;
+  border-top: 1px solid rgba(139, 115, 85, 0.2);
+  background-image:
+    radial-gradient(
+      circle at 10% 20%,
+      rgba(92, 10, 10, 0.04) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      rgba(26, 10, 31, 0.5) 0%,
+      transparent 50%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(184, 134, 11, 0.01) 0px,
+      rgba(184, 134, 11, 0.01) 1px,
+      transparent 1px,
+      transparent 20px
+    );
 }
 .home-new-arrivals-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 4rem;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.5rem;
+  border-bottom: 1px solid rgba(92, 10, 10, 0.3);
+  padding-bottom: 1.5rem;
 }
 .home-new-arrivals-title {
   font-family: 'Cinzel', serif;
-  font-size: 1.75rem;
+  font-size: 2.25rem;
   font-weight: 800;
   color: var(--bone);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
 }
 .home-view-all {
-  padding: 0.6rem 1.5rem;
-  border: 2px solid var(--aged-brass);
-  color: var(--bone);
+  padding: 0.75rem 2.25rem;
+  background: transparent;
+  border: 1px solid var(--aged-brass);
+  color: var(--aged-brass);
   font-family: 'Cinzel', serif;
   font-size: 0.85rem;
+  font-weight: 700;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
 .home-view-all:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  background: var(--aged-brass);
+  color: var(--midnight);
+  box-shadow: 0 0 20px rgba(184, 134, 11, 0.3);
 }
 .home-products-grid {
   display: grid;
@@ -3020,18 +3091,30 @@
 }
 .home-product-card {
   position: relative;
-  background: rgba(26, 10, 31, 0.4);
-  border: 2px solid rgba(139, 115, 85, 0.2);
+  background: rgba(13, 10, 15, 0.4);
+  border: 1px solid rgba(139, 115, 85, 0.2);
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
   text-decoration: none;
   color: inherit;
-  display: block;
+  display: flex;
+  flex-direction: column;
+}
+.home-product-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(184, 134, 11, 0.05);
+  margin: 6px;
+  pointer-events: none;
+  z-index: 10;
 }
 .home-product-card:hover {
   border-color: var(--accent);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  transform: translateY(-10px);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.8),
+    0 0 30px rgba(184, 134, 11, 0.1);
 }
 .home-product-card:focus-visible {
   outline: 2px solid var(--accent);
@@ -3073,27 +3156,33 @@
   letter-spacing: 1px;
 }
 .home-product-info {
-  padding: 1.25rem;
-  background: rgba(13, 10, 15, 0.6);
+  padding: 1.5rem;
+  background: rgba(5, 4, 6, 0.8);
+  border-top: 1px solid rgba(92, 10, 10, 0.2);
+  text-align: center;
 }
 .home-product-name {
   font-family: 'Cinzel', serif;
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--bone);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
 }
 .home-product-category {
-  font-family: 'Crimson Text', serif;
-  font-size: 0.8rem;
-  color: var(--aged-silver);
-  margin-bottom: 0.5rem;
+  font-family: 'IM Fell DW Pica', serif;
+  font-size: 0.85rem;
+  color: var(--aged-brass);
+  margin-bottom: 0.8rem;
+  font-style: italic;
+  text-transform: uppercase;
 }
 .home-product-price {
   font-family: 'Cinzel', serif;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--bone);
+  text-shadow: 0 0 10px rgba(184, 134, 11, 0.2);
 }
 .home-manifesto {
   width: 100%;
