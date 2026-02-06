@@ -1623,78 +1623,118 @@
   padding: 2rem;
 }
 .filter-section {
-  margin-bottom: 2.5rem;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.15);
+  margin-bottom: 0;
 }
-.filter-title {
+
+.filter-title-btn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 0;
+  background: none;
+  border: none;
   font-family: 'Cinzel', serif;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   color: var(--bone);
-  margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 2px;
-  border-bottom: 1px solid rgba(92, 10, 10, 0.3);
-  padding-bottom: 0.5rem;
-}
-.filter-option {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 0.8rem;
   cursor: pointer;
-  font-family: 'Crimson Text', serif;
-  color: var(--aged-silver);
   transition: color 0.3s ease;
 }
-.filter-option:hover {
-  color: var(--bone);
+
+.filter-title-btn:hover {
+  color: var(--accent);
 }
-.filter-option input[type='checkbox'],
-.filter-option input[type='radio'] {
-  width: 18px;
-  height: 18px;
-  border: 1px solid rgba(139, 115, 85, 0.5);
+
+.filter-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0, 1, 0, 1);
+  opacity: 0;
+}
+
+.filter-section.open .filter-content {
+  max-height: 1000px;
+  opacity: 1;
+  padding-bottom: 1.5rem;
+  transition: all 0.5s ease;
+}
+
+.filter-option-minimal {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+  cursor: pointer;
+  font-family: 'IM Fell DW Pica', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--aged-silver);
+  transition: all 0.3s ease;
+}
+
+.filter-option-minimal:hover {
+  color: var(--bone);
+  transform: translateX(4px);
+}
+
+.filter-option-minimal input[type='radio'] {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border: 1px solid rgba(139, 115, 85, 0.4);
   background: transparent;
   cursor: pointer;
+  position: relative;
+  border-radius: 50%;
 }
+
+.filter-option-minimal input[type='radio']:checked {
+  background: var(--blood-red);
+  border-color: var(--blood-red);
+  box-shadow: 0 0 5px var(--blood-red);
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
+
 .filter-price-display {
   font-family: 'Crimson Text', serif;
-  color: var(--aged-silver);
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-}
-.price-slider {
-  width: 100%;
-  margin-top: 0.5rem;
-}
-.collections-worlds-link {
-  display: block;
-  margin-top: 1rem;
   color: var(--accent);
-  font-family: 'Cinzel', serif;
+  margin-bottom: 1rem;
   font-size: 0.9rem;
-  text-decoration: none;
+  letter-spacing: 1px;
 }
-.collections-worlds-link:hover {
-  color: var(--bone);
+
+.sidebar-footer {
+  padding-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
-.clear-filters {
-  width: 100%;
-  background: transparent;
-  border: 1px solid rgba(139, 115, 85, 0.4);
+
+.clear-filters-minimal {
+  background: none;
+  border: none;
   color: var(--aged-silver);
-  padding: 0.7rem;
   font-family: 'Cinzel', serif;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
+  text-decoration: underline;
   cursor: pointer;
   text-transform: uppercase;
   letter-spacing: 1px;
-  transition: all 0.3s ease;
-  margin-top: 1rem;
+  opacity: 0.6;
+  padding: 0;
+  text-align: left;
 }
-.clear-filters:hover {
-  background: var(--blood-red);
-  border-color: var(--blood-red);
-  color: var(--bone);
+
+.clear-filters-minimal:hover {
+  opacity: 1;
+  color: var(--blood-red);
 }
 .collections-main {
   flex: 1;

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import {
   Heart,
   Eye,
-  Guitar,
   Skull,
   Moon,
   Cog,
@@ -15,9 +14,9 @@ import {
   Box,
   Zap,
   Droplets,
+  ChevronDown,
 } from 'lucide-react';
 import { products, genres } from '../../data/shop';
-import type { Product } from '../../data/shop';
 import { useCart, useWishlist } from '../../components/ShopLayout';
 
 const themeIcons: Record<string, React.ComponentType<{ size?: number }>> = {
@@ -46,8 +45,19 @@ export default function CollectionsPage() {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [priceRange, setPriceRange] = useState([0, 700]);
   const [sortBy, setSortBy] = useState('new');
+
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    world: true,
+    type: false,
+    price: false,
+  });
+
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
+
+  const toggleSection = (section: string) => {
+    setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
@@ -69,82 +79,129 @@ export default function CollectionsPage() {
   return (
     <div className='collections-page'>
       <aside className='filters-sidebar'>
-        <div className='filter-section'>
-          <h3 className='filter-title'>World</h3>
-          <label className='filter-option'>
-            <input
-              type='radio'
-              name='genre'
-              checked={categoryFilter === 'all'}
-              onChange={() => setCategoryFilter('all')}
+        {/* World Section */}
+        <div className={`filter-section ${openSections.world ? 'open' : ''}`}>
+          <button
+            type='button'
+            className='filter-title-btn'
+            onClick={() => toggleSection('world')}
+          >
+            <span>World</span>
+            <ChevronDown
+              size={14}
+              className={openSections.world ? 'rotate-180' : ''}
             />
-            All Worlds
-          </label>
-          {genres.map((g) => (
-            <label key={g.slug} className='filter-option'>
+          </button>
+
+          <div className='filter-content'>
+            <label className='filter-option-minimal'>
               <input
                 type='radio'
                 name='genre'
-                checked={categoryFilter === g.slug}
-                onChange={() => setCategoryFilter(g.slug)}
+                checked={categoryFilter === 'all'}
+                onChange={() => setCategoryFilter('all')}
               />
-              {g.name}
+              <span className='option-label'>All Worlds</span>
             </label>
-          ))}
+            {genres.map((g) => (
+              <label key={g.slug} className='filter-option-minimal'>
+                <input
+                  type='radio'
+                  name='genre'
+                  checked={categoryFilter === g.slug}
+                  onChange={() => setCategoryFilter(g.slug)}
+                />
+                <span className='option-label'>{g.name}</span>
+              </label>
+            ))}
+          </div>
         </div>
-        <div className='filter-section'>
-          <h3 className='filter-title'>Type</h3>
-          <label className='filter-option'>
-            <input
-              type='radio'
-              name='type'
-              checked={typeFilter === 'all'}
-              onChange={() => setTypeFilter('all')}
+
+        {/* Type Section */}
+        <div className={`filter-section ${openSections.type ? 'open' : ''}`}>
+          <button
+            type='button'
+            className='filter-title-btn'
+            onClick={() => toggleSection('type')}
+          >
+            <span>Type</span>
+            <ChevronDown
+              size={14}
+              className={openSections.type ? 'rotate-180' : ''}
             />
-            All Types
-          </label>
-          {Object.entries(productTypeLabels).map(([value, label]) => (
-            <label key={value} className='filter-option'>
+          </button>
+
+          <div className='filter-content'>
+            <label className='filter-option-minimal'>
               <input
                 type='radio'
                 name='type'
-                checked={typeFilter === value}
-                onChange={() => setTypeFilter(value)}
+                checked={typeFilter === 'all'}
+                onChange={() => setTypeFilter('all')}
               />
-              {label}
+              <span className='option-label'>All Types</span>
             </label>
-          ))}
-        </div>
-        <div className='filter-section'>
-          <h3 className='filter-title'>Price (₺)</h3>
-          <div className='filter-price-display'>
-            ₺{priceRange[0]} – ₺{priceRange[1]}
+            {Object.entries(productTypeLabels).map(([value, label]) => (
+              <label key={value} className='filter-option-minimal'>
+                <input
+                  type='radio'
+                  name='type'
+                  checked={typeFilter === value}
+                  onChange={() => setTypeFilter(value)}
+                />
+                <span className='option-label'>{label}</span>
+              </label>
+            ))}
           </div>
-          <input
-            type='range'
-            min={0}
-            max={700}
-            value={priceRange[1]}
-            onChange={(e) => setPriceRange([0, parseInt(e.target.value, 10)])}
-            className='price-slider'
-            style={{ width: '100%', accentColor: 'var(--blood-red)' }}
-          />
         </div>
-        <Link href='/worlds' className='collections-worlds-link'>
-          Explore all Worlds →
-        </Link>
-        <button
-          type='button'
-          className='clear-filters'
-          onClick={() => {
-            setCategoryFilter('all');
-            setTypeFilter('all');
-            setPriceRange([0, 700]);
-          }}
-        >
-          Clear Filters
-        </button>
+
+        {/* Price Section */}
+        <div className={`filter-section ${openSections.price ? 'open' : ''}`}>
+          <button
+            type='button'
+            className='filter-title-btn'
+            onClick={() => toggleSection('price')}
+          >
+            <span>Price</span>
+            <ChevronDown
+              size={14}
+              className={openSections.price ? 'rotate-180' : ''}
+            />
+          </button>
+
+          <div className='filter-content'>
+            <div className='filter-price-display'>
+              ₺{priceRange[0]} – ₺{priceRange[1]}
+            </div>
+            <input
+              type='range'
+              min={0}
+              max={700}
+              value={priceRange[1]}
+              onChange={(e) => setPriceRange([0, parseInt(e.target.value, 10)])}
+              className='price-slider'
+            />
+          </div>
+        </div>
+
+        <div className='sidebar-footer'>
+          <Link href='/worlds' className='collections-worlds-link'>
+            Explore all Worlds →
+          </Link>
+          <button
+            type='button'
+            className='clear-filters-minimal'
+            onClick={() => {
+              setCategoryFilter('all');
+              setTypeFilter('all');
+              setPriceRange([0, 700]);
+            }}
+          >
+            Reset
+          </button>
+        </div>
       </aside>
+
       <div className='collections-main'>
         <div className='collections-toolbar'>
           <div>
