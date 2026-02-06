@@ -1934,14 +1934,21 @@
   margin-right: 4px;
 }
 
-.price-input-wrap input {
+.price-input-wrap input,
+.price-value {
   width: 100%;
   background: transparent;
   border: none;
   color: var(--bone);
   font-family: 'Crimson Text', serif;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   outline: none;
+}
+
+.price-input-wrap.static {
+  background: rgba(26, 10, 31, 0.4);
+  border-color: rgba(139, 115, 85, 0.1);
+  cursor: default;
 }
 
 .price-separator {
@@ -5893,4 +5900,408 @@ body {
 /* Ensure these apply to the whole document */
 * {
   -webkit-tap-highlight-color: transparent;
+}
+/* QUICK VIEW MODAL & CARD FLIP ANIMATION */
+.quickview-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 10, 15, 0.65);
+  backdrop-filter: blur(8px);
+  z-index: 20000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.5s ease;
+}
+
+.quickview-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.quickview-container {
+  width: 100%;
+  max-width: 960px;
+  perspective: 2000px;
+  position: relative;
+}
+
+.quickview-card-flip {
+  width: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+  min-height: 560px;
+  background: transparent;
+}
+
+/* Base side styles */
+.quickview-card-side {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  display: flex;
+  border: 1.5px solid rgba(139, 115, 85, 0.4);
+  background: #0d0a0f;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9);
+  border-radius: 4px; /* Card-like corners */
+  overflow: hidden; /* Ensure content respect border */
+}
+
+/* Front Side: Ornamented Card Back */
+.quickview-card-front {
+  background: linear-gradient(135deg, #1a101f 0%, #0d0a0f 100%);
+  z-index: 2;
+  transform: rotateY(0deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.memento-card-back {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  color: var(--aged-brass);
+  position: relative;
+  border: 12px double rgba(139, 115, 85, 0.4);
+  background: radial-gradient(
+    circle,
+    rgba(26, 10, 31, 0.9) 0%,
+    rgba(13, 10, 15, 1) 100%
+  );
+}
+
+.card-seal {
+  opacity: 0.6;
+  filter: drop-shadow(0 0 15px rgba(139, 115, 85, 0.3));
+  margin-bottom: 2rem;
+}
+
+.memento-branding {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  letter-spacing: 6px;
+  color: var(--aged-brass);
+  opacity: 0.4;
+}
+
+.card-ornament {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--aged-brass);
+}
+
+.top-left {
+  top: 20px;
+  left: 20px;
+  border-right: none;
+  border-bottom: none;
+}
+.top-right {
+  top: 20px;
+  right: 20px;
+  border-left: none;
+  border-bottom: none;
+}
+.bottom-left {
+  bottom: 20px;
+  left: 20px;
+  border-right: none;
+  border-top: none;
+}
+.bottom-right {
+  bottom: 20px;
+  right: 20px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Back Side: The actual Content */
+.quickview-card-back {
+  background: #0d0a0f;
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+/* The Animation State */
+.quickview-card-flip.animating {
+  animation: cardDealFlip 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.quickview-card-flip.flipped {
+  transform: rotateY(180deg);
+}
+
+@keyframes cardDealFlip {
+  0% {
+    transform: translate(-30%, 50%) rotateY(0deg) rotateZ(-20deg) scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+    transform: translate(0, 0) rotateY(180deg) rotateZ(0deg) scale(1.05);
+  }
+  100% {
+    transform: translate(0, 0) rotateY(180deg) rotateZ(0deg) scale(1);
+  }
+}
+
+/* Content Layout inside quickview-card-back */
+.quickview-layout {
+  display: grid;
+  grid-template-columns: 450px 1fr;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.quickview-image-section {
+  background: #050406;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid rgba(139, 115, 85, 0.2);
+}
+
+.quickview-image-placeholder {
+  color: rgba(139, 115, 85, 0.1);
+}
+
+.quickview-badge {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  padding: 0.5rem 1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  background: var(--blood-red);
+  color: var(--bone);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quickview-info-section {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.qv-category {
+  font-family: 'IM Fell DW Pica', serif;
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.qv-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.2rem;
+  color: var(--bone);
+  margin-bottom: 1.5rem;
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+
+.qv-price {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  color: var(--aged-brass);
+  margin-bottom: 2rem;
+}
+
+.qv-description {
+  font-family: 'Crimson Text', serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--aged-silver);
+  margin-bottom: 3rem;
+}
+
+.qv-selectors {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.qv-selector-group label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  color: var(--aged-brass);
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.qv-options {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.qv-opt-btn {
+  width: 45px;
+  height: 35px;
+  background: transparent;
+  border: 1px solid rgba(139, 115, 85, 0.2);
+  color: var(--aged-silver);
+  font-family: 'Crimson Text', serif;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qv-opt-btn:hover {
+  border-color: var(--accent);
+  color: var(--bone);
+}
+
+.qv-opt-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+
+.qv-color-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background-color: var(--color-hex);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 0;
+}
+
+.qv-color-btn::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.qv-color-btn:hover::after {
+  border-color: rgba(139, 115, 85, 0.4);
+}
+
+.qv-color-btn.active::after {
+  border-color: var(--accent);
+}
+
+.qv-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.qv-add-btn {
+  flex: 1;
+  padding: 1.25rem;
+  background: var(--blood-red);
+  color: var(--bone);
+  border: none;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.qv-add-btn:hover {
+  background: #8b0000;
+  box-shadow: 0 10px 20px rgba(139, 0, 0, 0.3);
+}
+
+.qv-wish-btn {
+  width: 60px;
+  background: transparent;
+  border: 1px solid rgba(139, 115, 85, 0.3);
+  color: var(--aged-silver);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.qv-wish-btn:hover {
+  border-color: var(--accent);
+  color: var(--bone);
+}
+
+.qv-wish-btn.active {
+  color: var(--blood-red);
+  border-color: var(--blood-red);
+}
+
+.qv-footer-links {
+  margin-top: auto;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(139, 115, 85, 0.1);
+}
+
+.qv-detail-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--aged-silver);
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  transition: color 0.3s ease;
+}
+
+.qv-detail-link:hover {
+  color: var(--bone);
+}
+
+.quickview-close-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--aged-silver);
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.quickview-close-btn:hover {
+  color: var(--bone);
+  transform: rotate(90deg);
+}
+
+@media (max-width: 900px) {
+  .quickview-layout {
+    grid-template-columns: 1fr;
+  }
+  .quickview-image-section {
+    height: 300px;
+  }
 }

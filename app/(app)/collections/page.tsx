@@ -17,7 +17,9 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { products, genres } from '../../data/shop';
+import type { Product } from '../../data/shop';
 import { useCart, useWishlist } from '../../components/ShopLayout';
+import QuickViewModal from '../../components/QuickViewModal';
 
 const themeIcons: Record<string, React.ComponentType<{ size?: number }>> = {
   gothic: Moon,
@@ -59,6 +61,8 @@ export default function CollectionsPage() {
     type: false,
     price: false,
   });
+
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
 
   const { addToCart } = useCart();
   const { toggleWishlist, isInWishlist } = useWishlist();
@@ -230,32 +234,14 @@ export default function CollectionsPage() {
             </div>
 
             <div className='price-inputs-row'>
-              <div className='price-input-wrap'>
+              <div className='price-input-wrap static'>
                 <span className='price-currency'>₺</span>
-                <input
-                  type='number'
-                  value={priceRange[0]}
-                  onChange={(e) =>
-                    setPriceRange([
-                      parseInt(e.target.value, 10) || 0,
-                      priceRange[1],
-                    ])
-                  }
-                />
+                <span className='price-value'>{priceRange[0]}</span>
               </div>
               <span className='price-separator'>-</span>
-              <div className='price-input-wrap'>
+              <div className='price-input-wrap static'>
                 <span className='price-currency'>₺</span>
-                <input
-                  type='number'
-                  value={priceRange[1]}
-                  onChange={(e) =>
-                    setPriceRange([
-                      priceRange[0],
-                      parseInt(e.target.value, 10) || 0,
-                    ])
-                  }
-                />
+                <span className='price-value'>{priceRange[1]}</span>
               </div>
             </div>
           </div>
@@ -284,7 +270,7 @@ export default function CollectionsPage() {
           <div>
             <div className='breadcrumb'>Home / Collections</div>
             <div className='product-count' style={{ marginTop: '0.5rem' }}>
-              {sortedProducts.length} of {products.length} artifacts
+              {sortedProducts.length} of {products.length} items
             </div>
           </div>
 
@@ -350,13 +336,14 @@ export default function CollectionsPage() {
                         fill={inWishlist ? 'currentColor' : 'none'}
                       />
                     </button>
-                    <Link
-                      href={`/product/${product.id}`}
+                    <button
+                      type='button'
                       className='action-button'
-                      aria-label='View product'
+                      aria-label='Quick view'
+                      onClick={() => setPreviewProduct(product)}
                     >
                       <Eye size={18} />
-                    </Link>
+                    </button>
                   </div>
                 </div>
                 <div className='product-info'>
@@ -371,7 +358,7 @@ export default function CollectionsPage() {
                       className='add-to-cart'
                       onClick={() => addToCart()}
                     >
-                      Acquire
+                      Add to Cart
                     </button>
                   </div>
                 </div>
@@ -380,6 +367,15 @@ export default function CollectionsPage() {
           })}
         </div>
       </div>
+
+      <QuickViewModal
+        product={previewProduct}
+        isOpen={!!previewProduct}
+        onClose={() => setPreviewProduct(null)}
+        onAddToCart={() => addToCart()}
+        onToggleWishlist={(id: number) => toggleWishlist(id)}
+        isInWishlist={(id: number) => isInWishlist(id)}
+      />
     </div>
   );
 }
