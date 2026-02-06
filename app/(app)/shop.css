@@ -320,7 +320,6 @@
 }
 .nav-link:hover {
   color: var(--bone);
-  letter-spacing: 3px;
   text-shadow: 0 0 12px rgba(232, 220, 196, 0.2);
 }
 .nav-link:hover::after {
@@ -390,14 +389,13 @@
   color: var(--aged-silver);
   text-decoration: none;
   transition: all 0.25s ease;
-  border-left: 0 solid var(--accent);
+  border-left: 4px solid transparent;
 }
 
 .nav-dropdown-content a:hover {
   color: var(--bone);
   background: rgba(184, 134, 11, 0.1);
-  padding-left: 1.8rem;
-  border-left: 4px solid var(--accent);
+  border-left-color: var(--accent);
   text-shadow: 0 0 10px rgba(184, 134, 11, 0.3);
 }
 
@@ -415,7 +413,10 @@
   content: '▾';
   font-size: 0.8rem;
   opacity: 0.5;
-  transition: transform 0.3s ease;
+  transition:
+    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.3s ease,
+    opacity 0.3s ease;
 }
 
 .nav-dropdown-wrapper:hover .nav-link-button::after {
