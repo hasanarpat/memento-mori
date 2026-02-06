@@ -4772,16 +4772,15 @@
     height: 400px;
   }
   .contact-map-overlay {
-    position: fixed;
-    top: 24rem;
+    position: absolute;
+    top: 1rem;
     right: 1rem;
     left: auto;
+    width: 72%;
+    max-width: 280px;
     margin: 0;
-    width: 85%;
-    max-width: 300px;
-    transform: none;
-    padding: 1.5rem;
-    z-index: 10001;
+    padding: 1.25rem;
+    z-index: 20;
   }
 }
 
