@@ -1472,10 +1472,11 @@
 
 .section-title {
   font-family: 'Cinzel', serif;
-  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
   font-weight: 800;
   text-align: center;
-  margin-bottom: 5rem;
+  margin-bottom: 1.5rem;
+  padding: 0.5rem 0;
   color: var(--bone);
   text-shadow:
     2px 2px 0 var(--blood-red),
@@ -2139,8 +2140,8 @@
 }
 .blog-featured {
   position: relative;
-  height: 500px;
-  margin-bottom: 6rem;
+  height: 280px;
+  margin-bottom: 1.5rem;
   border: 2px solid rgba(139, 115, 85, 0.3);
   overflow: hidden;
   cursor: pointer;
@@ -2172,7 +2173,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 3rem;
+  padding: 1.5rem;
   z-index: 2;
 }
 .blog-category-badge {
@@ -2190,10 +2191,10 @@
 }
 .blog-title {
   font-family: 'Cinzel', serif;
-  font-size: 3rem;
+  font-size: 1.5rem;
   font-weight: 800;
   color: var(--bone);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   line-height: 1.2;
 }
 .blog-meta {
@@ -2238,6 +2239,169 @@
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 3rem;
 }
+
+/* Bento Grid Layout */
+.blog-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.blog-bento-grid .blog-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+/* Bento size variations */
+.blog-bento-grid .bento-large {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.blog-bento-grid .bento-wide {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.blog-bento-grid .bento-tall {
+  grid-column: span 1;
+  grid-row: span 2;
+}
+
+.blog-bento-grid .bento-normal {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+/* Card size adaptations */
+.blog-bento-grid .bento-large .blog-card-image {
+  height: 360px;
+}
+
+.blog-bento-grid .bento-wide .blog-card-image {
+  height: 220px;
+}
+
+.blog-bento-grid .bento-tall .blog-card-image {
+  height: 320px;
+}
+
+.blog-bento-grid .bento-normal .blog-card-image {
+  height: 220px;
+}
+
+.blog-bento-grid .bento-large .blog-card-title {
+  font-size: 1.75rem;
+}
+
+.blog-bento-grid .bento-wide .blog-card-title {
+  font-size: 1.35rem;
+}
+
+.blog-bento-grid .bento-tall .blog-card-title {
+  font-size: 1.3rem;
+}
+
+.blog-bento-grid .bento-normal .blog-card-title {
+  font-size: 1.2rem;
+}
+
+.blog-bento-grid .bento-large .blog-card-excerpt,
+.blog-bento-grid .bento-wide .blog-card-excerpt {
+  display: block;
+}
+
+.blog-bento-grid .bento-tall .blog-card-excerpt {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.blog-bento-grid .bento-normal .blog-card-excerpt {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+  .blog-bento-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .blog-bento-grid .bento-large {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .blog-bento-grid .bento-wide {
+    grid-column: span 2;
+    grid-row: span 1;
+  }
+
+  .blog-bento-grid .bento-tall {
+    grid-column: span 1;
+    grid-row: span 1;
+  }
+
+  .blog-bento-grid .bento-large .blog-card-image {
+    height: 240px;
+  }
+
+  .blog-bento-grid .bento-wide .blog-card-image {
+    height: 200px;
+  }
+
+  .blog-bento-grid .bento-tall .blog-card-image {
+    height: 240px;
+  }
+}
+
+@media (max-width: 768px) {
+  .blog-bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .blog-bento-grid .bento-large,
+  .blog-bento-grid .bento-wide,
+  .blog-bento-grid .bento-tall,
+  .blog-bento-grid .bento-normal {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+
+  .blog-bento-grid .bento-large .blog-card-image,
+  .blog-bento-grid .bento-wide .blog-card-image,
+  .blog-bento-grid .bento-tall .blog-card-image,
+  .blog-bento-grid .bento-normal .blog-card-image {
+    height: 200px;
+  }
+
+  .blog-bento-grid .blog-card-title {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .blog-bento-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .blog-bento-grid .blog-card-image {
+    height: 180px;
+  }
+
+  .blog-bento-grid .blog-card-content {
+    padding: 1.5rem;
+  }
+}
+
 .blog-card {
   border: 2px solid rgba(139, 115, 85, 0.2);
   background: rgba(26, 10, 31, 0.3);

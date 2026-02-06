@@ -89,33 +89,48 @@ export default function JournalPage() {
           Drops
         </button>
       </div>
-      <div className='blog-grid'>
+      <div className='blog-bento-grid'>
         {filteredBlog
           .filter((p) => !p.featured)
-          .map((post) => (
-            <Link
-              key={post.id}
-              href={`/journal/${post.slug}`}
-              className='blog-card-link'
-            >
-              <div className='blog-card'>
-                <div className='blog-card-image'>
-                  <Skull className='blog-card-placeholder' />
-                </div>
-                <div className='blog-card-content'>
-                  <span className='blog-card-category'>{post.category}</span>
-                  <h3 className='blog-card-title'>{post.title}</h3>
-                  <p className='blog-card-excerpt'>{post.excerpt}</p>
-                  <div className='blog-card-footer'>
-                    <span className='blog-card-author'>by {post.author}</span>
-                    <span className='blog-card-date'>
-                      {post.date} · {post.readTime}
-                    </span>
+          .map((post, index) => {
+            // Balanced pattern: some variety without too much extremes
+            const pattern = [
+              'bento-wide',
+              'bento-normal',
+              'bento-normal',
+              'bento-tall',
+              'bento-normal',
+              'bento-wide',
+              'bento-normal',
+              'bento-normal',
+            ];
+            const sizeClass = pattern[index % pattern.length];
+
+            return (
+              <Link
+                key={post.id}
+                href={`/journal/${post.slug}`}
+                className={`blog-card-link ${sizeClass}`}
+              >
+                <div className='blog-card'>
+                  <div className='blog-card-image'>
+                    <Skull className='blog-card-placeholder' />
+                  </div>
+                  <div className='blog-card-content'>
+                    <span className='blog-card-category'>{post.category}</span>
+                    <h3 className='blog-card-title'>{post.title}</h3>
+                    <p className='blog-card-excerpt'>{post.excerpt}</p>
+                    <div className='blog-card-footer'>
+                      <span className='blog-card-author'>by {post.author}</span>
+                      <span className='blog-card-date'>
+                        {post.date} · {post.readTime}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
       </div>
     </div>
   );
