@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { Skull, User, Calendar, Clock } from 'lucide-react';
 import { blogPosts } from '../../data/shop';
@@ -16,26 +17,33 @@ export default function JournalPage() {
     <div className='blog-page'>
       <h2 className='section-title'>The Grimoire</h2>
       {featuredPost && (
-        <div className='blog-featured'>
-          <div className='blog-featured-content'>
-            <span className='blog-category-badge'>{featuredPost.category}</span>
-            <h2 className='blog-title'>{featuredPost.title}</h2>
-            <div className='blog-meta'>
-              <div className='blog-meta-item'>
-                <User size={16} />
-                {featuredPost.author}
-              </div>
-              <div className='blog-meta-item'>
-                <Calendar size={16} />
-                {featuredPost.date}
-              </div>
-              <div className='blog-meta-item'>
-                <Clock size={16} />
-                {featuredPost.readTime}
+        <Link
+          href={`/journal/${featuredPost.slug}`}
+          className='blog-featured-link'
+        >
+          <div className='blog-featured'>
+            <div className='blog-featured-content'>
+              <span className='blog-category-badge'>
+                {featuredPost.category}
+              </span>
+              <h2 className='blog-title'>{featuredPost.title}</h2>
+              <div className='blog-meta'>
+                <div className='blog-meta-item'>
+                  <User size={16} />
+                  {featuredPost.author}
+                </div>
+                <div className='blog-meta-item'>
+                  <Calendar size={16} />
+                  {featuredPost.date}
+                </div>
+                <div className='blog-meta-item'>
+                  <Clock size={16} />
+                  {featuredPost.readTime}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </Link>
       )}
       <div className='blog-categories'>
         <button
@@ -85,22 +93,28 @@ export default function JournalPage() {
         {filteredBlog
           .filter((p) => !p.featured)
           .map((post) => (
-            <div key={post.id} className='blog-card'>
-              <div className='blog-card-image'>
-                <Skull className='blog-card-placeholder' />
-              </div>
-              <div className='blog-card-content'>
-                <span className='blog-card-category'>{post.category}</span>
-                <h3 className='blog-card-title'>{post.title}</h3>
-                <p className='blog-card-excerpt'>{post.excerpt}</p>
-                <div className='blog-card-footer'>
-                  <span className='blog-card-author'>by {post.author}</span>
-                  <span className='blog-card-date'>
-                    {post.date} · {post.readTime}
-                  </span>
+            <Link
+              key={post.id}
+              href={`/journal/${post.slug}`}
+              className='blog-card-link'
+            >
+              <div className='blog-card'>
+                <div className='blog-card-image'>
+                  <Skull className='blog-card-placeholder' />
+                </div>
+                <div className='blog-card-content'>
+                  <span className='blog-card-category'>{post.category}</span>
+                  <h3 className='blog-card-title'>{post.title}</h3>
+                  <p className='blog-card-excerpt'>{post.excerpt}</p>
+                  <div className='blog-card-footer'>
+                    <span className='blog-card-author'>by {post.author}</span>
+                    <span className='blog-card-date'>
+                      {post.date} · {post.readTime}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
       </div>
     </div>
