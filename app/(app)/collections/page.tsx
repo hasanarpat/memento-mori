@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Heart,
@@ -40,11 +40,19 @@ const productTypeLabels: Record<string, string> = {
   harness: 'Harness',
 };
 
+const sortOptions = [
+  { value: 'new', label: 'New First' },
+  { value: 'price-low', label: 'Price: Low to High' },
+  { value: 'price-high', label: 'Price: High to Low' },
+];
+
 export default function CollectionsPage() {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [priceRange, setPriceRange] = useState([0, 700]);
+  const [priceRange, setPriceRange] = useState([0, 1000]);
   const [sortBy, setSortBy] = useState('new');
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
 
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     world: true,
@@ -58,6 +66,17 @@ export default function CollectionsPage() {
   const toggleSection = (section: string) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
+
+  // Close sort dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
+        setIsSortOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
@@ -75,6 +94,8 @@ export default function CollectionsPage() {
     if (sortBy === 'new') return (b.new ? 1 : 0) - (a.new ? 1 : 0);
     return 0;
   });
+
+  const currentSortLabel = sortOptions.find((o) => o.value === sortBy)?.label;
 
   return (
     <div className='collections-page'>
@@ -173,14 +194,70 @@ export default function CollectionsPage() {
             <div className='filter-price-display'>
               ₺{priceRange[0]} – ₺{priceRange[1]}
             </div>
-            <input
-              type='range'
-              min={0}
-              max={700}
-              value={priceRange[1]}
-              onChange={(e) => setPriceRange([0, parseInt(e.target.value, 10)])}
-              className='price-slider'
-            />
+
+            <div className='dual-slider-container'>
+              <div className='slider-track'></div>
+              <input
+                type='range'
+                min={0}
+                max={1000}
+                value={priceRange[0]}
+                onChange={(e) => {
+                  const val = Math.min(
+                    parseInt(e.target.value, 10),
+                    priceRange[1] - 50,
+                  );
+                  setPriceRange([val, priceRange[1]]);
+                }}
+                className='price-slider min-slider'
+                style={{ zIndex: priceRange[0] > 500 ? 5 : 3 }}
+              />
+              <input
+                type='range'
+                min={0}
+                max={1000}
+                value={priceRange[1]}
+                onChange={(e) => {
+                  const val = Math.max(
+                    parseInt(e.target.value, 10),
+                    priceRange[0] + 50,
+                  );
+                  setPriceRange([priceRange[0], val]);
+                }}
+                className='price-slider max-slider'
+                style={{ zIndex: priceRange[0] > 500 ? 3 : 5 }}
+              />
+            </div>
+
+            <div className='price-inputs-row'>
+              <div className='price-input-wrap'>
+                <span className='price-currency'>₺</span>
+                <input
+                  type='number'
+                  value={priceRange[0]}
+                  onChange={(e) =>
+                    setPriceRange([
+                      parseInt(e.target.value, 10) || 0,
+                      priceRange[1],
+                    ])
+                  }
+                />
+              </div>
+              <span className='price-separator'>-</span>
+              <div className='price-input-wrap'>
+                <span className='price-currency'>₺</span>
+                <input
+                  type='number'
+                  value={priceRange[1]}
+                  onChange={(e) =>
+                    setPriceRange([
+                      priceRange[0],
+                      parseInt(e.target.value, 10) || 0,
+                    ])
+                  }
+                />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -194,7 +271,7 @@ export default function CollectionsPage() {
             onClick={() => {
               setCategoryFilter('all');
               setTypeFilter('all');
-              setPriceRange([0, 700]);
+              setPriceRange([0, 1000]);
             }}
           >
             Reset
@@ -210,15 +287,37 @@ export default function CollectionsPage() {
               {sortedProducts.length} of {products.length} artifacts
             </div>
           </div>
-          <select
-            className='sort-dropdown'
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-          >
-            <option value='new'>New First</option>
-            <option value='price-low'>Price: Low to High</option>
-            <option value='price-high'>Price: High to Low</option>
-          </select>
+
+          {/* CUSTOM AESTHETIC DROPDOWN */}
+          <div className='custom-dropdown-wrap' ref={sortRef}>
+            <button
+              className='custom-dropdown-trigger'
+              onClick={() => setIsSortOpen(!isSortOpen)}
+            >
+              <span className='trigger-label'>Sort:</span>
+              <span className='trigger-value'>{currentSortLabel}</span>
+              <ChevronDown
+                size={14}
+                className={isSortOpen ? 'rotate-180' : ''}
+              />
+            </button>
+            {isSortOpen && (
+              <div className='custom-dropdown-list'>
+                {sortOptions.map((opt) => (
+                  <button
+                    key={opt.value}
+                    className={`custom-dropdown-item ${sortBy === opt.value ? 'active' : ''}`}
+                    onClick={() => {
+                      setSortBy(opt.value);
+                      setIsSortOpen(false);
+                    }}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <div className='products-grid'>
           {sortedProducts.map((product) => {

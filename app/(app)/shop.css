@@ -1614,13 +1614,13 @@
   gap: 3rem;
 }
 .filters-sidebar {
-  width: 280px;
+  width: 260px;
   position: sticky;
   top: 120px;
   height: fit-content;
-  background: rgba(26, 10, 31, 0.4);
-  border: 2px solid rgba(139, 115, 85, 0.3);
-  padding: 2rem;
+  background: rgba(13, 10, 15, 0.6);
+  border: 1px solid rgba(139, 115, 85, 0.2);
+  padding: 1.25rem;
 }
 .filter-section {
   border-bottom: 1px solid rgba(139, 115, 85, 0.15);
@@ -1757,18 +1757,195 @@
   color: var(--aged-brass);
   font-size: 0.95rem;
 }
-.sort-dropdown {
-  background: rgba(61, 61, 61, 0.4);
-  border: 1px solid rgba(139, 115, 85, 0.4);
+
+/* CUSTOM DROPWDOWN STYLES */
+.custom-dropdown-wrap {
+  position: relative;
+  min-width: 200px;
+  z-index: 100;
+}
+
+.custom-dropdown-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(13, 10, 15, 0.8);
+  border: 1px solid rgba(139, 115, 85, 0.3);
   color: var(--bone);
-  padding: 0.6rem 1.2rem;
   font-family: 'Crimson Text', serif;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
-.sort-dropdown:focus {
+
+.custom-dropdown-trigger:hover {
+  border-color: var(--accent);
+  background: rgba(26, 10, 31, 0.8);
+}
+
+.trigger-label {
+  color: var(--aged-silver);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.trigger-value {
+  flex: 1;
+  text-align: left;
+  font-style: italic;
+}
+
+.custom-dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.5rem;
+  background: #0d0a0f;
+  border: 1px solid var(--accent);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+  overflow: hidden;
+  animation: dropdownFadeIn 0.3s ease;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.custom-dropdown-item {
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  background: transparent;
+  border: none;
+  color: var(--aged-silver);
+  text-align: left;
+  font-family: 'Crimson Text', serif;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.custom-dropdown-item:hover {
+  background: rgba(184, 134, 11, 0.1);
+  color: var(--bone);
+}
+
+.custom-dropdown-item.active {
+  color: var(--accent);
+  background: rgba(139, 115, 85, 0.05);
+}
+
+/* DUAL SLIDER STYLES */
+.dual-slider-container {
+  position: relative;
+  height: 30px;
+  margin-bottom: 1.5rem;
+}
+
+.slider-track {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(139, 115, 85, 0.2);
+  transform: translateY(-50%);
+}
+
+.dual-slider-container .price-slider {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  background: transparent;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+  transform: translateY(-50%);
+  margin: 0;
   outline: none;
-  border-color: var(--blood-red);
+}
+
+/* Chrome, Safari, Edge, Opera */
+.dual-slider-container .price-slider::-webkit-slider-thumb {
+  pointer-events: auto;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--blood-red);
+  border: 2px solid var(--bone);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.dual-slider-container .price-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Firefox */
+.dual-slider-container .price-slider::-moz-range-thumb {
+  pointer-events: auto;
+  width: 18px;
+  height: 18px;
+  background: var(--blood-red);
+  border: 2px solid var(--bone);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease;
+}
+
+.dual-slider-container .price-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+.price-inputs-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.price-input-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: rgba(13, 10, 15, 0.6);
+  border: 1px solid rgba(139, 115, 85, 0.2);
+  padding: 0.4rem 0.6rem;
+}
+
+.price-currency {
+  font-size: 0.8rem;
+  color: var(--aged-brass);
+  margin-right: 4px;
+}
+
+.price-input-wrap input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--bone);
+  font-family: 'Crimson Text', serif;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.price-separator {
+  color: var(--aged-silver);
 }
 .products-grid {
   display: grid;
