@@ -4,8 +4,8 @@ import { buildConfig } from 'payload';
 import path from 'path';
 import sharp from 'sharp';
 
-import { Users } from './collections/Users';
-import { Media } from './collections/Media';
+import { Users } from './cms/Users';
+import { Media } from './cms/Media';
 
 const dirname = path.resolve(__dirname);
 
