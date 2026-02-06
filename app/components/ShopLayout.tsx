@@ -10,7 +10,16 @@ import React, {
 } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShoppingCart, Search, Heart, Menu, X } from 'lucide-react';
+import {
+  ShoppingCart,
+  Search,
+  Heart,
+  Menu,
+  X,
+  User,
+  ChevronDown,
+  ArrowRight,
+} from 'lucide-react';
 import SearchModal from '@/app/components/SearchModal';
 
 const CartContext = createContext<{
@@ -54,6 +63,9 @@ export default function ShopLayout({
   const [shopOpen, setShopOpen] = useState(false);
   const [exploreOpen, setExploreOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileShopOpen, setMobileShopOpen] = useState(false);
+  const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
+  const [mobileCodexOpen, setMobileCodexOpen] = useState(false);
 
   const codexRef = useRef<HTMLDivElement>(null);
   const shopRef = useRef<HTMLDivElement>(null);
@@ -270,7 +282,7 @@ export default function ShopLayout({
               <div className='mobile-menu-header'>
                 <span className='mobile-menu-title'>
                   <span className='mobile-menu-title-symbol'>☠</span>
-                  MENU
+                  MEMENTO
                 </span>
                 <button
                   type='button'
@@ -281,77 +293,169 @@ export default function ShopLayout({
                   <X size={22} />
                 </button>
               </div>
-              <div className='mobile-menu-divider'>
-                <span>NAVIGATE</span>
+
+              <div className='mobile-menu-search-container'>
+                <div
+                  className='mobile-menu-search-box'
+                  onClick={() => {
+                    setMobileOpen(false);
+                    setSearchOpen(true);
+                  }}
+                >
+                  <Search size={18} />
+                  <span>Seek products...</span>
+                </div>
               </div>
-              <nav className='mobile-menu-nav'>
-                <Link
-                  href='/'
-                  className='mobile-menu-link'
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <span className='mobile-menu-num'>I</span> HOME
-                </Link>
-                <Link
-                  href='/collections'
-                  className='mobile-menu-link'
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <span className='mobile-menu-num'>II</span> COLLECTIONS
-                </Link>
-                <Link
-                  href='/new-arrivals'
-                  className='mobile-menu-link'
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <span className='mobile-menu-num'>III</span> NEW ARRIVALS
-                </Link>
-                <Link
-                  href='/journal'
-                  className='mobile-menu-link'
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <span className='mobile-menu-num'>IV</span> JOURNAL
-                </Link>
-                <Link
-                  href='/about'
-                  className='mobile-menu-link'
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <span className='mobile-menu-num'>V</span> ABOUT
-                </Link>
-                <Link
-                  href='/contact'
-                  className='mobile-menu-link'
-                  onClick={() => setMobileOpen(false)}
-                >
-                  <span className='mobile-menu-num'>VI</span> CONTACT
-                </Link>
-              </nav>
-              <div className='mobile-menu-actions'>
-                <Link
-                  href='/wishlist'
-                  className='mobile-menu-action'
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Wishlist
-                </Link>
-                <Link
-                  href='/cart'
-                  className='mobile-menu-action mobile-menu-action-accent'
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Cart {cartCount > 0 ? `(${cartCount})` : ''}
-                </Link>
-                <Link
-                  href='/login'
-                  className='mobile-menu-action'
-                  onClick={() => setMobileOpen(false)}
-                >
-                  Login
-                </Link>
+
+              <div className='mobile-menu-scroll-area'>
+                <nav className='mobile-menu-nav'>
+                  <Link
+                    href='/'
+                    className='mobile-menu-link'
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    HOME
+                  </Link>
+
+                  {/* MOBILE SHOP ACCORDION */}
+                  <div className='mobile-menu-accordion'>
+                    <button
+                      className={`mobile-menu-accordion-trigger ${mobileShopOpen ? 'open' : ''}`}
+                      onClick={() => setMobileShopOpen(!mobileShopOpen)}
+                    >
+                      SHOP <ChevronDown size={16} />
+                    </button>
+                    <div
+                      className={`mobile-menu-accordion-content ${mobileShopOpen ? 'open' : ''}`}
+                    >
+                      <Link
+                        href='/collections'
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        Collections <ArrowRight size={14} />
+                      </Link>
+                      <Link
+                        href='/new-arrivals'
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        New Arrivals <ArrowRight size={14} />
+                      </Link>
+                      <Link href='/ritual' onClick={() => setMobileOpen(false)}>
+                        Ritual & Altar <ArrowRight size={14} />
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* MOBILE EXPLORE ACCORDION */}
+                  <div className='mobile-menu-accordion'>
+                    <button
+                      className={`mobile-menu-accordion-trigger ${mobileExploreOpen ? 'open' : ''}`}
+                      onClick={() => setMobileExploreOpen(!mobileExploreOpen)}
+                    >
+                      EXPLORE <ChevronDown size={16} />
+                    </button>
+                    <div
+                      className={`mobile-menu-accordion-content ${mobileExploreOpen ? 'open' : ''}`}
+                    >
+                      <Link
+                        href='/journal'
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        Journal <ArrowRight size={14} />
+                      </Link>
+                      <Link href='/about' onClick={() => setMobileOpen(false)}>
+                        About <ArrowRight size={14} />
+                      </Link>
+                      <Link
+                        href='/lookbook'
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        Lookbook <ArrowRight size={14} />
+                      </Link>
+                    </div>
+                  </div>
+
+                  {/* MOBILE CODEX ACCORDION */}
+                  <div className='mobile-menu-accordion'>
+                    <button
+                      className={`mobile-menu-accordion-trigger ${mobileCodexOpen ? 'open' : ''}`}
+                      onClick={() => setMobileCodexOpen(!mobileCodexOpen)}
+                    >
+                      CODEX <ChevronDown size={16} />
+                    </button>
+                    <div
+                      className={`mobile-menu-accordion-content ${mobileCodexOpen ? 'open' : ''}`}
+                    >
+                      <Link
+                        href='/size-guide'
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        Sizing <ArrowRight size={14} />
+                      </Link>
+                      <Link href='/kvkk' onClick={() => setMobileOpen(false)}>
+                        KVKK <ArrowRight size={14} />
+                      </Link>
+                      <Link
+                        href='/gizlilik-politikasi'
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        Privacy <ArrowRight size={14} />
+                      </Link>
+                      <Link
+                        href='/contact'
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        Contact <ArrowRight size={14} />
+                      </Link>
+                    </div>
+                  </div>
+                </nav>
               </div>
-              <p className='mobile-menu-tagline'>In darkness we find beauty.</p>
+
+              <div className='mobile-menu-footer'>
+                <div className='mobile-menu-quick-grid'>
+                  <Link
+                    href='/login'
+                    className='mobile-quick-action'
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <User size={20} />
+                    <span>LOGIN</span>
+                  </Link>
+                  <Link
+                    href='/wishlist'
+                    className='mobile-quick-action'
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <div className='action-icon-wrap'>
+                      <Heart size={20} />
+                      {wishlistIds.length > 0 && (
+                        <span className='action-badge'>
+                          {wishlistIds.length}
+                        </span>
+                      )}
+                    </div>
+                    <span>WISHES</span>
+                  </Link>
+                  <Link
+                    href='/cart'
+                    className='mobile-quick-action action-accent'
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <div className='action-icon-wrap'>
+                      <ShoppingCart size={20} />
+                      {cartCount > 0 && (
+                        <span className='action-badge'>{cartCount}</span>
+                      )}
+                    </div>
+                    <span>CART</span>
+                  </Link>
+                </div>
+                <div className='mobile-menu-bottom-tag'>
+                  <p>Est. MMXXVI</p>
+                  <div className='mobile-menu-divider-dots'>•••</div>
+                </div>
+              </div>
             </div>
           </header>
 
