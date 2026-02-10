@@ -1,11 +1,9 @@
-import Link from "next/link";
+import { getPayload } from 'payload';
+import configPromise from '@payload-config';
 import { Droplets, Flame, Sparkles } from "lucide-react";
-import { products } from "@/app/data/shop";
 import RitualClient from "./RitualClient";
-
-const ritualProducts = products.filter((p) => p.productType === "ritual");
-
 import { buildPageMetadata } from "@/app/lib/metadata";
+import Link from "next/link";
 
 export const metadata = buildPageMetadata({
   title: "Ritual & Altar",
@@ -15,7 +13,18 @@ export const metadata = buildPageMetadata({
   keywords: ["ritual candles", "altar supplies", "incense holder", "sacred objects", "ritual tools", "dark ritual"],
 });
 
-export default function RitualPage() {
+export default async function RitualPage() {
+  const payload = await getPayload({ config: configPromise });
+
+  const ritualProductsResult = await payload.find({
+    collection: 'products',
+    where: {
+      productType: { equals: 'ritual' }
+    },
+    limit: 100,
+    depth: 1,
+  });
+
   return (
     <div className="ritual-page">
       <section className="ritual-hero">
@@ -31,7 +40,7 @@ export default function RitualPage() {
           <Sparkles size={32} aria-hidden="true" />
         </div>
       </section>
-      <RitualClient products={ritualProducts} />
+      <RitualClient products={ritualProductsResult.docs as any} />
       <section className="ritual-cta">
         <h2 className="ritual-cta-title">Deeper into the craft</h2>
         <p className="ritual-cta-desc">

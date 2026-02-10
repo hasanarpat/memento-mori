@@ -2146,6 +2146,16 @@
   border-bottom: 2px solid rgba(92, 10, 10, 0.3);
 }
 
+.product-image-link {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  text-decoration: none;
+}
+
 .product-image::before {
   content: '';
   position: absolute;
@@ -2212,6 +2222,7 @@
   opacity: 0;
   transform: translateX(-10px);
   transition: all 0.3s ease;
+  z-index: 10;
 }
 
 .product-card:hover .product-actions {

@@ -1,3 +1,5 @@
+import { getPayload } from 'payload';
+import configPromise from '@payload-config';
 import Link from 'next/link';
 import {
   ArrowRight,
@@ -10,7 +12,7 @@ import {
   Zap,
   Droplets,
 } from 'lucide-react';
-import { genres } from '../../data/shop';
+import { buildPageMetadata } from '../../lib/metadata';
 
 const iconMap = {
   Moon,
@@ -22,8 +24,6 @@ const iconMap = {
   Zap,
   Droplets,
 } as const;
-
-import { buildPageMetadata } from '../../lib/metadata';
 
 export const metadata = buildPageMetadata({
   title: 'Worlds',
@@ -43,7 +43,17 @@ export const metadata = buildPageMetadata({
   ],
 });
 
-export default function WorldsPage() {
+export default async function WorldsPage() {
+  const payload = await getPayload({ config: configPromise });
+
+  const categoriesResult = await payload.find({
+    collection: 'categories',
+    sort: 'title',
+    limit: 100,
+  });
+
+  const categories = categoriesResult.docs;
+
   return (
     <div className='worlds-page'>
       <section className='worlds-hero'>
@@ -53,21 +63,21 @@ export default function WorldsPage() {
         </p>
       </section>
       <div className='worlds-grid'>
-        {genres.map((genre) => {
-          const Icon = iconMap[genre.icon as keyof typeof iconMap] ?? Moon;
+        {categories.map((category: any) => {
+          const Icon = iconMap[category.icon as keyof typeof iconMap] ?? Moon;
           return (
             <Link
-              key={genre.slug}
-              href={`/collections/${genre.slug}`}
+              key={category.slug}
+              href={`/collections/${category.slug}`}
               className='worlds-card'
-              style={{ '--world-accent': genre.accent } as React.CSSProperties}
+              style={{ '--world-accent': category.accent } as React.CSSProperties}
             >
               <div className='worlds-card-icon-wrap'>
                 <Icon className='worlds-card-icon' size={48} />
               </div>
-              <h2 className='worlds-card-name'>{genre.name}</h2>
-              <p className='worlds-card-tagline'>{genre.tagline}</p>
-              <p className='worlds-card-desc'>{genre.shortDesc}</p>
+              <h2 className='worlds-card-name'>{category.title}</h2>
+              <p className='worlds-card-tagline'>{category.tagline}</p>
+              <p className='worlds-card-desc'>{category.shortDesc}</p>
               <span className='worlds-card-link'>
                 Enter
                 <ArrowRight size={18} />

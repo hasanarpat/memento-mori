@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Heart, Eye, Skull, Moon, Cog, Flame, Sparkles, BookOpen, Box, Zap, Droplets } from 'lucide-react';
 import { useCart, useWishlist } from './ShopLayout';
@@ -42,12 +43,27 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
         {initialProducts.map((product) => {
           const Icon = themeIcons[product.theme] ?? Skull;
           const inWishlist = isInWishlist(product.id);
+          const imageUrl = (product.images as any)?.url;
+
           return (
             <div key={product.id} className='product-card'>
               <div className='product-image'>
-                <div className='product-placeholder'>
-                  <Icon size={36} />
-                </div>
+                <Link href={`/product/${product.id}`} className='product-image-link'>
+                  {imageUrl ? (
+                    <Image
+                      src={imageUrl}
+                      alt={product.name}
+                      fill
+                      sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+                      className='object-cover'
+                      unoptimized
+                    />
+                  ) : (
+                    <div className='product-placeholder'>
+                      <Icon size={36} />
+                    </div>
+                  )}
+                </Link>
                 {product.badge && product.badge !== 'none' && (
                   <div className={`product-badge ${product.badge.toLowerCase().replace(/\s/g, '-')}`}>
                     {product.badge.toUpperCase()}
@@ -59,6 +75,7 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
                     className={`action-button ${inWishlist ? 'liked' : ''}`}
                     onClick={(e) => {
                       e.preventDefault();
+                      e.stopPropagation();
                       toggleWishlist(product.id);
                     }}
                   >
@@ -71,7 +88,11 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
                     type='button'
                     className='action-button'
                     aria-label='Quick view'
-                    onClick={() => setPreviewProduct(product)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setPreviewProduct(product);
+                    }}
                   >
                     <Eye size={18} />
                   </button>
@@ -80,8 +101,8 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
               <div className='product-info'>
                 <div className='product-category'>
                   {Array.isArray(product.category) 
-                    ? product.category.map((c: any) => c.title).join(' × ') 
-                    : (product.category as any)?.title || product.theme}
+                    ? product.category.map((c: any) => (typeof c === 'object' ? c.title : c)).join(' × ') 
+                    : (product.category as any)?.title || (typeof product.category === 'string' ? product.category : product.theme)}
                 </div>
                 <h3 className='product-name'>
                   <Link href={`/product/${product.id}`}>{product.name}</Link>

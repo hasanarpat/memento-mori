@@ -1,8 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useCart, useWishlist } from "@/components/ShopLayout";
-import type { Product } from "@/app/data/shop";
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  category: any;
+  theme: string;
+  badge?: string;
+  images: any;
+}
 
 export default function RitualClient({ products: ritualProducts }: { products: Product[] }) {
   const { addToCart } = useCart();
@@ -27,11 +37,28 @@ export default function RitualClient({ products: ritualProducts }: { products: P
       <div className="ritual-grid">
         {ritualProducts.map((product) => {
           const inWishlist = isInWishlist(product.id);
+          const categoryTitle = Array.isArray(product.category)
+            ? product.category.map((c: any) => (typeof c === 'object' ? c.title : c)).join(' / ')
+            : (product.category as any)?.title || product.theme;
+          
+          const imageUrl = (product.images as any)?.url;
+
           return (
             <article key={product.id} className="ritual-card home-product-card">
               <Link href={`/product/${product.id}`} className="ritual-card-image">
-                <div className="home-product-image" />
-                {product.badge && (
+                <div className="home-product-image">
+                  {imageUrl && (
+                    <Image
+                      src={imageUrl}
+                      alt={product.name}
+                      fill
+                      sizes='(max-width: 768px) 100vw, 33vw'
+                      className='object-cover'
+                      unoptimized
+                    />
+                  )}
+                </div>
+                {product.badge && product.badge !== 'none' && (
                   <span className={`product-badge ${product.badge.toLowerCase().replace(/\s/g, "-")}`}>
                     {product.badge}
                   </span>
@@ -41,23 +68,22 @@ export default function RitualClient({ products: ritualProducts }: { products: P
                 <h3 className="home-product-name">
                   <Link href={`/product/${product.id}`}>{product.name}</Link>
                 </h3>
-                <p className="home-product-category">{product.category}</p>
+                <p className="home-product-category">{categoryTitle}</p>
                 <p className="home-product-price">₺{product.price}</p>
                 <div className="ritual-card-actions">
                   <button
                     type="button"
                     className="product-detail-btn-primary"
                     onClick={() => addToCart({
-                    id: String(product.id),
-                    product: {
-                      ...product,
-                      slug: String(product.id),
-                      description: '',
-                      images: [],
-                    },
-                    quantity: 1,
-                    price: product.price,
-                  })}
+                      id: product.id,
+                      product: {
+                        ...product,
+                        slug: product.id,
+                        description: '',
+                      },
+                      quantity: 1,
+                      price: product.price,
+                    })}
                   >
                     Add to Cart
                   </button>

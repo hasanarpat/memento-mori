@@ -6,15 +6,35 @@ import { Heart, Minus, Plus, ChevronDown, ChevronUp, Star, ImagePlus, X, ZoomIn 
 import { useCart, useWishlist } from "@/components/ShopLayout";
 import ImageViewer from "@/app/components/ImageViewer";
 
-const PLACEHOLDER_IMAGES = 4;
 const COLORS = ["#1a0a1f", "#2b0d0d", "#3d1f1f", "#4a2c2a"];
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
-const PRODUCT_GALLERY_IMAGES = [
-  "https://picsum.photos/800/800?random=1",
-  "https://picsum.photos/800/800?random=2",
-  "https://picsum.photos/800/800?random=3",
-  "https://picsum.photos/800/800?random=4",
-];
+
+const RichText = ({ content }: { content: any }) => {
+  if (!content || !content.root || !content.root.children) return null;
+  
+  return (
+    <div className="rich-text">
+      {content.root.children.map((node: any, i: number) => {
+        if (node.type === 'paragraph') {
+          return (
+            <p key={i}>
+              {node.children?.map((child: any, j: number) => {
+                if (child.type === 'text') {
+                  let text = child.text;
+                  if (child.format & 1) text = <strong key={j}>{text}</strong>;
+                  if (child.format & 2) text = <em key={j}>{text}</em>;
+                  return text;
+                }
+                return null;
+              })}
+            </p>
+          );
+        }
+        return null;
+      })}
+    </div>
+  );
+};
 
 type Review = {
   id: string;
@@ -53,13 +73,16 @@ const DEMO_REVIEWS: Review[] = [
 ];
 
 type Product = {
-  id: number;
+  id: string;
   name: string;
   price: number;
-  category: string;
+  category: any;
   badge: string | null;
   theme: string;
-  new: boolean;
+  description?: any;
+  images: any;
+  additionalImages?: { image: any }[];
+  stock?: number;
 };
 
 export default function ProductDetailClient({
@@ -94,12 +117,17 @@ export default function ProductDetailClient({
     setViewerOpen(true);
   }, []);
 
+  const allImages = [
+    product.images?.url,
+    ...(product.additionalImages?.map((img: any) => img.image?.url).filter(Boolean) || []),
+  ].filter(Boolean);
+
   const openProductGalleryViewer = useCallback(() => {
-    setViewerImages(PRODUCT_GALLERY_IMAGES);
+    setViewerImages(allImages as string[]);
     setViewerIndex(mainImage);
     setViewerIsProductGallery(true);
     setViewerOpen(true);
-  }, [mainImage]);
+  }, [mainImage, allImages]);
 
   const handleViewerNavigate = useCallback((index: number) => {
     setViewerIndex(index);
@@ -139,9 +167,9 @@ export default function ProductDetailClient({
     setReviewPhotoFiles([]);
   };
 
-  const stock = 12;
+  const stock = product.stock || 0;
   const inStock = stock > 0;
-  const lowStock = stock <= 3;
+  const lowStock = stock > 0 && stock <= 3;
 
   const accordions = [
     {
@@ -170,7 +198,11 @@ export default function ProductDetailClient({
         <span aria-hidden="true"> / </span>
         <Link href="/collections">Collections</Link>
         <span aria-hidden="true"> / </span>
-        <span>{product.category}</span>
+        <span>
+          {Array.isArray(product.category)
+            ? product.category.map((c: any) => (typeof c === 'object' ? c.title : c)).join(' / ')
+            : (product.category as any)?.title || (typeof product.category === 'string' ? product.category : product.theme)}
+        </span>
         <span aria-hidden="true"> / </span>
         <span>{product.name}</span>
       </nav>
@@ -190,7 +222,7 @@ export default function ProductDetailClient({
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={PRODUCT_GALLERY_IMAGES[mainImage]}
+                src={product.images?.url || "https://picsum.photos/800/800?random=1"}
                 alt={`${product.name} view ${mainImage + 1}`}
                 className="product-detail-main-img"
               />
@@ -201,7 +233,7 @@ export default function ProductDetailClient({
             </span>
           </button>
           <div className="product-detail-thumbs">
-            {Array.from({ length: PLACEHOLDER_IMAGES }).map((_, i) => (
+            {allImages.map((img, i) => (
               <button
                 key={i}
                 type="button"
@@ -211,7 +243,7 @@ export default function ProductDetailClient({
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={PRODUCT_GALLERY_IMAGES[i]}
+                  src={img as string}
                   alt=""
                   className="product-detail-thumb-img"
                 />
@@ -222,7 +254,11 @@ export default function ProductDetailClient({
 
         <div className="product-detail-info">
           <h1 className="product-detail-name">{product.name}</h1>
-          <span className="product-detail-category-badge">{product.category}</span>
+          <span className="product-detail-category-badge">
+            {Array.isArray(product.category)
+              ? product.category.map((c: any) => (typeof c === 'object' ? c.title : c)).join(' / ')
+              : (product.category as any)?.title || (typeof product.category === 'string' ? product.category : product.theme)}
+          </span>
           <p className="product-detail-price">₺{product.price}</p>
           <div className="product-detail-rating">
             {[1, 2, 3, 4, 5].map((i) => (
@@ -230,10 +266,13 @@ export default function ProductDetailClient({
             ))}
             <span className="product-detail-reviews">({reviews.length} reviews)</span>
           </div>
-          <p className="product-detail-desc">
-            A statement piece that blends gothic elegance with industrial edge.
-            Handcrafted with premium materials for those who dare to stand out.
-          </p>
+          <div className="product-detail-desc">
+            {product.description ? (
+              <RichText content={product.description} />
+            ) : (
+              <p>A statement piece that blends gothic elegance with industrial edge.</p>
+            )}
+          </div>
 
           <div className="product-detail-variants">
             <div className="product-detail-variant">
@@ -521,7 +560,11 @@ export default function ProductDetailClient({
                 <div className="home-product-image" />
                 <div className="home-product-info">
                   <h3 className="home-product-name">{p.name}</h3>
-                  <p className="home-product-category">{p.category}</p>
+                  <p className="home-product-category">
+                    {Array.isArray(p.category)
+                      ? p.category.map((c: any) => (typeof c === 'object' ? c.title : c)).join(' / ')
+                      : (p.category as any)?.title || (typeof p.category === 'string' ? p.category : p.theme)}
+                  </p>
                   <p className="home-product-price">₺{p.price}</p>
                 </div>
               </Link>

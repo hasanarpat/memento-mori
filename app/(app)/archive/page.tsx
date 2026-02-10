@@ -1,12 +1,11 @@
+import { getPayload } from 'payload';
+import configPromise from '@payload-config';
 import Link from "next/link";
-import { Archive, Clock } from "lucide-react";
-import { lookbookItems } from "@/app/data/shop";
-import { products } from "@/app/data/shop";
+import { Archive, Clock, Skull } from "lucide-react";
+import { lookbookItems } from "@/app/data/shop"; // Lookbooks still static
+import { buildPageMetadata } from "@/app/lib/metadata";
 
 const archiveLookbooks = lookbookItems.filter((lb) => lb.year === "Archive");
-const limitedProducts = products.filter((p) => p.badge === "LIMITED" || p.badge === "RARE");
-
-import { buildPageMetadata } from "@/app/lib/metadata";
 
 export const metadata = buildPageMetadata({
   title: "Archive",
@@ -16,7 +15,42 @@ export const metadata = buildPageMetadata({
   keywords: ["archive collection", "limited edition", "past collections", "rare gothic fashion", "memento mori archive"],
 });
 
-export default function ArchivePage() {
+export default async function ArchivePage() {
+  const payload = await getPayload({ config: configPromise });
+
+  // Fetch Limited & Rare products
+  const limitedProductsResult = await payload.find({
+    collection: 'products',
+    where: {
+      badge: { in: ['limited', 'rare'] }
+    },
+    limit: 100,
+    depth: 1,
+  });
+
+  const limitedProducts = limitedProductsResult.docs;
+
+  const ProductCard = ({ product }: { product: any }) => {
+    const categoryTitle = Array.isArray(product.category)
+      ? product.category.map((c: any) => (typeof c === 'object' ? c.title : c)).join(' / ')
+      : (product.category as any)?.title || product.theme;
+
+    return (
+      <Link
+        key={product.id}
+        href={`/product/${product.id}`}
+        className="home-product-card archive-product-card"
+      >
+        <div className="home-product-image" />
+        <div className="home-product-info">
+          <span className="home-product-category">{categoryTitle}</span>
+          <h3 className="home-product-name">{product.name}</h3>
+          <p className="home-product-price">₺{product.price}</p>
+        </div>
+      </Link>
+    );
+  };
+
   return (
     <div className="archive-page">
       <section className="archive-hero">
@@ -61,22 +95,14 @@ export default function ArchivePage() {
         {limitedProducts.length > 0 ? (
           <div className="archive-products-grid">
             {limitedProducts.map((product) => (
-              <Link
-                key={product.id}
-                href={`/product/${product.id}`}
-                className="home-product-card archive-product-card"
-              >
-                <div className="home-product-image" />
-                <div className="home-product-info">
-                  <span className="home-product-category">{product.category}</span>
-                  <h3 className="home-product-name">{product.name}</h3>
-                  <p className="home-product-price">₺{product.price}</p>
-                </div>
-              </Link>
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
-          <p className="archive-empty">No limited pieces at this time.</p>
+          <div className="archive-empty">
+            <Skull size={48} opacity={0.3} />
+            <p>No limited pieces at this time.</p>
+          </div>
         )}
       </section>
 

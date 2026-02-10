@@ -129,7 +129,11 @@ export default function QuickViewModal({
               {/* Product Info Section */}
               <div className='quickview-info-section'>
                 <div className='quickview-header'>
-                  <span className='qv-category'>{product.category}</span>
+                  <span className='qv-category'>
+                    {Array.isArray(product.category)
+                      ? product.category.map((c: any) => (typeof c === 'object' ? c.title : c)).join(' × ')
+                      : (product.category as any)?.title || (typeof product.category === 'string' ? product.category : product.theme)}
+                  </span>
                   <h2 className='qv-title'>{product.name}</h2>
                   <div className='qv-price'>₺{product.price}</div>
                 </div>
