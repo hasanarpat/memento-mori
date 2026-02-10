@@ -102,4 +102,40 @@ export const modifyWishlist = createAsyncThunk(
   }
 );
 
+
+export const mergeWishlistWithBackend = createAsyncThunk(
+  'wishlist/mergeWishlistWithBackend',
+  async (localIds: string[], { dispatch, getState }) => {
+    const state = getState() as RootState;
+    const token = state.auth.token;
+    if (!token) return;
+
+    try {
+      // 1. Fetch Backend Wishlist
+      const res = await fetch('/api/shop/wishlist', {
+         headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!res.ok) throw new Error('Failed to fetch backend wishlist for merge');
+      const data = await res.json();
+      const backendIds = data.wishlist.map((item: any) => 
+         typeof item === 'object' ? String(item.id) : String(item)
+      ) as string[];
+
+      // 2. Merge Strategies (Set for unique)
+      const mergedSet = new Set([...backendIds, ...localIds]);
+      const mergedIds = Array.from(mergedSet);
+
+      // 3. Sync merged list to Backend
+      await dispatch(syncWishlist(mergedIds));
+
+      // 4. Update Local State (via fetchWishlist or manually setting state)
+      await dispatch(fetchWishlist());
+      
+    } catch (err) {
+       console.error('Merge wishlist failed', err);
+    }
+  }
+);
+
 export default wishlistSlice.reducer;

@@ -23,8 +23,8 @@ import {
 import SearchModal from '@/app/components/SearchModal';
 
 import { useAppDispatch, useAppSelector } from '../lib/redux/hooks';
-import { toggleWishlist, setWishlist, fetchWishlist, syncWishlist, modifyWishlist } from '../lib/redux/slices/wishlistSlice';
-import { addToCart, fetchCart, syncCart } from '../lib/redux/slices/cartSlice';
+import { toggleWishlist, setWishlist, fetchWishlist, syncWishlist, modifyWishlist, mergeWishlistWithBackend } from '../lib/redux/slices/wishlistSlice';
+import { addToCart, fetchCart, syncCart, mergeCartWithBackend } from '../lib/redux/slices/cartSlice';
 import { checkAuth, logout } from '../lib/redux/slices/authSlice';
 
 export function useCart() {
@@ -127,9 +127,20 @@ export default function ShopLayout({
   
   useEffect(() => {
     if (isAuthenticated && token) {
-      dispatch(fetchCart());
-      dispatch(fetchWishlist());
+      // Merge Strategy: Combine Guest Data with Backend Data
+      if (cartItems.length > 0) {
+         dispatch(mergeCartWithBackend(cartItems));
+      } else {
+         dispatch(fetchCart());
+      }
+
+      if (wishlistIds.length > 0) {
+         dispatch(mergeWishlistWithBackend(wishlistIds));
+      } else {
+         dispatch(fetchWishlist());
+      }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, token, dispatch]);
 
   // 3. Sync Cart to Backend

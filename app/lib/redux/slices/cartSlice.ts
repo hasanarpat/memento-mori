@@ -116,4 +116,60 @@ const cartSlice = createSlice({
 });
 
 export const { addToCart, removeFromCart, updateQuantity, toggleCart, setCartOpen, clearCart } = cartSlice.actions;
+
+export const mergeCartWithBackend = createAsyncThunk(
+  'cart/mergeCartWithBackend',
+  async (localItems: CartItem[], { dispatch, getState }) => {
+    const state = getState() as RootState;
+    const token = state.auth.token;
+    if (!token) return;
+
+    try {
+      // 1. Fetch Backend Cart
+      const res = await fetch('/api/shop/cart', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (!res.ok) throw new Error('Failed to fetch backend cart for merge');
+      const data = await res.json();
+      
+      const backendItems = data.cart.map((item: any) => ({
+        id: item.product.id,
+        product: item.product,
+        quantity: item.quantity,
+        price: item.product.price,
+      })) as CartItem[];
+
+      // 2. Merge Strategies (Local + Backend)
+      // Map by ID
+      const mergedMap = new Map<string | number, CartItem>();
+
+      // Add backend items first
+      backendItems.forEach(item => mergedMap.set(item.id, { ...item }));
+
+      // Merge local items
+      localItems.forEach(localItem => {
+         if (mergedMap.has(localItem.id)) {
+            const existing = mergedMap.get(localItem.id)!;
+            existing.quantity += localItem.quantity;
+         } else {
+            mergedMap.set(localItem.id, localItem);
+         }
+      });
+
+      const mergedItems = Array.from(mergedMap.values());
+
+      // 3. Sync merged list to Backend
+      await dispatch(syncCart(mergedItems));
+
+      // 4. Update Local State (via fetchCart or manually setting state)
+      // Since syncCart updates backend, we can just set state or re-fetch.
+      // Re-fetching is safer to ensure backend consistency.
+      await dispatch(fetchCart());
+
+    } catch (err) {
+      console.error('Merge cart failed', err);
+    }
+  }
+);
 export default cartSlice.reducer;
