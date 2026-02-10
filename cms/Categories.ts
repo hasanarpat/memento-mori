@@ -35,5 +35,25 @@ export const Categories: CollectionConfig = {
         ],
       },
     },
+    {
+      name: 'tagline',
+      type: 'text',
+    },
+    {
+      name: 'shortDesc',
+      type: 'textarea',
+    },
+    {
+      name: 'longDesc',
+      type: 'textarea',
+    },
+    {
+      name: 'accent',
+      type: 'text',
+    },
+    {
+      name: 'icon',
+      type: 'text', // Lucide icon name
+    },
   ],
 }

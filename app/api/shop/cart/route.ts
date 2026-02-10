@@ -65,10 +65,27 @@ export async function POST(request: Request) {
     }
 
     console.log('Cart Update Request Items:', JSON.stringify(items, null, 2));
-    const processedCart = items.map((item: any) => ({
-      product: item.product?.id || item.product, 
-      quantity: item.quantity
-    }));
+    
+    const processedCart = items
+      .filter((item: any) => {
+        const id = item.product?.id || item.product;
+        // AcceptONLY 24-char hex (ObjectId). Reject integers/legacy IDs.
+        const isObjectId = typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
+        
+        if (!isObjectId) {
+           console.warn(`Skipping invalid cart item ID: ${id}`);
+           return false;
+        }
+        return true;
+      })
+      .map((item: any) => {
+        const id = item.product?.id || item.product;
+        return {
+          product: id, 
+          quantity: item.quantity
+        };
+      });
+
     console.log('Processed Cart for Update:', JSON.stringify(processedCart, null, 2));
 
     // Update User's cart

@@ -55,11 +55,24 @@ export async function POST(request: Request) {
 
     console.log('Wishlist Update IDs:', productIds);
 
+    const validIds = productIds
+      .filter((id: any) => {
+         // AcceptONLY 24-char hex (ObjectId). Reject integers/legacy IDs.
+         const isObjectId = typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
+         
+         if (!isObjectId) {
+            console.warn(`Skipping invalid wishlist item ID: ${id}`);
+            return false;
+         }
+         return true;
+      })
+      .map((id: any) => id);
+
     await payload.update({
       collection: 'users',
       id: user.id,
       data: {
-        wishlist: productIds,
+        wishlist: validIds,
       },
       overrideAccess: true, // Bypass validation for fields not being updated
     });

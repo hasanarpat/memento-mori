@@ -57,8 +57,37 @@ export const Products: CollectionConfig = {
       name: 'category',
       type: 'relationship',
       relationTo: 'categories',
-      hasMany: false,
-      label: 'Category',
+      hasMany: true,
+      label: 'Categories',
+      required: true,
+    },
+    {
+      name: 'productType',
+      type: 'select',
+      options: [
+        { label: 'Apparel', value: 'apparel' },
+        { label: 'Outerwear', value: 'outerwear' },
+        { label: 'Jewelry', value: 'jewelry' },
+        { label: 'Accessories', value: 'accessories' },
+        { label: 'Footwear', value: 'footwear' },
+        { label: 'Ritual', value: 'ritual' },
+        { label: 'Harness', value: 'harness' },
+      ],
+      required: true,
+    },
+    {
+      name: 'theme',
+      type: 'select',
+      options: [
+        { label: 'Gothic', value: 'gothic' },
+        { label: 'Steampunk', value: 'steampunk' },
+        { label: 'Metal', value: 'metal' },
+        { label: 'Occult', value: 'occult' },
+        { label: 'Dark Academia', value: 'dark-academia' },
+        { label: 'Industrial', value: 'industrial' },
+        { label: 'Deathrock', value: 'deathrock' },
+        { label: 'Ritual', value: 'ritual' },
+      ],
       required: true,
     },
     {
@@ -66,7 +95,7 @@ export const Products: CollectionConfig = {
       type: 'upload',
       relationTo: 'media',
       label: 'Product Image',
-      required: true, // Şimdilik zorunlu yapalım, görsel önemli
+      required: true, 
     },
     {
       name: 'additionalImages',
@@ -114,8 +143,10 @@ export const Products: CollectionConfig = {
         { label: 'Sale', value: 'sale' },
         { label: 'New', value: 'new' },
         { label: 'Limited', value: 'limited' },
+        { label: 'Rare', value: 'rare' },
+        { label: 'Handmade', value: 'handmade' },
       ],
-      defaultValue: 'none',
+
       admin: {
         position: 'sidebar',
       },

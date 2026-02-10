@@ -9,6 +9,7 @@ import { Media } from './cms/Media';
 import { Products } from './cms/Products';
 import { Categories } from './cms/Categories';
 import { Orders } from './cms/Orders';
+import { seed } from './cms/seed';
 
 const dirname = path.resolve(__dirname);
 
@@ -21,6 +22,8 @@ const dbUrl = process.env.DATABASE_URL;
 if (!dbUrl) {
   throw new Error('DATABASE_URL is missing from environment variables');
 }
+
+
 
 export default buildConfig({
   admin: {
@@ -39,4 +42,9 @@ export default buildConfig({
   plugins: [
     // Add plugins here
   ],
+  onInit: async (payload) => {
+    if (process.env.PAYLOAD_SEED === 'true') {
+      await seed(payload);
+    }
+  },
 });
