@@ -23,8 +23,9 @@ import {
 import SearchModal from '@/app/components/SearchModal';
 
 import { useAppDispatch, useAppSelector } from '../lib/redux/hooks';
-import { toggleWishlist, setWishlist } from '../lib/redux/slices/wishlistSlice';
-import { addToCart } from '../lib/redux/slices/cartSlice';
+import { toggleWishlist, setWishlist, fetchWishlist, syncWishlist } from '../lib/redux/slices/wishlistSlice';
+import { addToCart, fetchCart, syncCart } from '../lib/redux/slices/cartSlice';
+import { checkAuth } from '../lib/redux/slices/authSlice';
 
 export function useCart() {
   const dispatch = useAppDispatch();
@@ -83,8 +84,12 @@ export default function ShopLayout({
   const exploreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Sync Wishlist from LocalStorage on mount
-    const syncWishlist = () => {
+    // 1. Check Authentication on Mount
+    dispatch(checkAuth());
+    
+    // Guest: Sync from LocalStorage
+    // Auth: Handled by next effect
+    const syncLocal = () => {
       try {
         const raw = localStorage.getItem(WISHLIST_KEY);
         if (raw) {
@@ -95,14 +100,45 @@ export default function ShopLayout({
         // ignore
       }
     };
-    requestAnimationFrame(syncWishlist);
+    if (!localStorage.getItem('payload-token')) {
+        requestAnimationFrame(syncLocal);
+    }
   }, [dispatch]);
 
+  // 2. Fetch Data when Authenticated
+  const { isAuthenticated, token } = useAppSelector((state) => state.auth);
+  
   useEffect(() => {
-    if (wishlistIds.length > 0) {
+    if (isAuthenticated && token) {
+      dispatch(fetchCart());
+      dispatch(fetchWishlist());
+    }
+  }, [isAuthenticated, token, dispatch]);
+
+  // 3. Sync Cart to Backend
+  useEffect(() => {
+    if (isAuthenticated && token && cartItems.length > 0) {
+      const timer = setTimeout(() => {
+          dispatch(syncCart(cartItems));
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [cartItems, isAuthenticated, token, dispatch]);
+
+  // 4. Sync Wishlist to Backend
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      const timer = setTimeout(() => {
+          dispatch(syncWishlist(wishlistIds));
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    
+    // Guest: Sync to LocalStorage
+    if (!isAuthenticated && wishlistIds.length > 0) {
       localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlistIds));
     }
-  }, [wishlistIds]);
+  }, [wishlistIds, isAuthenticated, token, dispatch]);
 
   // Click outside handlers...
   useEffect(() => {

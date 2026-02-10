@@ -1,4 +1,26 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+
+export const checkAuth = createAsyncThunk(
+  'auth/checkAuth',
+  async (_, { dispatch }) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('payload-token') : null;
+    if (!token) throw new Error('No token');
+
+    const res = await fetch('/api/users/me', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) throw new Error('Auth failed');
+    const data = await res.json();
+    
+    // Payload /api/users/me returns { user: ... }
+    if (!data.user) throw new Error('No user found');
+    
+    return { user: data.user, token };
+  }
+);
 
 export interface User {
   id: string;
@@ -54,6 +76,25 @@ const authSlice = createSlice({
       state.loading = false;
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(checkAuth.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(checkAuth.fulfilled, (state, action) => {
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.loading = false;
+      })
+      .addCase(checkAuth.rejected, (state) => {
+        state.isAuthenticated = false;
+        state.user = null;
+        state.token = null;
+        state.loading = false;
+        if (typeof window !== 'undefined') localStorage.removeItem('payload-token');
+      });
+  }
 });
 
 export const { setUser, logout, setLoading, setError } = authSlice.actions;

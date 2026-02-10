@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import { RootState } from '../store';
 
 export interface CartItem {
   id: string | number; // Product ID
@@ -23,6 +24,53 @@ const initialState: CartState = {
   items: [],
   isOpen: false,
 };
+
+
+// Async Thunks
+export const fetchCart = createAsyncThunk(
+  'cart/fetchCart',
+  async (_, { getState }) => {
+    const state = getState() as RootState;
+    const token = state.auth.token;
+    if (!token) throw new Error('No token');
+
+    const res = await fetch('/api/shop/cart', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) throw new Error('Failed to fetch cart');
+    const data = await res.json();
+    
+    // Map backend response to CartItem structure if needed
+    // Backend returns product object populated.
+    return data.cart.map((item: any) => ({
+      id: item.product.id,
+      product: item.product,
+      quantity: item.quantity,
+      price: item.product.price,
+    }));
+  }
+);
+
+export const syncCart = createAsyncThunk(
+  'cart/syncCart',
+  async (items: CartItem[], { getState }) => {
+    const state = getState() as RootState;
+    const token = state.auth.token;
+    if (!token) return; // Silent return if not auth
+
+    await fetch('/api/shop/cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ items }),
+    });
+  }
+);
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -55,6 +103,16 @@ const cartSlice = createSlice({
       state.items = [];
     }
   },
+  extraReducers: (builder) => {
+    builder.addCase(fetchCart.fulfilled, (state, action) => {
+      // Merge strategy: Server has truth
+      // Or local overrides?
+      // Since we want persist across devices, server wins on login.
+      // But if user added items as guest then logged in?
+      // For now, simpler: Server wins.
+      state.items = action.payload;
+    });
+  }
 });
 
 export const { addToCart, removeFromCart, updateQuantity, toggleCart, setCartOpen, clearCart } = cartSlice.actions;
