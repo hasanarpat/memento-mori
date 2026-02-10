@@ -110,6 +110,14 @@ export default function ShopLayout({
     if (!localStorage.getItem('payload-token')) {
         requestAnimationFrame(syncLocal);
     }
+    
+    // Listen for custom auth-change event from login page
+    const handleAuthChange = () => {
+      dispatch(checkAuth());
+    };
+    window.addEventListener('auth-change', handleAuthChange);
+    
+    return () => window.removeEventListener('auth-change', handleAuthChange);
   }, [dispatch]);
 
   // 2. Fetch Data when Authenticated
