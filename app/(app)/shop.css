@@ -1706,16 +1706,20 @@
   margin: 0 auto;
   display: flex;
   gap: 3rem;
+  min-height: 80vh;
 }
 
 .filters-sidebar {
   width: 260px;
+  flex-shrink: 0;
   position: sticky;
-  top: 120px;
+  top: 100px;
   height: fit-content;
-  background: rgba(13, 10, 15, 0.6);
-  border: 1px solid rgba(139, 115, 85, 0.2);
-  padding: 1.25rem;
+  background: rgba(13, 10, 15, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 115, 85, 0.1);
+  padding: 1.5rem;
+  transition: all 0.4s ease;
 }
 
 .filter-section {
@@ -1756,6 +1760,56 @@
   opacity: 1;
   padding-bottom: 1.5rem;
   transition: all 0.5s ease;
+}
+
+.mobile-filter-trigger {
+  display: none;
+  width: 100%;
+  padding: 1rem;
+  background: var(--dark-purple);
+  border: 1px solid rgba(139, 115, 85, 0.3);
+  color: var(--bone);
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.sidebar-header-mobile {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(139, 115, 85, 0.2);
+  margin-bottom: 1rem;
+}
+
+.sidebar-header-mobile span {
+  font-family: 'Cinzel', serif;
+  color: var(--accent);
+  letter-spacing: 2px;
+}
+
+.sidebar-header-mobile button {
+  background: none;
+  border: none;
+  color: var(--bone);
+  cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+  .mobile-filter-trigger {
+    display: flex;
+  }
+  
+  .sidebar-header-mobile {
+    display: flex;
+  }
 }
 
 .filter-option-minimal {
@@ -4239,12 +4293,23 @@
 }
 
 @media (max-width: 1024px) {
-  .filters-sidebar {
-    display: none;
+  .collections-page {
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    gap: 2rem;
   }
 
-  .masonry-grid {
-    column-count: 2;
+  .filters-sidebar {
+    width: 100%;
+    position: static;
+    display: none; /* Controlled by mobile-open class */
+    background: rgba(13, 10, 15, 0.8);
+    border: 1px solid rgba(139, 115, 85, 0.2);
+    margin-bottom: 2rem;
+  }
+
+  .filters-sidebar.mobile-visible {
+    display: block;
   }
 }
 
