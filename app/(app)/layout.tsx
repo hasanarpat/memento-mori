@@ -10,6 +10,7 @@ import {
   LOCALE,
   BRAND_KEYWORDS,
 } from '../lib/site';
+import StoreProvider from '../lib/redux/provider';
 import JsonLd from '../components/JsonLd';
 import './globals.css';
 import './shop.css';
@@ -123,7 +124,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ShopLayout>{children}</ShopLayout>
+        <StoreProvider>
+          <ShopLayout>{children}</ShopLayout>
+        </StoreProvider>
       </body>
     </html>
   );

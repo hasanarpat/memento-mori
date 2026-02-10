@@ -22,30 +22,35 @@ import {
 } from 'lucide-react';
 import SearchModal from '@/app/components/SearchModal';
 
-const CartContext = createContext<{
-  cartCount: number;
-  addToCart: () => void;
-}>({
-  cartCount: 0,
-  addToCart: () => {},
-});
+import { useAppDispatch, useAppSelector } from '../lib/redux/hooks';
+import { toggleWishlist, setWishlist } from '../lib/redux/slices/wishlistSlice';
+import { addToCart } from '../lib/redux/slices/cartSlice';
 
 export function useCart() {
-  return useContext(CartContext);
+  const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  // Helper to match the signature of the old context but now requires item
+  const addItem = (item: any) => {
+     if (!item) {
+        console.error("addToCart now requires an item object");
+        return;
+     }
+     dispatch(addToCart(item));
+  };
+
+  return { cartCount, addToCart: addItem };
 }
 
-const WishlistContext = createContext<{
-  wishlistIds: string[];
-  toggleWishlist: (id: string | number) => void;
-  isInWishlist: (id: string | number) => boolean;
-}>({
-  wishlistIds: [],
-  toggleWishlist: () => {},
-  isInWishlist: () => false,
-});
-
 export function useWishlist() {
-  return useContext(WishlistContext);
+  const dispatch = useAppDispatch();
+  const wishlistIds = useAppSelector((state) => state.wishlist.wishlistIds);
+
+  const toggle = (id: string | number) => dispatch(toggleWishlist(String(id)));
+  const isIn = (id: string | number) => wishlistIds.includes(String(id));
+
+  return { wishlistIds, toggleWishlist: toggle, isInWishlist: isIn };
 }
 
 const WISHLIST_KEY = 'memento-wishlist';
@@ -56,8 +61,14 @@ export default function ShopLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [cartCount, setCartCount] = useState(0);
-  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
+  // We use Redux selectors instead of local state
+  // But for UI state like menus, we keep local state
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const wishlistIds = useAppSelector((state) => state.wishlist.wishlistIds);
+  
+  const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
   const [searchOpen, setSearchOpen] = useState(false);
   const [codexOpen, setCodexOpen] = useState(false);
   const [shopOpen, setShopOpen] = useState(true);
@@ -72,24 +83,20 @@ export default function ShopLayout({
   const exploreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // We use a small delay or check mount to avoid the "cascading renders" warning
-    // when setting state immediately on mount in a complex layout.
+    // Sync Wishlist from LocalStorage on mount
     const syncWishlist = () => {
       try {
         const raw = localStorage.getItem(WISHLIST_KEY);
         if (raw) {
           const parsed = JSON.parse(raw) as string[];
-          if (Array.isArray(parsed)) setWishlistIds(parsed);
+          if (Array.isArray(parsed)) dispatch(setWishlist(parsed));
         }
       } catch {
         // ignore
       }
     };
-
-    // Using requestAnimationFrame to ensure it happens after the first paint
-    // and doesn't block the initial render flow.
     requestAnimationFrame(syncWishlist);
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (wishlistIds.length > 0) {
@@ -97,18 +104,7 @@ export default function ShopLayout({
     }
   }, [wishlistIds]);
 
-  const toggleWishlist = useCallback((id: string | number) => {
-    const sid = String(id);
-    setWishlistIds((prev) =>
-      prev.includes(sid) ? prev.filter((x) => x !== sid) : [...prev, sid],
-    );
-  }, []);
-
-  const isInWishlist = useCallback(
-    (id: string | number) => wishlistIds.includes(String(id)),
-    [wishlistIds],
-  );
-
+  // Click outside handlers...
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (codexRef.current && !codexRef.current.contains(e.target as Node)) {
@@ -130,16 +126,8 @@ export default function ShopLayout({
 
   const hideFooter = pathname === '/login';
 
+  // No more Providers needed, StoreProvider wraps the app
   return (
-    <CartContext.Provider
-      value={{
-        cartCount,
-        addToCart: () => setCartCount((c) => c + 1),
-      }}
-    >
-      <WishlistContext.Provider
-        value={{ wishlistIds, toggleWishlist, isInWishlist }}
-      >
         <div className='dark-cult-shop'>
           <div className='grain-overlay' />
           <div className='web-decoration' />
@@ -528,7 +516,5 @@ export default function ShopLayout({
             </footer>
           )}
         </div>
-      </WishlistContext.Provider>
-    </CartContext.Provider>
   );
 }

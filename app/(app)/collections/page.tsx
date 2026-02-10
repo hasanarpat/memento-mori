@@ -356,7 +356,17 @@ export default function CollectionsPage() {
                     <button
                       type='button'
                       className='add-to-cart'
-                      onClick={() => addToCart()}
+                      onClick={() => addToCart({
+                        id: String(product.id),
+                        product: {
+                          ...product,
+                          slug: String(product.id), // Temporary mapping
+                          description: '',
+                          images: [],
+                        },
+                        quantity: 1,
+                        price: product.price, 
+                      })}
                     >
                       Add to Cart
                     </button>
@@ -372,7 +382,17 @@ export default function CollectionsPage() {
         product={previewProduct}
         isOpen={!!previewProduct}
         onClose={() => setPreviewProduct(null)}
-        onAddToCart={() => addToCart()}
+        onAddToCart={(p) => addToCart({
+          id: String(p.id),
+          product: {
+            ...p,
+            slug: String(p.id),
+            description: '',
+            images: [],
+          },
+          quantity: 1,
+          price: p.price,
+        })}
         onToggleWishlist={(id: number) => toggleWishlist(id)}
         isInWishlist={(id: number) => isInWishlist(id)}
       />

@@ -315,7 +315,18 @@ export default function ProductDetailClient({
               type="button"
               className="product-detail-btn-primary"
               onClick={() => {
-                for (let i = 0; i < qty; i++) addToCart();
+                addToCart({
+                  id: String(product.id),
+                  product: {
+                    id: String(product.id),
+                    name: product.name,
+                    slug: String(product.id),
+                    price: product.price,
+                    description: '',
+                  },
+                  quantity: qty,
+                  price: product.price,
+                });
               }}
             >
               Add to Cart

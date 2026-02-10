@@ -47,7 +47,17 @@ export default function RitualClient({ products: ritualProducts }: { products: P
                   <button
                     type="button"
                     className="product-detail-btn-primary"
-                    onClick={() => addToCart()}
+                    onClick={() => addToCart({
+                    id: String(product.id),
+                    product: {
+                      ...product,
+                      slug: String(product.id),
+                      description: '',
+                      images: [],
+                    },
+                    quantity: 1,
+                    price: product.price,
+                  })}
                   >
                     Add to Cart
                   </button>

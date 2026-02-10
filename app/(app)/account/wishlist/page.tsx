@@ -77,7 +77,17 @@ export default function AccountWishlistPage() {
                     fontSize: '0.8rem',
                     padding: '0.5rem',
                   }}
-                  onClick={() => addToCart()}
+                  onClick={() => addToCart({
+                    id: String(product.id),
+                    product: {
+                      ...product,
+                      slug: String(product.id),
+                      description: '',
+                      images: [],
+                    },
+                    quantity: 1,
+                    price: product.price,
+                  })}
                 >
                   <ShoppingBag size={16} />
                   Add to Cart

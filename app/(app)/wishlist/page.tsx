@@ -80,7 +80,17 @@ export default function WishlistPage() {
                 <button
                   type="button"
                   className="wishlist-card-btn-primary"
-                  onClick={() => addToCart()}
+                  onClick={() => addToCart({
+                    id: String(product.id),
+                    product: {
+                      ...product,
+                      slug: String(product.id),
+                      description: '',
+                      images: [],
+                    },
+                    quantity: 1,
+                    price: product.price,
+                  })}
                 >
                   <ShoppingBag size={18} />
                   Add to Cart
