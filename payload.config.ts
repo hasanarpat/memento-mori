@@ -6,21 +6,34 @@ import sharp from 'sharp';
 
 import { Users } from './cms/Users';
 import { Media } from './cms/Media';
+import { Products } from './cms/Products';
+import { Categories } from './cms/Categories';
+import { Orders } from './cms/Orders';
 
 const dirname = path.resolve(__dirname);
+
+const secret = process.env.PAYLOAD_SECRET;
+if (!secret) {
+  throw new Error('PAYLOAD_SECRET is missing from environment variables');
+}
+
+const dbUrl = process.env.DATABASE_URL;
+if (!dbUrl) {
+  throw new Error('DATABASE_URL is missing from environment variables');
+}
 
 export default buildConfig({
   admin: {
     user: Users.slug,
   },
-  collections: [Users, Media],
+  collections: [Users, Media, Products, Categories, Orders],
   editor: lexicalEditor({}),
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: mongooseAdapter({
-    url: process.env.DATABASE_URL || '',
+    url: dbUrl,
   }),
   sharp,
   plugins: [
