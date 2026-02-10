@@ -64,6 +64,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid cart format' }, { status: 400 });
     }
 
+    console.log('Cart Update Request Items:', JSON.stringify(items, null, 2));
+    const processedCart = items.map((item: any) => ({
+      product: item.product?.id || item.product, 
+      quantity: item.quantity
+    }));
+    console.log('Processed Cart for Update:', JSON.stringify(processedCart, null, 2));
+
     // Update User's cart
     await payload.update({
       collection: 'users',

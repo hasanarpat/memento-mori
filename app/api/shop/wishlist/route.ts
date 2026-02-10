@@ -53,6 +53,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid wishlist format' }, { status: 400 });
     }
 
+    console.log('Wishlist Update IDs:', productIds);
+
     await payload.update({
       collection: 'users',
       id: user.id,

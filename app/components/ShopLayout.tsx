@@ -55,6 +55,7 @@ export function useWishlist() {
 }
 
 const WISHLIST_KEY = 'memento-wishlist';
+const CART_KEY = 'memento-cart';
 
 export default function ShopLayout({
   children,
@@ -87,6 +88,8 @@ export default function ShopLayout({
 
   const handleLogout = () => {
     dispatch(logout());
+    localStorage.removeItem(WISHLIST_KEY);
+    localStorage.removeItem(CART_KEY);
     setUserOpen(false);
   };
 
@@ -98,11 +101,18 @@ export default function ShopLayout({
     // Auth: Handled by next effect
     const syncLocal = () => {
       try {
-        const raw = localStorage.getItem(WISHLIST_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw) as string[];
+        // Wishlist
+        const rawWishlist = localStorage.getItem(WISHLIST_KEY);
+        if (rawWishlist) {
+          const parsed = JSON.parse(rawWishlist) as string[];
           if (Array.isArray(parsed)) dispatch(setWishlist(parsed));
         }
+
+        // Cart (We need an action to set cart items, for now we can't easily set without adding an action to slice.
+        // But we can rely on mergeCartWithBackend if we are logging in.
+        // If we are guest on refresh, we lose cart if we don't restore it.
+        // Assuming cartSlice doesn't have setCart. Let's skip restoring cart to Redux for guest for now, 
+        // focus on login merge which is the user issue.)
       } catch {
         // ignore
       }
@@ -120,22 +130,50 @@ export default function ShopLayout({
     return () => window.removeEventListener('auth-change', handleAuthChange);
   }, [dispatch]);
 
-  // 2. Fetch Data when Authenticated
+  // 2. Fetch Data or Merge when Authenticated
   const { isAuthenticated, token, user } = useAppSelector((state) => state.auth);
   const userName = user?.name || 'User';
   const userEmail = user?.email || '';
   
   useEffect(() => {
     if (isAuthenticated && token) {
-      // Merge Strategy: Combine Guest Data with Backend Data
-      if (cartItems.length > 0) {
-         dispatch(mergeCartWithBackend(cartItems));
+      // CART MERGE
+      // Try to get local cart from storage to cover refresh case
+      let localCartItems: any[] = [...cartItems]; 
+      try {
+         const rawCart = localStorage.getItem(CART_KEY);
+         if (rawCart) {
+            const parsed = JSON.parse(rawCart);
+            // Simple merge of lists if needed, or just use storage if state is empty
+            if (localCartItems.length === 0 && Array.isArray(parsed)) {
+               localCartItems = parsed;
+            }
+         }
+      } catch {}
+
+      if (localCartItems.length > 0) {
+         dispatch(mergeCartWithBackend(localCartItems));
       } else {
          dispatch(fetchCart());
       }
 
-      if (wishlistIds.length > 0) {
-         dispatch(mergeWishlistWithBackend(wishlistIds));
+      // WISHLIST MERGE
+      let localWishlistIds: string[] = [...wishlistIds];
+      try {
+         const rawWishlist = localStorage.getItem(WISHLIST_KEY);
+         if (rawWishlist) {
+            const parsed = JSON.parse(rawWishlist);
+            if (Array.isArray(parsed) && localWishlistIds.length === 0) {
+               localWishlistIds = parsed;
+            } else if (Array.isArray(parsed)) {
+                // Combine unique
+               localWishlistIds = Array.from(new Set([...localWishlistIds, ...parsed]));
+            }
+         }
+      } catch {}
+
+      if (localWishlistIds.length > 0) {
+         dispatch(mergeWishlistWithBackend(localWishlistIds));
       } else {
          dispatch(fetchWishlist());
       }
@@ -143,15 +181,26 @@ export default function ShopLayout({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, token, dispatch]);
 
-  // 3. Sync Cart to Backend
+  // 3. Sync Data
   useEffect(() => {
-    if (isAuthenticated && token && cartItems.length > 0) {
-      const timer = setTimeout(() => {
-          dispatch(syncCart(cartItems));
-      }, 2000);
-      return () => clearTimeout(timer);
+    if (isAuthenticated && token) {
+       // Auth: Cart Sync to Backend (Wishlist handled by thunk)
+       if (cartItems.length > 0) {
+          const timer = setTimeout(() => {
+              dispatch(syncCart(cartItems));
+          }, 2000);
+          return () => clearTimeout(timer);
+       }
+    } else {
+       // Guest: Sync to LocalStorage
+       if (wishlistIds.length > 0) {
+          localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlistIds));
+       }
+       if (cartItems.length > 0) {
+          localStorage.setItem(CART_KEY, JSON.stringify(cartItems));
+       }
     }
-  }, [cartItems, isAuthenticated, token, dispatch]);
+  }, [wishlistIds, cartItems, isAuthenticated, token, dispatch]);
 
   // 4. Sync Wishlist to Backend
 
