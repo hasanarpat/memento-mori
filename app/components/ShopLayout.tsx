@@ -121,7 +121,9 @@ export default function ShopLayout({
   }, [dispatch]);
 
   // 2. Fetch Data when Authenticated
-  const { isAuthenticated, token } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, token, user } = useAppSelector((state) => state.auth);
+  const userName = user?.name || 'User';
+  const userEmail = user?.email || '';
   
   useEffect(() => {
     if (isAuthenticated && token) {
@@ -308,26 +310,52 @@ export default function ShopLayout({
                   <div className='nav-dropdown-wrapper' ref={userRef}>
                     <button
                       type='button'
-                      className={`nav-link nav-link-button header-login ${userOpen ? 'active' : ''}`}
+                      className={`icon-button ${userOpen ? 'active' : ''}`}
                       aria-expanded={userOpen}
                       onClick={() => setUserOpen((open) => !open)}
                       aria-label="Account menu"
                     >
                       <User size={20} />
                     </button>
-                    <div className='nav-dropdown-content dropdown-right'>
-                      <Link href='/account' onClick={() => setUserOpen(false)}>
-                        Profile
+                    <div className='nav-dropdown-content dropdown-right user-dropdown'>
+                      <div className='user-dropdown-header'>
+                        <div className='user-dropdown-avatar'>
+                          <User size={18} />
+                        </div>
+                        <div className='user-dropdown-info'>
+                          <span className='user-dropdown-name'>
+                            {userName}
+                          </span>
+                          <span className='user-dropdown-email'>
+                            {userEmail}
+                          </span>
+                        </div>
+                      </div>
+                      <div className='user-dropdown-divider' />
+                      <Link href='/account' onClick={() => setUserOpen(false)} className='user-dropdown-link'>
+                        <User size={16} />
+                        <span>Profile</span>
                       </Link>
-                      <Link href='/account/orders' onClick={() => setUserOpen(false)}>
-                        Orders
+                      <Link href='/account/orders' onClick={() => setUserOpen(false)} className='user-dropdown-link'>
+                        <ShoppingCart size={16} />
+                        <span>Orders</span>
                       </Link>
+                      <Link href='/account/wishlist' onClick={() => setUserOpen(false)} className='user-dropdown-link'>
+                        <Heart size={16} />
+                        <span>Wishlist</span>
+                      </Link>
+                      <div className='user-dropdown-divider' />
                       <button 
                         type="button"
-                        className="text-left w-full"
+                        className="user-dropdown-link user-dropdown-logout"
                         onClick={handleLogout}
                       >
-                        Logout
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                          <polyline points="16 17 21 12 16 7" />
+                          <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                        <span>Logout</span>
                       </button>
                     </div>
                   </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -34,7 +35,14 @@ export default function AccountLayout({
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, isAuthenticated, loading } = useAppSelector((state) => state.auth);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, loading, router]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -46,6 +54,27 @@ export default function AccountLayout({
     : (user?.email?.split('@')[0] || 'Guest');
   
   const initial = user?.name ? user.name[0].toUpperCase() : (user?.email ? user.email[0].toUpperCase() : 'G');
+
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className='account-page' style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        minHeight: '60vh',
+        color: 'var(--bone)',
+        fontFamily: 'Cinzel, serif'
+      }}>
+        Loading...
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated (will redirect)
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className='account-page'>
