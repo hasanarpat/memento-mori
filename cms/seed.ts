@@ -67,19 +67,28 @@ export const seed = async (payload: Payload): Promise<void> => {
           const filePath = path.join(mediaDir, file);
           if (fs.existsSync(filePath)) {
               try {
-                  const fileBuffer = fs.readFileSync(filePath);
+                  // Create a temporary copy of the file to avoid locking/permission issues in public dir
+                  const tempDir = path.join(process.cwd(), 'tmp-seed');
+                  if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
+                  
+                  const tempFilePath = path.join(tempDir, file);
+                  fs.copyFileSync(filePath, tempFilePath);
+
                   const mediaDoc = await payload.create({
                       collection: 'media',
                       data: { alt: file },
                       file: {
-                          data: fileBuffer,
+                          path: tempFilePath,
                           name: file,
                           mimetype: file.endsWith('.png') ? 'image/png' : 'image/jpeg',
-                          size: fileBuffer.byteLength,
-                      } as any, 
+                          size: fs.statSync(tempFilePath).size,
+                      } as any,
                   });
                   mediaDocs.push(mediaDoc);
                   console.log(`Created media: ${file}`);
+                  
+                  // Cleanup temp file
+                  try { fs.unlinkSync(tempFilePath); } catch (e) {}
               } catch (e) {
                   console.error(`Failed to create media ${file}:`, e);
               }

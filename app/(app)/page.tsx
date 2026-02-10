@@ -1,6 +1,8 @@
 import React, { Fragment } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getPayload } from 'payload';
+import configPromise from '@payload-config';
 import {
   Moon,
   Zap,
@@ -9,11 +11,27 @@ import {
   Compass,
   Sun,
   Flower,
+  Ghost,
+  Skull,
+  Flame,
+  type LucideIcon,
 } from 'lucide-react';
-import { products } from '../data/shop';
 import NewsletterForm from '../components/NewsletterForm';
 import { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE } from '../lib/site';
 import JsonLd from '../components/JsonLd';
+import NewArrivalsSection from '../components/NewArrivalsSection';
+
+const IconMap: Record<string, LucideIcon> = {
+  moon: Moon,
+  zap: Zap,
+  sparkles: Sparkles,
+  ghost: Ghost,
+  skull: Skull,
+  flame: Flame,
+  compass: Compass,
+  sun: Sun,
+  flower: Flower,
+};
 
 export const metadata = {
   title: 'Umbra Aesthetica — Where Shadows Take Form',
@@ -63,11 +81,40 @@ const breadcrumbJsonLd = {
   ],
 };
 
-export default function HomePage() {
-  const newArrivals =
-    products.filter((p) => p.new).length >= 8
-      ? products.filter((p) => p.new)
-      : [...products].slice(0, 8);
+export default async function HomePage() {
+  const payload = await getPayload({ config: configPromise });
+
+  // 1. Fetch Featured/Latest Categories for the "Worlds" section
+  const { docs: categories } = await payload.find({
+    collection: 'categories',
+    limit: 3,
+    sort: 'title',
+  });
+
+  // 2. Fetch New Arrivals
+  const newArrivalsResult = await payload.find({
+    collection: 'products',
+    where: {
+      or: [
+        { isNewArrival: { equals: true } },
+        { badge: { equals: 'new' } }
+      ]
+    },
+    limit: 8,
+    page: 1,
+    sort: '-createdAt',
+  });
+
+  // 3. Fetch Featured product for Hero (optional, fallback to static)
+  const { docs: featuredProducts } = await payload.find({
+    collection: 'products',
+    where: {
+      isFeatured: { equals: true },
+    },
+    limit: 1,
+  });
+
+  const heroProduct = featuredProducts[0];
 
   return (
     <>
@@ -116,8 +163,8 @@ export default function HomePage() {
 
               <div className='hero-oval-frame'>
                 <Image
-                  src='/atlas-conan.jpg'
-                  alt='Gothic Art'
+                  src={(heroProduct?.images as any)?.url || '/atlas-conan.jpg'}
+                  alt={heroProduct?.name || 'Gothic Art'}
                   fill
                   className='hero-frame-img'
                   sizes='(max-width: 768px) 85vw, 440px'
@@ -129,8 +176,8 @@ export default function HomePage() {
               <div className='hero-frame-decoration decoration-inner' />
             </div>
             <div className='hero-artwork-info'>
-              <h2 className='artwork-title'>THE CULT OF CONAN</h2>
-              <p className='artwork-subtitle'>ATLAS CHRONICLES</p>
+              <h2 className='artwork-title'>{heroProduct?.name || 'THE CULT OF CONAN'}</h2>
+              <p className='artwork-subtitle'>{heroProduct?.theme?.toUpperCase() || 'ATLAS CHRONICLES'}</p>
               <p className='artwork-artist'>MEMENTO MORI ARCHIVE</p>
             </div>
           </div>
@@ -195,83 +242,34 @@ export default function HomePage() {
           Explore Our Worlds
         </h2>
         <div className='home-categories-grid'>
-          <Link href='/collections/gothic' className='home-category-card'>
-            <Moon className='home-category-icon' size={48} />
-            <h3 className='home-category-name'>Gothic</h3>
-            <p className='home-category-desc'>
-              Victorian shadows, velvet decay. Mourning elegance and timeless
-              darkness.
-            </p>
-            <span className='home-category-link'>
-              Enter
-              <ArrowRight className='home-category-arrow' size={18} />
-            </span>
-          </Link>
-          <Link href='/collections/steampunk' className='home-category-card'>
-            <Zap className='home-category-icon' size={48} />
-            <h3 className='home-category-name'>Steampunk</h3>
-            <p className='home-category-desc'>
-              Brass, gears, and clockwork. Victorian industry reimagined.
-            </p>
-            <span className='home-category-link'>
-              Enter
-              <ArrowRight className='home-category-arrow' size={18} />
-            </span>
-          </Link>
-          <Link href='/collections/occult' className='home-category-card'>
-            <Sparkles className='home-category-icon' size={48} />
-            <h3 className='home-category-name'>Occult</h3>
-            <p className='home-category-desc'>
-              Symbols, sigils, and sacred dark. Ritual jewelry and the unseen.
-            </p>
-            <span className='home-category-link'>
-              Enter
-              <ArrowRight className='home-category-arrow' size={18} />
-            </span>
-          </Link>
+          {categories.map((category) => {
+            const IconComponent = IconMap[category.icon || 'moon'] || Moon;
+            return (
+              <Link key={category.id} href={`/collections/${category.slug}`} className='home-category-card' style={{ borderColor: category.accent || 'var(--border-color)' }}>
+                <IconComponent className='home-category-icon' size={48} style={{ color: category.accent }} />
+                <h3 className='home-category-name'>{category.title}</h3>
+                <p className='home-category-desc'>
+                  {category.shortDesc || 'Discover human creativity forged in darkness.'}
+                </p>
+                <span className='home-category-link'>
+                  Enter
+                  <ArrowRight className='home-category-arrow' size={18} />
+                </span>
+              </Link>
+            );
+          })}
         </div>
         <p className='home-categories-more'>
-          <Link href='/worlds'>View all 8 worlds →</Link>
+          <Link href='/collections'>View all collections →</Link>
         </p>
       </section>
 
-      {/* Section 3: New Arrivals */}
-      <section
-        className='home-new-arrivals-wrap'
-        aria-labelledby='new-arrivals-heading'
-      >
-        <div className='home-new-arrivals-header'>
-          <h2 id='new-arrivals-heading' className='home-new-arrivals-title'>
-            New Arrivals
-          </h2>
-          <Link href='/new-arrivals' className='home-view-all'>
-            View All
-          </Link>
-        </div>
-        <div className='home-products-grid'>
-          {newArrivals.map((product) => (
-            <Link
-              key={product.id}
-              href={`/product/${product.id}`}
-              className='home-product-card'
-            >
-              <div className='home-product-image'>
-                {product.badge && (
-                  <span className='home-product-badge'>{product.badge}</span>
-                )}
-                {!product.badge && product.new && (
-                  <span className='home-product-badge'>NEW</span>
-                )}
-              </div>
-              <div className='home-product-info'>
-                <h3 className='home-product-name'>{product.name}</h3>
-                <p className='home-product-category'>{product.category}</p>
-                <p className='home-product-price'>₺{product.price}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {/* Section 3: New Arrivals (Infinite Scroll) */}
+      <NewArrivalsSection 
+        initialProducts={newArrivalsResult.docs as any} 
+        totalPages={newArrivalsResult.totalPages || 0}
+        initialPage={newArrivalsResult.page || 1}
+      />
 
       {/* Section 4: Manifesto */}
       <section className='home-manifesto' aria-labelledby='manifesto-heading'>
