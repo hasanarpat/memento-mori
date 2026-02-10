@@ -8197,3 +8197,21 @@ body {
     width: 100%;
   }
 }
+
+/* Helper for right-aligned dropdowns (e.g. User Menu) */
+.nav-dropdown-content.dropdown-right {
+  left: auto;
+  right: 0;
+  transform: translateY(10px);
+}
+
+.nav-dropdown-wrapper:hover .nav-dropdown-content.dropdown-right {
+  transform: translateY(0);
+}
+
+/* Ensure the arrow also aligns properly or is hidden/moved */
+.nav-dropdown-content.dropdown-right::after {
+  left: auto;
+  right: 1rem;
+  transform: translateX(0) rotate(45deg);
+}

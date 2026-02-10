@@ -25,7 +25,7 @@ import SearchModal from '@/app/components/SearchModal';
 import { useAppDispatch, useAppSelector } from '../lib/redux/hooks';
 import { toggleWishlist, setWishlist, fetchWishlist, syncWishlist } from '../lib/redux/slices/wishlistSlice';
 import { addToCart, fetchCart, syncCart } from '../lib/redux/slices/cartSlice';
-import { checkAuth } from '../lib/redux/slices/authSlice';
+import { checkAuth, logout } from '../lib/redux/slices/authSlice';
 
 export function useCart() {
   const dispatch = useAppDispatch();
@@ -82,6 +82,13 @@ export default function ShopLayout({
   const codexRef = useRef<HTMLDivElement>(null);
   const shopRef = useRef<HTMLDivElement>(null);
   const exploreRef = useRef<HTMLDivElement>(null);
+  const userRef = useRef<HTMLDivElement>(null);
+  const [userOpen, setUserOpen] = useState(false);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    setUserOpen(false);
+  };
 
   useEffect(() => {
     // 1. Check Authentication on Mount
@@ -154,6 +161,9 @@ export default function ShopLayout({
         !exploreRef.current.contains(e.target as Node)
       ) {
         setExploreOpen(false);
+      }
+      if (userRef.current && !userRef.current.contains(e.target as Node)) {
+        setUserOpen(false);
       }
     }
     document.addEventListener('click', handleClick);
@@ -286,9 +296,38 @@ export default function ShopLayout({
                     <span className='cart-badge'>{cartCount}</span>
                   )}
                 </Link>
-                <Link href='/login' className='nav-link header-login'>
-                  LOGIN
-                </Link>
+                {isAuthenticated ? (
+                  <div className='nav-dropdown-wrapper' ref={userRef}>
+                    <button
+                      type='button'
+                      className={`nav-link nav-link-button header-login ${userOpen ? 'active' : ''}`}
+                      aria-expanded={userOpen}
+                      onClick={() => setUserOpen((open) => !open)}
+                      aria-label="Account menu"
+                    >
+                      <User size={20} />
+                    </button>
+                    <div className='nav-dropdown-content dropdown-right'>
+                      <Link href='/account' onClick={() => setUserOpen(false)}>
+                        Profile
+                      </Link>
+                      <Link href='/account/orders' onClick={() => setUserOpen(false)}>
+                        Orders
+                      </Link>
+                      <button 
+                        type="button"
+                        className="text-left w-full"
+                        onClick={handleLogout}
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <Link href='/login' className='nav-link header-login'>
+                    LOGIN
+                  </Link>
+                )}
                 <button
                   type='button'
                   className='mobile-menu-btn'
@@ -441,14 +480,37 @@ export default function ShopLayout({
 
               <div className='mobile-menu-footer'>
                 <div className='mobile-menu-quick-grid'>
-                  <Link
-                    href='/login'
-                    className='mobile-quick-action'
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    <User size={20} />
-                    <span>LOGIN</span>
-                  </Link>
+                  {isAuthenticated ? (
+                    <>
+                      <Link
+                        href='/account'
+                        className='mobile-quick-action'
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        <User size={20} />
+                        <span>ACCOUNT</span>
+                      </Link>
+                      <button
+                         type="button"
+                         className='mobile-quick-action'
+                         onClick={() => {
+                           handleLogout();
+                           setMobileOpen(false);
+                         }}
+                      >
+                         <span>LOGOUT</span>
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      href='/login'
+                      className='mobile-quick-action'
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <User size={20} />
+                      <span>LOGIN</span>
+                    </Link>
+                  )}
                   <Link
                     href='/wishlist'
                     className='mobile-quick-action'

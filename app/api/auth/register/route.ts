@@ -14,7 +14,11 @@ const registerSchema = z.object({
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
     .regex(/[0-9]/, 'Password must contain at least one number'),
-  name: z.string().min(2, 'Name is too short').trim().optional(),
+  name: z.string().min(2, 'Name is required').trim(),
+  surname: z.string().min(2, 'Surname is required').trim(),
+  phone: z.string().optional(),
+  age: z.coerce.number().min(18, 'You must be at least 18 years old').optional(),
+  gender: z.enum(['male', 'female', 'other', 'unsure']).optional(),
 });
 
 export async function POST(request: Request) {
@@ -35,7 +39,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
-    const { email, password, name } = validationResult.data;
+    const { email, password, name, surname, phone, age, gender } = validationResult.data;
 
     // 2. Check existence (Silent Protection)
     // Don't reveal if user exists to prevent email enumeration attacks
@@ -58,21 +62,49 @@ export async function POST(request: Request) {
 
     // 3. Create User
     // Payload automatically hashes passwords securely (bcrypt/argon2)
-    await payload.create({
+    // 3. Create User
+    // Payload automatically hashes passwords securely (bcrypt/argon2)
+    const newUser = await payload.create({
       collection: 'users',
       data: {
         email,
         password,
         name,
+        surname,
+        phone,
+        age,
+        gender,
       },
     })
     
-    // 4. Secure Response
-    // Never return the password or internal IDs if not necessary
-    // Nor automatically login if not secure
+    // 4. Auto Login
+    const loginResult = await payload.login({
+      collection: 'users',
+      data: {
+        email,
+        password,
+      },
+      req: request,
+    })
+
+    if (!loginResult.token) {
+        // Fallback if auto-login fails for some reason
+        return NextResponse.json({ 
+          success: true, 
+          message: 'Account created successfully. Please log in.' 
+        }, { status: 201 })
+    }
+
+    // 5. Secure Response
     return NextResponse.json({ 
       success: true, 
-      message: 'Account created successfully. Please log in.' 
+      message: 'Account created and logged in successfully.',
+      token: loginResult.token,
+      user: {
+        email: newUser.email,
+        id: newUser.id,
+        name: newUser.name,
+      }
     }, { status: 201 })
 
   } catch (error) {

@@ -10,6 +10,35 @@ export const Users: CollectionConfig = {
     {
       name: 'name',
       type: 'text',
+      label: 'Name',
+      required: true,
+    },
+    {
+      name: 'surname',
+      type: 'text',
+      label: 'Surname',
+      required: true,
+    },
+    {
+      name: 'phone',
+      type: 'text',
+      label: 'Phone Number',
+    },
+    {
+      name: 'age',
+      type: 'number',
+      label: 'Age',
+      min: 18,
+    },
+    {
+      name: 'gender',
+      type: 'select',
+      options: [
+        { label: 'Male', value: 'male' },
+        { label: 'Female', value: 'female' },
+        { label: 'Other', value: 'other' },
+        { label: 'Prefer not to say', value: 'unsure' },
+      ],
     },
     {
       name: 'wishlist',

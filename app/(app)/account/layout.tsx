@@ -12,6 +12,9 @@ import {
   LogOut,
   Ruler,
 } from 'lucide-react';
+import { useAppDispatch, useAppSelector } from '@/app/lib/redux/hooks';
+import { logout } from '@/app/lib/redux/slices/authSlice';
+import { useRouter } from 'next/navigation';
 
 const MENU = [
   { href: '/account', icon: User, label: 'Dashboard' },
@@ -29,6 +32,20 @@ export default function AccountLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const { user } = useAppSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    router.push('/login');
+  };
+
+  const displayName = user?.name 
+    ? (user.surname ? `${user.name} ${user.surname}` : user.name)
+    : (user?.email?.split('@')[0] || 'Guest');
+  
+  const initial = user?.name ? user.name[0].toUpperCase() : (user?.email ? user.email[0].toUpperCase() : 'G');
 
   return (
     <div className='account-page'>
@@ -43,9 +60,17 @@ export default function AccountLayout({
                 borderRadius: '50%',
                 background: 'rgba(139,115,85,0.3)',
                 border: '2px solid var(--aged-brass)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.5rem',
+                color: 'var(--bone)',
+                fontFamily: 'Cinzel, serif'
               }}
-            />
-            <span className='account-name'>Guest</span>
+            >
+              {initial}
+            </div>
+            <span className='account-name'>{displayName}</span>
           </div>
           <nav className='account-nav' aria-label='Account menu'>
             {MENU.map((item) => (
@@ -60,7 +85,11 @@ export default function AccountLayout({
                 {item.label}
               </Link>
             ))}
-            <button type='button' className='account-nav-link'>
+            <button 
+              type='button' 
+              className='account-nav-link'
+              onClick={handleLogout}
+            >
               <LogOut size={20} />
               Logout
             </button>

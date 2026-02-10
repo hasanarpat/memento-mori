@@ -20,6 +20,11 @@ export default function LoginPage() {
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
     const confirmPassword = formData.get("confirmPassword") as string;
+    const name = formData.get("name") as string;
+    const surname = formData.get("surname") as string;
+    const phone = formData.get("phone") as string;
+    const age = formData.get("age") as string;
+    const gender = formData.get("gender") as string;
 
     // Client-side validation
     if (tab === "register" && password !== confirmPassword) {
@@ -32,7 +37,7 @@ export default function LoginPage() {
       const endpoint = tab === "login" ? "/api/auth/login" : "/api/auth/register";
       const body = tab === "login" 
         ? { email, password }
-        : { email, password, name: email.split('@')[0] }; // Simple name derivation
+        : { email, password, name, surname, phone, age, gender };
 
       const res = await fetch(endpoint, {
         method: "POST",
@@ -46,19 +51,19 @@ export default function LoginPage() {
         throw new Error(data.error || "Authentication failed");
       }
 
-      // Success handling
-      if (tab === "login") {
-        if (data.token) {
-          localStorage.setItem("payload-token", data.token);
-          // Dispatch a custom event to update auth state globally if needed
-          window.dispatchEvent(new Event("auth-change"));
-          router.push("/account");
-        }
-      } else {
-        // Registration successful
+      // Success handling: If we have a token (login or auto-login after register)
+      if (data.token) {
+        localStorage.setItem("payload-token", data.token);
+        // Dispatch a custom event to update auth state globally if needed
+        window.dispatchEvent(new Event("auth-change"));
+        router.push("/account");
+        return;
+      }
+
+      // If no token (fallback for register without auto-login), show success message
+      if (tab === "register") {
         setTab("login");
         setError("Account created successfully! Please sign in.");
-        // Clear form inputs if needed, or let user type again for security
       }
     } catch (err) {
       if (err instanceof Error) {
@@ -115,6 +120,49 @@ export default function LoginPage() {
             )}
 
             <form className="auth-form" onSubmit={handleSubmit}>
+              {tab === "register" && (
+                <>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <label className="auth-label">
+                      Name
+                      <span className="auth-input-wrap">
+                        <input name="name" type="text" placeholder="John" required />
+                      </span>
+                    </label>
+                    <label className="auth-label">
+                      Surname
+                      <span className="auth-input-wrap">
+                        <input name="surname" type="text" placeholder="Doe" required />
+                      </span>
+                    </label>
+                  </div>
+                  <label className="auth-label">
+                      Phone Number
+                      <span className="auth-input-wrap">
+                        <input name="phone" type="tel" placeholder="+1..." />
+                      </span>
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    <label className="auth-label">
+                      Age
+                      <span className="auth-input-wrap">
+                        <input name="age" type="number" min="18" placeholder="25" />
+                      </span>
+                    </label>
+                    <label className="auth-label">
+                      Gender
+                      <span className="auth-input-wrap">
+                        <select name="gender" style={{ width: '100%', background: 'transparent', color: 'inherit', border: 'none', padding: '0.5rem' }}>
+                          <option value="male">Male</option>
+                          <option value="female">Female</option>
+                          <option value="other">Other</option>
+                          <option value="unsure">Prefer not to say</option>
+                        </select>
+                      </span>
+                    </label>
+                  </div>
+                </>
+              )}
               <label className="auth-label">
                 Email
                 <span className="auth-input-wrap">

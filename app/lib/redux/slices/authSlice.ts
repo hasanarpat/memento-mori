@@ -26,6 +26,10 @@ export interface User {
   id: string;
   email: string;
   name?: string;
+  surname?: string;
+  phone?: string;
+  age?: number;
+  gender?: string;
 }
 
 export interface AuthState {
