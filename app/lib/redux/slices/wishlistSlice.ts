@@ -50,6 +50,8 @@ export const syncWishlist = createAsyncThunk(
   }
 );
 
+
+
 const wishlistSlice = createSlice({
   name: 'wishlist',
   initialState,
@@ -80,4 +82,24 @@ const wishlistSlice = createSlice({
 });
 
 export const { toggleWishlist, setWishlist, clearWishlist } = wishlistSlice.actions;
+
+export const modifyWishlist = createAsyncThunk(
+  'wishlist/modify',
+  async (id: string, { dispatch, getState }) => {
+    dispatch(toggleWishlist(id));
+    
+    const state = getState() as RootState;
+    const { wishlistIds } = state.wishlist;
+    const token = state.auth.token;
+
+    if (token) {
+       await dispatch(syncWishlist(wishlistIds));
+    } else {
+       if (typeof window !== 'undefined') {
+          localStorage.setItem('memento-wishlist', JSON.stringify(wishlistIds));
+       }
+    }
+  }
+);
+
 export default wishlistSlice.reducer;

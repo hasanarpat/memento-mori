@@ -59,6 +59,7 @@ export async function POST(request: Request) {
       data: {
         wishlist: productIds,
       },
+      overrideAccess: true, // Bypass validation for fields not being updated
     });
 
     return NextResponse.json({ success: true, message: 'Wishlist updated' });

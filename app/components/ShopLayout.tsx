@@ -23,7 +23,7 @@ import {
 import SearchModal from '@/app/components/SearchModal';
 
 import { useAppDispatch, useAppSelector } from '../lib/redux/hooks';
-import { toggleWishlist, setWishlist, fetchWishlist, syncWishlist } from '../lib/redux/slices/wishlistSlice';
+import { toggleWishlist, setWishlist, fetchWishlist, syncWishlist, modifyWishlist } from '../lib/redux/slices/wishlistSlice';
 import { addToCart, fetchCart, syncCart } from '../lib/redux/slices/cartSlice';
 import { checkAuth, logout } from '../lib/redux/slices/authSlice';
 
@@ -48,7 +48,7 @@ export function useWishlist() {
   const dispatch = useAppDispatch();
   const wishlistIds = useAppSelector((state) => state.wishlist.wishlistIds);
 
-  const toggle = (id: string | number) => dispatch(toggleWishlist(String(id)));
+  const toggle = (id: string | number) => dispatch(modifyWishlist(String(id)));
   const isIn = (id: string | number) => wishlistIds.includes(String(id));
 
   return { wishlistIds, toggleWishlist: toggle, isInWishlist: isIn };
@@ -143,19 +143,7 @@ export default function ShopLayout({
   }, [cartItems, isAuthenticated, token, dispatch]);
 
   // 4. Sync Wishlist to Backend
-  useEffect(() => {
-    if (isAuthenticated && token) {
-      const timer = setTimeout(() => {
-          dispatch(syncWishlist(wishlistIds));
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-    
-    // Guest: Sync to LocalStorage
-    if (!isAuthenticated && wishlistIds.length > 0) {
-      localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlistIds));
-    }
-  }, [wishlistIds, isAuthenticated, token, dispatch]);
+
 
   // Click outside handlers...
   useEffect(() => {
