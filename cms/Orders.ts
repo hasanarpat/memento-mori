@@ -7,6 +7,39 @@ export const Orders: CollectionConfig = {
     defaultColumns: ['id', 'status', 'total', 'createdAt'],
     group: 'Shop',
   },
+  hooks: {
+    afterChange: [
+      async ({ doc, operation, req }) => {
+        if (operation === 'create') {
+          for (const item of doc.items) {
+             const productId = typeof item.product === 'object' ? item.product.id : item.product;
+             if (!productId) continue;
+
+             try {
+                // Fetch current product to access stock
+                const product = await req.payload.findByID({
+                   collection: 'products',
+                   id: productId,
+                });
+                
+                if (product) {
+                    const newStock = Math.max(0, (product.stock || 0) - item.quantity);
+                    await req.payload.update({
+                       collection: 'products',
+                       id: productId,
+                       data: {
+                          stock: newStock,
+                       }
+                    });
+                }
+             } catch (err) {
+                console.error(`Failed to update stock for product ${productId}`, err);
+             }
+          }
+        }
+      }
+    ]
+  },
   access: {
     read: ({ req: { user } }) => {
       if (user?.collection === 'users') {

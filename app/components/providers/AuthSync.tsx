@@ -42,6 +42,12 @@ export default function AuthSync() {
     };
     window.addEventListener('auth-change', handleAuthChange);
     
+    // Sync cookie with localStorage token (Critical for Server Components)
+    const token = localStorage.getItem('payload-token');
+    if (token) {
+       document.cookie = `payload-token=${token}; path=/; max-age=86400; SameSite=Lax`;
+    }
+
     return () => window.removeEventListener('auth-change', handleAuthChange);
   }, [dispatch]);
 

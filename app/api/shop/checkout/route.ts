@@ -76,8 +76,12 @@ export async function POST(request: Request) {
         );
       }
 
-      // Validate stock if needed (optional for now, but recommended)
-      // if (product.stock < item.quantity) ...
+      if (product.stock < item.quantity) {
+        return NextResponse.json(
+           { error: `Insufficient stock for ${product.name}. Available: ${product.stock}` },
+           { status: 400 }
+        );
+      }
 
       const qty = Math.abs(Math.floor(item.quantity));
       const price = product.price; // Trust Server Price
