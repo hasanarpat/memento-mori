@@ -42,7 +42,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
-    const { items, shippingAddress, paymentMethod, user } = validationResult.data;
+    const { items, shippingAddress, paymentMethod } = validationResult.data;
+
+    // Authenticate User
+    const { user } = await payload.auth(request);
+
+    if (user) {
+       // Check if user is verified (Payload adds _verified field when verify: true)
+       // Note: payload.auth returns user object, we need to cast or access it dynamically if types aren't generated yet
+       if ((user as any)._verified === false) {
+          return NextResponse.json(
+             { error: 'Email not verified. Please check your inbox or profile.' },
+             { status: 403 }
+          );
+       }
+    } else {
+       // If we want to force login for checkout, uncomment below:
+       // return NextResponse.json({ error: 'You must be logged in to checkout.' }, { status: 401 });
+    }
 
     // 2. Secure Calculation (Server-Side)
     // Fetch fresh product data to get actual prices
@@ -109,7 +126,7 @@ export async function POST(request: Request) {
         paymentMethod,
         paymentStatus,
         status: 'processing',
-        user: user || undefined,
+        user: user ? user.id : undefined,
       },
     })
 

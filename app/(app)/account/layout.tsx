@@ -39,7 +39,12 @@ export default function AccountLayout({
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    // Check localStorage validation to prevent race conditions (state may be resetting on refresh)
+    const hasToken = typeof window !== 'undefined' ? localStorage.getItem('payload-token') : null;
+    
+    // Only redirect if absolutely sure: not loading, not auth in state, AND no token in storage
+    // (If checkAuth fails, it clears storage, so this will eventually redirect)
+    if (!loading && !isAuthenticated && !hasToken) {
       router.push('/login');
     }
   }, [isAuthenticated, loading, router]);

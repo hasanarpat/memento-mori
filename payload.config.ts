@@ -1,15 +1,16 @@
 import { mongooseAdapter } from '@payloadcms/db-mongodb';
 import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { resendAdapter } from '@payloadcms/email-resend';
 import { buildConfig } from 'payload';
 import path from 'path';
 import sharp from 'sharp';
 
-import { Users } from './cms/Users';
-import { Media } from './cms/Media';
-import { Products } from './cms/Products';
-import { Categories } from './cms/Categories';
-import { Orders } from './cms/Orders';
-import { seed } from './cms/seed';
+import { Users } from './cms/Users.ts';
+import { Media } from './cms/Media.ts';
+import { Products } from './cms/Products.ts';
+import { Categories } from './cms/Categories.ts';
+import { Orders } from './cms/Orders.ts';
+import { seed } from './cms/seed.ts';
 
 const dirname = path.resolve(__dirname);
 
@@ -37,6 +38,11 @@ export default buildConfig({
   },
   db: mongooseAdapter({
     url: dbUrl,
+  }),
+  email: resendAdapter({
+    defaultFromAddress: 'onboarding@resend.dev',
+    defaultFromName: 'Memento Mori',
+    apiKey: process.env.RESEND_API_KEY || '',
   }),
   sharp,
   plugins: [

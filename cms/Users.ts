@@ -5,7 +5,28 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
   },
-  auth: true,
+  auth: {
+    verify: {
+      generateEmailHTML: ({ token, user }) => {
+        return `
+          <!DOCTYPE html>
+          <html>
+          <body style="font-family: serif; color: #333; background-color: #f4f4f4; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 40px; border: 1px solid #ddd;">
+              <h1 style="text-align: center; font-family: 'Cinzel', serif; letter-spacing: 2px;">MEMENTO MORI</h1>
+              <p>Greetings ${user.name},</p>
+              <p>To access the inner circle and complete your rituals, you must verify your existence.</p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${process.env.NEXT_PUBLIC_SITE_URL}/verify?token=${token}" style="background-color: #000; color: #fff; padding: 12px 24px; text-decoration: none; text-transform: uppercase; letter-spacing: 1px;">Verify Email</a>
+              </div>
+              <p style="font-size: 12px; color: #888; text-align: center;">Or copy this link: ${process.env.NEXT_PUBLIC_SITE_URL}/verify?token=${token}</p>
+            </div>
+          </body>
+          </html>
+        `;
+      },
+    },
+  },
   fields: [
     {
       name: 'name',
