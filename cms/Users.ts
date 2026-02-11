@@ -6,6 +6,7 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
   },
   auth: {
+    tokenExpiration: 604800, // 7 days in seconds (7 * 24 * 60 * 60)
     // Only require email verification in production
     verify:
       process.env.NODE_ENV === 'production'
