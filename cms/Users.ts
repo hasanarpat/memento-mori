@@ -6,9 +6,12 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
   },
   auth: {
-    verify: {
-      generateEmailHTML: ({ token, user }) => {
-        return `
+    // Only require email verification in production
+    verify:
+      process.env.NODE_ENV === 'production'
+        ? {
+            generateEmailHTML: ({ token, user }) => {
+              return `
           <!DOCTYPE html>
           <html>
           <body style="font-family: serif; color: #333; background-color: #f4f4f4; padding: 20px;">
@@ -24,8 +27,9 @@ export const Users: CollectionConfig = {
           </body>
           </html>
         `;
-      },
-    },
+            },
+          }
+        : undefined,
   },
   fields: [
     {
