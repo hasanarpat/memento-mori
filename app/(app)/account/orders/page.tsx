@@ -55,11 +55,23 @@ export default async function OrdersPage() {
 
       <div className='orders-list space-y-4'>
         {orders.length === 0 ? (
-          <div className="text-center py-12 border border-dashed border-[#333] rounded-lg">
-            <Package size={48} className="mx-auto text-[#666] mb-4" />
-            <p className='text-[#a6a6a6] mb-6'>No rituals performed yet.</p>
-            <Link href='/collections' className='px-6 py-2 bg-[#e0e0e0] text-[#0d0a0f] font-semibold hover:bg-white transition-colors'>
-              Start Shopping
+          <div className="flex flex-col items-center justify-center min-h-[40vh] py-12 px-4 rounded-lg bg-[#0a0a0a] border border-[#222]">
+            <div className="relative mb-6">
+               <div className="absolute inset-0 bg-white/5 blur-xl rounded-full" />
+               <Package size={64} strokeWidth={1} className="relative text-[#333] z-10" />
+            </div>
+            <h2 className='text-2xl font-serif text-[#e0e0e0] mb-2 tracking-wide'>No Rituals Found</h2>
+            <p className='text-[#666] mb-8 font-light max-w-sm text-center leading-relaxed'>
+              Your journey has yet to be recorded in our chronicles. 
+              The void awaits your selection.
+            </p>
+            <Link 
+              href='/collections' 
+              className='group relative px-8 py-3 bg-transparent border border-[#333] text-[#e0e0e0] 
+                         overflow-hidden transition-all hover:border-[#666]'
+            >
+              <span className="relative z-10 text-sm tracking-[0.2em] font-medium">BEGIN JOURNEY</span>
+              <div className="absolute inset-0 bg-[#1a1a1a] transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300" />
             </Link>
           </div>
         ) : (
