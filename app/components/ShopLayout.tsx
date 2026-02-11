@@ -1,38 +1,24 @@
 'use client';
 
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-import Link from 'next/link';
+import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import {
-  ShoppingCart,
-  Search,
-  Heart,
-  Menu,
-  X,
-  User,
-  ChevronDown,
-  ArrowRight,
-} from 'lucide-react';
 import SearchModal from '@/app/components/SearchModal';
-
 import { useAppDispatch, useAppSelector } from '../lib/redux/hooks';
-import { toggleWishlist, setWishlist, fetchWishlist, syncWishlist, modifyWishlist, mergeWishlistWithBackend } from '../lib/redux/slices/wishlistSlice';
-import { addToCart, fetchCart, syncCart, mergeCartWithBackend } from '../lib/redux/slices/cartSlice';
-import { checkAuth, logout } from '../lib/redux/slices/authSlice';
+import { modifyWishlist } from '../lib/redux/slices/wishlistSlice';
+import { addToCart } from '../lib/redux/slices/cartSlice';
 
+// Components
+import Header from './layout/Header';
+import Footer from './layout/Footer';
+import MobileMenu from './layout/MobileMenu';
+import AuthSync from './providers/AuthSync';
+
+// Hooks for Context (Backward Comp)
 export function useCart() {
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state) => state.cart.items);
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-  // Helper to match the signature of the old context but now requires item
   const addItem = (item: any) => {
      if (!item) {
         console.error("addToCart now requires an item object");
@@ -54,583 +40,51 @@ export function useWishlist() {
   return { wishlistIds, toggleWishlist: toggle, isInWishlist: isIn };
 }
 
-const WISHLIST_KEY = 'memento-wishlist';
-const CART_KEY = 'memento-cart';
-
 export default function ShopLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
-  // We use Redux selectors instead of local state
-  // But for UI state like menus, we keep local state
+  
+  // Mobile & Search State
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Data from Redux for Header
   const cartItems = useAppSelector((state) => state.cart.items);
   const wishlistIds = useAppSelector((state) => state.wishlist.wishlistIds);
-  
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [codexOpen, setCodexOpen] = useState(false);
-  const [shopOpen, setShopOpen] = useState(true);
-  const [exploreOpen, setExploreOpen] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [mobileShopOpen, setMobileShopOpen] = useState(false);
-  const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
-  const [mobileCodexOpen, setMobileCodexOpen] = useState(false);
-
-  const codexRef = useRef<HTMLDivElement>(null);
-  const shopRef = useRef<HTMLDivElement>(null);
-  const exploreRef = useRef<HTMLDivElement>(null);
-  const userRef = useRef<HTMLDivElement>(null);
-  const [userOpen, setUserOpen] = useState(false);
-
-  const handleLogout = () => {
-    dispatch(logout());
-    localStorage.removeItem(WISHLIST_KEY);
-    localStorage.removeItem(CART_KEY);
-    setUserOpen(false);
-  };
-
-  useEffect(() => {
-    // 1. Check Authentication on Mount
-    dispatch(checkAuth());
-    
-    // Guest: Sync from LocalStorage
-    // Auth: Handled by next effect
-    const syncLocal = () => {
-      try {
-        // Wishlist
-        const rawWishlist = localStorage.getItem(WISHLIST_KEY);
-        if (rawWishlist) {
-          const parsed = JSON.parse(rawWishlist) as string[];
-          if (Array.isArray(parsed)) dispatch(setWishlist(parsed));
-        }
-
-        // Cart (We need an action to set cart items, for now we can't easily set without adding an action to slice.
-        // But we can rely on mergeCartWithBackend if we are logging in.
-        // If we are guest on refresh, we lose cart if we don't restore it.
-        // Assuming cartSlice doesn't have setCart. Let's skip restoring cart to Redux for guest for now, 
-        // focus on login merge which is the user issue.)
-      } catch {
-        // ignore
-      }
-    };
-    if (!localStorage.getItem('payload-token')) {
-        requestAnimationFrame(syncLocal);
-    }
-    
-    // Listen for custom auth-change event from login page
-    const handleAuthChange = () => {
-      dispatch(checkAuth());
-    };
-    window.addEventListener('auth-change', handleAuthChange);
-    
-    return () => window.removeEventListener('auth-change', handleAuthChange);
-  }, [dispatch]);
-
-  // 2. Fetch Data or Merge when Authenticated
-  const { isAuthenticated, token, user } = useAppSelector((state) => state.auth);
-  const userName = user?.name || 'User';
-  const userEmail = user?.email || '';
-  
-  useEffect(() => {
-    if (isAuthenticated && token) {
-      // CART MERGE
-      // Try to get local cart from storage to cover refresh case
-      let localCartItems: any[] = [...cartItems]; 
-      try {
-         const rawCart = localStorage.getItem(CART_KEY);
-         if (rawCart) {
-            const parsed = JSON.parse(rawCart);
-            // Simple merge of lists if needed, or just use storage if state is empty
-            if (localCartItems.length === 0 && Array.isArray(parsed)) {
-               localCartItems = parsed;
-            }
-         }
-      } catch {}
-
-      if (localCartItems.length > 0) {
-         dispatch(mergeCartWithBackend(localCartItems));
-      } else {
-         dispatch(fetchCart());
-      }
-
-      // WISHLIST MERGE
-      let localWishlistIds: string[] = [...wishlistIds];
-      try {
-         const rawWishlist = localStorage.getItem(WISHLIST_KEY);
-         if (rawWishlist) {
-            const parsed = JSON.parse(rawWishlist);
-            if (Array.isArray(parsed) && localWishlistIds.length === 0) {
-               localWishlistIds = parsed;
-            } else if (Array.isArray(parsed)) {
-                // Combine unique
-               localWishlistIds = Array.from(new Set([...localWishlistIds, ...parsed]));
-            }
-         }
-      } catch {}
-
-      if (localWishlistIds.length > 0) {
-         dispatch(mergeWishlistWithBackend(localWishlistIds));
-      } else {
-         dispatch(fetchWishlist());
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, token, dispatch]);
-
-  // 3. Sync Data
-  useEffect(() => {
-    if (isAuthenticated && token) {
-       // Auth: Cart Sync to Backend (Wishlist handled by thunk)
-       if (cartItems.length > 0) {
-          const timer = setTimeout(() => {
-              dispatch(syncCart(cartItems));
-          }, 2000);
-          return () => clearTimeout(timer);
-       }
-    } else {
-       // Guest: Sync to LocalStorage
-       if (wishlistIds.length > 0) {
-          localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlistIds));
-       }
-       if (cartItems.length > 0) {
-          localStorage.setItem(CART_KEY, JSON.stringify(cartItems));
-       }
-    }
-  }, [wishlistIds, cartItems, isAuthenticated, token, dispatch]);
-
-  // 4. Sync Wishlist to Backend
-
-
-  // Click outside handlers...
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (codexRef.current && !codexRef.current.contains(e.target as Node)) {
-        setCodexOpen(false);
-      }
-      if (shopRef.current && !shopRef.current.contains(e.target as Node)) {
-        setShopOpen(false);
-      }
-      if (
-        exploreRef.current &&
-        !exploreRef.current.contains(e.target as Node)
-      ) {
-        setExploreOpen(false);
-      }
-      if (userRef.current && !userRef.current.contains(e.target as Node)) {
-        setUserOpen(false);
-      }
-    }
-    document.addEventListener('click', handleClick);
-    return () => document.removeEventListener('click', handleClick);
-  }, []);
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
 
   const hideFooter = pathname === '/login';
 
-  // No more Providers needed, StoreProvider wraps the app
   return (
         <div className='dark-cult-shop'>
+          <AuthSync />
+          
           <div className='grain-overlay' />
           <div className='web-decoration' />
           <div className='web-decoration web-decoration-left' />
 
-          <header className='header'>
-            <div className='header-content'>
-              <Link href='/' className='logo'>
-                MEMENTO MORI
-              </Link>
-              <nav className='nav'>
-                <Link
-                  href='/'
-                  className={`nav-link ${pathname === '/' ? 'active' : ''}`}
-                >
-                  HOME
-                </Link>
+          <Header 
+            cartCount={cartCount}
+            wishlistCount={wishlistIds.length}
+            isAuthenticated={isAuthenticated}
+            user={user}
+            onMobileMenuOpen={() => setMobileOpen(true)}
+            mobileMenuOpen={mobileOpen}
+            onSearchOpen={() => setSearchOpen(true)}
+          />
 
-                {/* SHOP DROPDOWN */}
-                <div className='nav-dropdown-wrapper' ref={shopRef}>
-                  <button
-                    type='button'
-                    className={`nav-link nav-link-button ${shopOpen ? 'active' : ''}`}
-                    aria-expanded={shopOpen}
-                    onClick={() => setShopOpen((open) => !open)}
-                  >
-                    SHOP
-                  </button>
-                  <div className='nav-dropdown-content'>
-                    <Link
-                      href='/collections'
-                      onClick={() => setShopOpen(false)}
-                    >
-                      Collections
-                    </Link>
-                    <Link
-                      href='/new-arrivals'
-                      onClick={() => setShopOpen(false)}
-                    >
-                      New Arrivals
-                    </Link>
-                  </div>
-                </div>
-
-                {/* EXPLORE DROPDOWN */}
-                <div className='nav-dropdown-wrapper' ref={exploreRef}>
-                  <button
-                    type='button'
-                    className={`nav-link nav-link-button ${exploreOpen ? 'active' : ''}`}
-                    aria-expanded={exploreOpen}
-                    onClick={() => setExploreOpen((open) => !open)}
-                  >
-                    EXPLORE
-                  </button>
-                  <div className='nav-dropdown-content'>
-                    <Link href='/journal' onClick={() => setExploreOpen(false)}>
-                      Journal
-                    </Link>
-                    <Link href='/about' onClick={() => setExploreOpen(false)}>
-                      About
-                    </Link>
-                  </div>
-                </div>
-
-                {/* CODEX DROPDOWN */}
-                <div className='nav-dropdown-wrapper' ref={codexRef}>
-                  <button
-                    type='button'
-                    className={`nav-link nav-link-button ${codexOpen ? 'active' : ''}`}
-                    aria-expanded={codexOpen}
-                    onClick={() => setCodexOpen((open) => !open)}
-                  >
-                    CODEX
-                  </button>
-                  <div className='nav-dropdown-content'>
-                    <Link
-                      href='/size-guide'
-                      onClick={() => setCodexOpen(false)}
-                    >
-                      Sizing
-                    </Link>
-                    <Link href='/kvkk' onClick={() => setCodexOpen(false)}>
-                      KVKK
-                    </Link>
-                    <Link
-                      href='/gizlilik-politikasi'
-                      onClick={() => setCodexOpen(false)}
-                    >
-                      Gizlilik
-                    </Link>
-                    <Link href='/contact' onClick={() => setCodexOpen(false)}>
-                      Contact
-                    </Link>
-                  </div>
-                </div>
-              </nav>
-              <div className='header-actions'>
-                <button
-                  type='button'
-                  className='search-trigger'
-                  onClick={() => setSearchOpen(true)}
-                  aria-label='Search'
-                >
-                  <Search size={18} />
-                  <span className='search-trigger-text'>seek...</span>
-                </button>
-                <Link
-                  href='/wishlist'
-                  className='icon-button'
-                  aria-label='Wishlist'
-                >
-                  <Heart size={20} />
-                  {wishlistIds.length > 0 && (
-                    <span className='cart-badge'>{wishlistIds.length}</span>
-                  )}
-                </Link>
-                <Link href='/cart' className='icon-button' aria-label='Cart'>
-                  <ShoppingCart size={20} />
-                  {cartCount > 0 && (
-                    <span className='cart-badge'>{cartCount}</span>
-                  )}
-                </Link>
-                {isAuthenticated ? (
-                  <div className='nav-dropdown-wrapper' ref={userRef}>
-                    <button
-                      type='button'
-                      className={`icon-button ${userOpen ? 'active' : ''}`}
-                      aria-expanded={userOpen}
-                      onClick={() => setUserOpen((open) => !open)}
-                      aria-label="Account menu"
-                    >
-                      <User size={20} />
-                    </button>
-                    <div className='nav-dropdown-content dropdown-right user-dropdown'>
-                      <div className='user-dropdown-header'>
-                        <div className='user-dropdown-avatar'>
-                          <User size={18} />
-                        </div>
-                        <div className='user-dropdown-info'>
-                          <span className='user-dropdown-name'>
-                            {userName}
-                          </span>
-                          <span className='user-dropdown-email'>
-                            {userEmail}
-                          </span>
-                        </div>
-                      </div>
-                      <div className='user-dropdown-divider' />
-                      <Link href='/account' onClick={() => setUserOpen(false)} className='user-dropdown-link'>
-                        <User size={16} />
-                        <span>Profile</span>
-                      </Link>
-                      <Link href='/account/orders' onClick={() => setUserOpen(false)} className='user-dropdown-link'>
-                        <ShoppingCart size={16} />
-                        <span>Orders</span>
-                      </Link>
-                      <Link href='/account/wishlist' onClick={() => setUserOpen(false)} className='user-dropdown-link'>
-                        <Heart size={16} />
-                        <span>Wishlist</span>
-                      </Link>
-                      <div className='user-dropdown-divider' />
-                      <button 
-                        type="button"
-                        className="user-dropdown-link user-dropdown-logout"
-                        onClick={handleLogout}
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                          <polyline points="16 17 21 12 16 7" />
-                          <line x1="21" y1="12" x2="9" y2="12" />
-                        </svg>
-                        <span>Logout</span>
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <Link href='/login' className='nav-link header-login'>
-                    LOGIN
-                  </Link>
-                )}
-                <button
-                  type='button'
-                  className='mobile-menu-btn'
-                  onClick={() => setMobileOpen((o) => !o)}
-                  aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-                >
-                  {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
-              </div>
-            </div>
-
-            <div
-              className={`mobile-menu-backdrop ${mobileOpen ? 'open' : ''}`}
-              onClick={() => setMobileOpen(false)}
-              aria-hidden
-            />
-            <div className={`mobile-menu-drawer ${mobileOpen ? 'open' : ''}`}>
-              <div className='mobile-menu-header'>
-                <span className='mobile-menu-title'>
-                  <span className='mobile-menu-title-symbol'>☠</span>
-                  MEMENTO
-                </span>
-                <button
-                  type='button'
-                  className='mobile-menu-close'
-                  onClick={() => setMobileOpen(false)}
-                  aria-label='Close menu'
-                >
-                  <X size={22} />
-                </button>
-              </div>
-
-              <div className='mobile-menu-search-container'>
-                <div
-                  className='mobile-menu-search-box'
-                  onClick={() => {
-                    setMobileOpen(false);
-                    setSearchOpen(true);
-                  }}
-                >
-                  <Search size={18} />
-                  <span>Seek products...</span>
-                </div>
-              </div>
-
-              <div className='mobile-menu-scroll-area'>
-                <nav className='mobile-menu-nav'>
-                  <Link
-                    href='/'
-                    className='mobile-menu-link'
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    HOME
-                  </Link>
-
-                  {/* MOBILE SHOP ACCORDION */}
-                  <div className='mobile-menu-accordion'>
-                    <button
-                      className={`mobile-menu-accordion-trigger ${mobileShopOpen ? 'open' : ''}`}
-                      onClick={() => setMobileShopOpen(!mobileShopOpen)}
-                    >
-                      SHOP <ChevronDown size={16} />
-                    </button>
-                    <div
-                      className={`mobile-menu-accordion-content ${mobileShopOpen ? 'open' : ''}`}
-                    >
-                      <Link
-                        href='/collections'
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        Collections <ArrowRight size={14} />
-                      </Link>
-                      <Link
-                        href='/new-arrivals'
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        New Arrivals <ArrowRight size={14} />
-                      </Link>
-                      <Link href='/ritual' onClick={() => setMobileOpen(false)}>
-                        Ritual & Altar <ArrowRight size={14} />
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* MOBILE EXPLORE ACCORDION */}
-                  <div className='mobile-menu-accordion'>
-                    <button
-                      className={`mobile-menu-accordion-trigger ${mobileExploreOpen ? 'open' : ''}`}
-                      onClick={() => setMobileExploreOpen(!mobileExploreOpen)}
-                    >
-                      EXPLORE <ChevronDown size={16} />
-                    </button>
-                    <div
-                      className={`mobile-menu-accordion-content ${mobileExploreOpen ? 'open' : ''}`}
-                    >
-                      <Link
-                        href='/journal'
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        Journal <ArrowRight size={14} />
-                      </Link>
-                      <Link href='/about' onClick={() => setMobileOpen(false)}>
-                        About <ArrowRight size={14} />
-                      </Link>
-                      <Link
-                        href='/lookbook'
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        Lookbook <ArrowRight size={14} />
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* MOBILE CODEX ACCORDION */}
-                  <div className='mobile-menu-accordion'>
-                    <button
-                      className={`mobile-menu-accordion-trigger ${mobileCodexOpen ? 'open' : ''}`}
-                      onClick={() => setMobileCodexOpen(!mobileCodexOpen)}
-                    >
-                      CODEX <ChevronDown size={16} />
-                    </button>
-                    <div
-                      className={`mobile-menu-accordion-content ${mobileCodexOpen ? 'open' : ''}`}
-                    >
-                      <Link
-                        href='/size-guide'
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        Sizing <ArrowRight size={14} />
-                      </Link>
-                      <Link href='/kvkk' onClick={() => setMobileOpen(false)}>
-                        KVKK <ArrowRight size={14} />
-                      </Link>
-                      <Link
-                        href='/gizlilik-politikasi'
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        Privacy <ArrowRight size={14} />
-                      </Link>
-                      <Link
-                        href='/contact'
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        Contact <ArrowRight size={14} />
-                      </Link>
-                    </div>
-                  </div>
-                </nav>
-              </div>
-
-              <div className='mobile-menu-footer'>
-                <div className='mobile-menu-quick-grid'>
-                  {isAuthenticated ? (
-                    <>
-                      <Link
-                        href='/account'
-                        className='mobile-quick-action'
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        <User size={20} />
-                        <span>ACCOUNT</span>
-                      </Link>
-                      <button
-                         type="button"
-                         className='mobile-quick-action'
-                         onClick={() => {
-                           handleLogout();
-                           setMobileOpen(false);
-                         }}
-                      >
-                         <span>LOGOUT</span>
-                      </button>
-                    </>
-                  ) : (
-                    <Link
-                      href='/login'
-                      className='mobile-quick-action'
-                      onClick={() => setMobileOpen(false)}
-                    >
-                      <User size={20} />
-                      <span>LOGIN</span>
-                    </Link>
-                  )}
-                  <Link
-                    href='/wishlist'
-                    className='mobile-quick-action'
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    <div className='action-icon-wrap'>
-                      <Heart size={20} />
-                      {wishlistIds.length > 0 && (
-                        <span className='action-badge'>
-                          {wishlistIds.length}
-                        </span>
-                      )}
-                    </div>
-                    <span>WISHES</span>
-                  </Link>
-                  <Link
-                    href='/cart'
-                    className='mobile-quick-action action-accent'
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    <div className='action-icon-wrap'>
-                      <ShoppingCart size={20} />
-                      {cartCount > 0 && (
-                        <span className='action-badge'>{cartCount}</span>
-                      )}
-                    </div>
-                    <span>CART</span>
-                  </Link>
-                </div>
-                <div className='mobile-menu-bottom-tag'>
-                  <p>Est. MMXXVI</p>
-                  <div className='mobile-menu-divider-dots'>•••</div>
-                </div>
-              </div>
-            </div>
-          </header>
+          <MobileMenu 
+            isOpen={mobileOpen}
+            onClose={() => setMobileOpen(false)}
+            onSearchOpen={() => setSearchOpen(true)}
+            isAuthenticated={isAuthenticated}
+            cartCount={cartCount}
+            wishlistCount={wishlistIds.length}
+          />
 
           <SearchModal
             isOpen={searchOpen}
@@ -639,64 +93,7 @@ export default function ShopLayout({
 
           <div className='page-container'>{children}</div>
 
-          {!hideFooter && (
-            <footer className='footer'>
-              <div className='footer-content'>
-                <div className='footer-section'>
-                  <h3>Navigate</h3>
-                  <Link href='/' className='footer-link'>
-                    Home
-                  </Link>
-                  <Link href='/lookbook' className='footer-link'>
-                    Lookbook
-                  </Link>
-                  <Link href='/collections' className='footer-link'>
-                    Collections
-                  </Link>
-                  <Link href='/journal' className='footer-link'>
-                    Journal
-                  </Link>
-                </div>
-                <div className='footer-section'>
-                  <h3>Codex</h3>
-                  <Link href='/kvkk' className='footer-link'>
-                    KVKK
-                  </Link>
-                  <Link href='/gizlilik-politikasi' className='footer-link'>
-                    Gizlilik
-                  </Link>
-                  <Link href='/size-guide' className='footer-link'>
-                    Sizing
-                  </Link>
-                  <Link href='/contact' className='footer-link'>
-                    Contact
-                  </Link>
-                </div>
-                <div className='footer-section'>
-                  <h3>Commune</h3>
-                  <a href='#' className='footer-link'>
-                    Discord
-                  </a>
-                  <a href='#' className='footer-link'>
-                    Instagram
-                  </a>
-                  <a href='#' className='footer-link'>
-                    Newsletter
-                  </a>
-                </div>
-                <div className='footer-section'>
-                  <h3>Manifesto</h3>
-                  <p>
-                    In darkness we find beauty. In leather and brass, our armor.
-                    In shadows, our truth.
-                  </p>
-                </div>
-              </div>
-              <div className='footer-bottom'>
-                © MMXXVI MEMENTO MORI — From dust to dust, from shadow to shadow
-              </div>
-            </footer>
-          )}
+          {!hideFooter && <Footer />}
         </div>
   );
 }

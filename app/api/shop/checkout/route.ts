@@ -45,25 +45,54 @@ export async function POST(request: Request) {
     const { items, shippingAddress, paymentMethod, user } = validationResult.data;
 
     // 2. Secure Calculation (Server-Side)
-    // In a real scenario, we MUST fetch prices from DB using item IDs
-    // to prevent price tampering via client-side modification.
-    // For this demo, we acknowledge this risk but proceed with robust structure.
+    // Fetch fresh product data to get actual prices
+    const productIds = items.map((item) => item.id);
+    
+    // Check if IDs are numbers or strings based on schema, but Payload usually uses one or the other per collection.
+    // Assuming string for now based on typicalPayload/Mongo usage, but schema allows both.
+    // If Mongo, IDs are strings. If SQL, usually numbers.
+    // Let's use `in` operator which handles array.
+    
+    const { docs: products } = await payload.find({
+      collection: 'products',
+      where: {
+        id: { in: productIds },
+      },
+      pagination: false,
+    });
+
+    const productMap = new Map(products.map((p) => [p.id, p]));
+    
     let total = 0
-    const orderItems = items.map((item) => {
-      // Validate absolute values again just in case
+    const orderItems = [];
+
+    for (const item of items) {
+      const product = productMap.get(item.id);
+      
+      if (!product) {
+        return NextResponse.json(
+          { error: `Product with ID ${item.id} not found or unavailable` }, 
+          { status: 400 }
+        );
+      }
+
+      // Validate stock if needed (optional for now, but recommended)
+      // if (product.stock < item.quantity) ...
+
       const qty = Math.abs(Math.floor(item.quantity));
-      const price = Math.abs(item.price);
-      
-      total += price * qty
-      
-      return {
-        product: item.id, 
+      const price = product.price; // Trust Server Price
+
+      total += price * qty;
+
+      orderItems.push({
+        product: product.id,
         quantity: qty,
         price: price,
-      }
-    })
+      });
+    }
 
     // 3. Payment Simulation (Secure Placeholder)
+    // In real app, create PaymentIntent here with `total`
     const paymentStatus = 'paid' 
 
     // 4. Create Order
