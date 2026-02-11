@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { ShoppingBag, X, Minus, Plus } from 'lucide-react';
-import { useCart } from '../../components/ShopLayout';
+import { useAppSelector, useAppDispatch } from '../../lib/redux/hooks';
+import { removeFromCart, updateQuantity } from '../../lib/redux/slices/cartSlice';
 import { products } from '../../data/shop';
 
 function CartSummaryContent({ total }: { total: number }) {
@@ -11,7 +12,7 @@ function CartSummaryContent({ total }: { total: number }) {
       <h2 className='cart-summary-title'>Order Summary</h2>
       <div className='cart-summary-row'>
         <span>Subtotal</span>
-        <span>₺{total}</span>
+        <span>₺{total.toFixed(2)}</span>
       </div>
       <div className='cart-summary-row'>
         <span>Shipping</span>
@@ -23,7 +24,7 @@ function CartSummaryContent({ total }: { total: number }) {
       </div>
       <div className='cart-summary-row cart-summary-total'>
         <span>Total</span>
-        <span>₺{total}</span>
+        <span>₺{total.toFixed(2)}</span>
       </div>
       <div className='cart-coupon'>
         <input
@@ -45,19 +46,24 @@ function CartSummaryContent({ total }: { total: number }) {
   );
 }
 
-// Demo: use a simple cart store or context with items. For now we only have count in context.
-// This page shows empty state when count is 0, or a demo filled state.
 export default function CartPage() {
-  const { cartCount } = useCart();
-  const isEmpty = cartCount === 0;
+  const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const isEmpty = cartItems.length === 0;
 
-  // Demo items for filled state (first 2 products)
-  const demoItems = products.slice(0, 2).map((p, i) => ({
-    ...p,
-    qty: i + 1,
-    size: 'M',
-    color: 'Black',
-  }));
+  const handleRemoveItem = (id: string | number) => {
+    dispatch(removeFromCart(id));
+  };
+
+  const handleUpdateQuantity = (id: string | number, quantity: number) => {
+    if (quantity < 1) {
+      dispatch(removeFromCart(id));
+    } else {
+      dispatch(updateQuantity({ id, quantity }));
+    }
+  };
+
+  const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   return (
     <div className='cart-page'>
@@ -89,45 +95,59 @@ export default function CartPage() {
         </div>
       ) : (
         <>
-          <h1 className='cart-title'>Shopping Cart</h1>
+          <h1 className='cart-title'>Shopping Cart ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})</h1>
           <div className='cart-layout'>
             <div className='cart-items'>
-              {demoItems.map((item) => (
+              {cartItems.map((item) => (
                 <div key={item.id} className='cart-item'>
                   <div
                     className='cart-item-thumb'
                     style={{
                       width: 100,
                       height: 100,
-                      background: 'rgba(26,10,31,0.8)',
+                      background: item.product.images?.[0]?.url 
+                        ? `url(${item.product.images[0].url}) center/cover` 
+                        : 'rgba(26,10,31,0.8)',
                       border: '2px solid rgba(139,115,85,0.3)',
                     }}
                   />
                   <div className='cart-item-details'>
-                    <h3 className='cart-item-name'>{item.name}</h3>
+                    <h3 className='cart-item-name'>{item.product.name}</h3>
                     <p className='cart-item-meta'>
-                      {item.category} · {item.size} · {item.color}
+                      {item.product.productType && item.product.theme 
+                        ? `${item.product.productType} · ${item.product.theme}`
+                        : item.product.productType || item.product.theme || 'Product'
+                      }
                     </p>
                     <div className='cart-item-qty'>
-                      <button type='button' aria-label='Decrease'>
+                      <button 
+                        type='button' 
+                        aria-label='Decrease'
+                        onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                      >
                         <Minus size={14} />
                       </button>
-                      <span>{item.qty}</span>
-                      <button type='button' aria-label='Increase'>
+                      <span>{item.quantity}</span>
+                      <button 
+                        type='button' 
+                        aria-label='Increase'
+                        onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                      >
                         <Plus size={14} />
                       </button>
                     </div>
                   </div>
                   <div className='cart-item-prices'>
-                    <span className='cart-item-unit'>₺{item.price}</span>
+                    <span className='cart-item-unit'>₺{item.price.toFixed(2)}</span>
                     <span className='cart-item-total'>
-                      ₺{item.price * item.qty}
+                      ₺{(item.price * item.quantity).toFixed(2)}
                     </span>
                   </div>
                   <button
                     type='button'
                     className='cart-item-remove'
                     aria-label='Remove item'
+                    onClick={() => handleRemoveItem(item.id)}
                   >
                     <X size={20} />
                   </button>
@@ -136,19 +156,14 @@ export default function CartPage() {
             </div>
             <aside className='cart-sidebar'>
               <div className='cart-summary-standalone cart-summary'>
-                <CartSummaryContent
-                  total={demoItems.reduce((s, i) => s + i.price * i.qty, 0)}
-                />
+                <CartSummaryContent total={total} />
               </div>
               <details className='cart-summary-collapse' open>
                 <summary>
-                  Order Summary — ₺
-                  {demoItems.reduce((s, i) => s + i.price * i.qty, 0)}
+                  Order Summary — ₺{total.toFixed(2)}
                 </summary>
                 <div className='cart-summary'>
-                  <CartSummaryContent
-                    total={demoItems.reduce((s, i) => s + i.price * i.qty, 0)}
-                  />
+                  <CartSummaryContent total={total} />
                 </div>
               </details>
             </aside>

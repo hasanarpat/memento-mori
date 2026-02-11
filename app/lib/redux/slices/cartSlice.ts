@@ -7,8 +7,15 @@ export interface CartItem {
     name: string;
     slug: string;
     price: number;
-    description: string;
-    images?: any[];
+    description: any; // Lexical editor format
+    images?: any;
+    productType?: string;
+    theme?: string;
+    category?: any[];
+    stock?: number;
+    badge?: string | null;
+    isNewArrival?: boolean;
+    isFeatured?: boolean;
   };
   quantity: number;
   price: number;
