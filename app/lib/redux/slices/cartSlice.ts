@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
-import { RootState } from '../store';
 
 export interface CartItem {
   id: string | number; // Product ID
@@ -30,7 +29,7 @@ const initialState: CartState = {
 export const fetchCart = createAsyncThunk(
   'cart/fetchCart',
   async (_, { getState }) => {
-    const state = getState() as RootState;
+    const state = getState() as { auth: { token: string | null } };
     const token = state.auth.token;
     if (!token) throw new Error('No token');
 
@@ -57,7 +56,7 @@ export const fetchCart = createAsyncThunk(
 export const syncCart = createAsyncThunk(
   'cart/syncCart',
   async (items: CartItem[], { getState }) => {
-    const state = getState() as RootState;
+    const state = getState() as { auth: { token: string | null } };
     const token = state.auth.token;
     if (!token) return; // Silent return if not auth
 
@@ -120,7 +119,7 @@ export const { addToCart, removeFromCart, updateQuantity, toggleCart, setCartOpe
 export const mergeCartWithBackend = createAsyncThunk(
   'cart/mergeCartWithBackend',
   async (localItems: CartItem[], { dispatch, getState }) => {
-    const state = getState() as RootState;
+    const state = getState() as { auth: { token: string | null } };
     const token = state.auth.token;
     if (!token) return;
 
