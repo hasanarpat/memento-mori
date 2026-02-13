@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Heart, Minus, Plus, ChevronDown, ChevronUp, Star, ImagePlus, X, ZoomIn } from "lucide-react";
 import { useCart, useWishlist } from "@/components/ShopLayout";
 import ImageViewer from "@/app/components/ImageViewer";
+import { useAppSelector } from "@/app/lib/redux/hooks";
 
 const COLORS = ["#1a0a1f", "#2b0d0d", "#3d1f1f", "#4a2c2a"];
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL"];
@@ -105,10 +106,12 @@ export default function ProductDetailClient({
   const [viewerImages, setViewerImages] = useState<string[]>([]);
   const [viewerIndex, setViewerIndex] = useState(0);
   const [viewerIsProductGallery, setViewerIsProductGallery] = useState(false);
+  const [reviewFormOpen, setReviewFormOpen] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [reviewPhotos, setReviewPhotos] = useState<string[]>([]);
   const [reviewPhotoFiles, setReviewPhotoFiles] = useState<File[]>([]);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   const openPhotoViewer = useCallback((images: string[], index: number) => {
     setViewerImages(images);
@@ -165,6 +168,7 @@ export default function ProductDetailClient({
     setReviewText("");
     setReviewPhotos([]);
     setReviewPhotoFiles([]);
+    setReviewFormOpen(false);
   };
 
   const stock = product.stock || 0;
@@ -457,80 +461,105 @@ export default function ProductDetailClient({
                 </li>
               ))}
             </ul>
-            <div className="product-review-form">
-              <h3 className="product-review-form-title">Write a review</h3>
-              <div className="product-review-form-rating">
-                <span className="product-review-form-label">Rating</span>
-                <div className="product-review-stars product-review-form-stars">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setReviewRating(i)}
-                      aria-label={`${i} star`}
-                      aria-pressed={reviewRating === i}
-                    >
-                      <Star
-                        size={24}
-                        fill={i <= reviewRating ? "var(--accent)" : "none"}
-                        color="var(--accent)"
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <label className="product-review-form-label">
-                Your review
-                <textarea
-                  className="product-review-form-textarea"
-                  value={reviewText}
-                  onChange={(e) => setReviewText(e.target.value)}
-                  rows={4}
-                  placeholder="Share your experience..."
-                />
-              </label>
-              <div className="product-review-form-photos">
-                <span className="product-review-form-label">Photos (optional, max 5)</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleReviewPhotoChange}
-                  className="product-review-form-file"
-                  id="review-photos"
-                />
-                <label htmlFor="review-photos" className="product-review-form-upload">
-                  <ImagePlus size={20} />
-                  Add photos
-                </label>
-                {reviewPhotos.length > 0 && (
-                  <div className="product-review-form-preview">
-                    {reviewPhotos.map((src, i) => (
-                      <div key={i} className="product-review-form-preview-item">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={src} alt="" />
-                        <button
-                          type="button"
-                          onClick={() => removeReviewPhoto(i)}
-                          className="product-review-form-preview-remove"
-                          aria-label="Remove photo"
-                        >
-                          <X size={14} />
-                        </button>
+            {isAuthenticated && (
+              <div className="product-review-form-wrap">
+                {!reviewFormOpen ? (
+                  <button
+                    type="button"
+                    className="product-review-write-btn"
+                    onClick={() => setReviewFormOpen(true)}
+                    aria-expanded="false"
+                    aria-controls="product-review-form"
+                  >
+                    Write a review
+                  </button>
+                ) : (
+                  <div id="product-review-form" className="product-review-form" role="region" aria-labelledby="review-form-heading">
+                    <h3 id="review-form-heading" className="product-review-form-title">Write a review</h3>
+                    <div className="product-review-form-rating">
+                      <span className="product-review-form-label">Rating</span>
+                      <div className="product-review-stars product-review-form-stars">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => setReviewRating(i)}
+                            aria-label={`${i} star`}
+                            aria-pressed={reviewRating === i}
+                          >
+                            <Star
+                              size={24}
+                              fill={i <= reviewRating ? "var(--accent)" : "none"}
+                              color="var(--accent)"
+                            />
+                          </button>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+                    <label className="product-review-form-label">
+                      Your review
+                      <textarea
+                        className="product-review-form-textarea"
+                        value={reviewText}
+                        onChange={(e) => setReviewText(e.target.value)}
+                        rows={4}
+                        placeholder="Share your experience..."
+                      />
+                    </label>
+                    <div className="product-review-form-photos">
+                      <span className="product-review-form-label">Photos (optional, max 5)</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleReviewPhotoChange}
+                        className="product-review-form-file"
+                        id="review-photos"
+                      />
+                      <label htmlFor="review-photos" className="product-review-form-upload">
+                        <ImagePlus size={20} />
+                        Add photos
+                      </label>
+                      {reviewPhotos.length > 0 && (
+                        <div className="product-review-form-preview">
+                          {reviewPhotos.map((src, i) => (
+                            <div key={i} className="product-review-form-preview-item">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={src} alt="" />
+                              <button
+                                type="button"
+                                onClick={() => removeReviewPhoto(i)}
+                                className="product-review-form-preview-remove"
+                                aria-label="Remove photo"
+                              >
+                                <X size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="product-review-form-actions">
+                      <button
+                        type="button"
+                        className="product-detail-btn-ghost"
+                        onClick={() => setReviewFormOpen(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        className="product-detail-btn-primary"
+                        onClick={submitReview}
+                        disabled={!reviewRating || !reviewText.trim()}
+                      >
+                        Submit review
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
-              <button
-                type="button"
-                className="product-detail-btn-primary"
-                onClick={submitReview}
-                disabled={!reviewRating || !reviewText.trim()}
-              >
-                Submit review
-              </button>
-            </div>
+            )}
           </section>
         </div>
       </div>

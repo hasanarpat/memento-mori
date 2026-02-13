@@ -3414,11 +3414,52 @@
   display: block;
 }
 
+.product-review-form-wrap {
+  margin-top: 1.5rem;
+}
+
+.product-review-write-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--aged-brass);
+  background: transparent;
+  border: 1px solid rgba(139, 115, 85, 0.4);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.product-review-write-btn:hover {
+  border-color: var(--accent);
+  color: var(--bone);
+  background: rgba(184, 134, 11, 0.08);
+}
+
 .product-review-form {
-  margin-top: 2rem;
+  margin-top: 0;
   padding: 1.5rem;
   background: rgba(26, 10, 31, 0.4);
   border: 2px solid rgba(139, 115, 85, 0.3);
+}
+
+.product-review-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.product-review-form-actions .product-detail-btn-primary {
+  width: auto;
+  padding: 0.75rem 1.5rem;
+}
+
+.product-review-form-actions .product-detail-btn-ghost {
+  padding: 0.75rem 1.25rem;
 }
 
 .product-review-form-title {
