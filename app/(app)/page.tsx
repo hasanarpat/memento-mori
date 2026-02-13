@@ -365,15 +365,18 @@ export default async function HomePage() {
               const video = typeof r.video === 'object' && r.video && 'url' in r.video ? (r.video as { url?: string }).url : null;
               const product = typeof r.product === 'object' && r.product && 'slug' in r.product ? (r.product as { slug?: string; name?: string }) : null;
               const category = typeof r.category === 'object' && r.category && 'slug' in r.category ? (r.category as { slug?: string; title?: string }) : null;
+              const page = typeof r.page === 'object' && r.page && 'slug' in r.page ? (r.page as { slug?: string; title?: string }) : null;
               const href = r.linkType === 'product' && product?.slug
                 ? `/product/${product.slug}`
                 : r.linkType === 'category' && category?.slug
                   ? `/collections/${category.slug}`
-                  : r.linkType === 'custom' && r.customUrl
-                    ? r.customUrl.startsWith('http') ? r.customUrl : `/${r.customUrl.replace(/^\//, '')}`
-                    : null;
+                  : r.linkType === 'page' && page?.slug
+                    ? `/p/${page.slug}`
+                    : r.linkType === 'custom' && r.customUrl
+                      ? r.customUrl.startsWith('http') ? r.customUrl : `/${r.customUrl.replace(/^\//, '')}`
+                      : null;
               const isExternalHref = !!href && href.startsWith('http');
-              const linkLabel = r.linkLabel?.trim() || (r.linkType === 'product' ? 'Ürünü Gör' : r.linkType === 'category' ? 'Koleksiyona Git' : 'Git');
+              const linkLabel = r.linkLabel?.trim() || (r.linkType === 'product' ? 'Ürünü Gör' : r.linkType === 'category' ? 'Koleksiyona Git' : r.linkType === 'page' ? 'Sayfaya Git' : 'Git');
               return (
                 <ReelCard
                   key={r.id}

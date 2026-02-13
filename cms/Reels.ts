@@ -64,6 +64,7 @@ export const Reels: CollectionConfig = {
       options: [
         { label: 'Tek ürün', value: 'product' },
         { label: 'Koleksiyon / kategori', value: 'category' },
+        { label: 'Sayfa (kampanya vb.)', value: 'page' },
         { label: 'Özel URL', value: 'custom' },
       ],
       admin: {
@@ -92,12 +93,22 @@ export const Reels: CollectionConfig = {
       },
     },
     {
+      name: 'page',
+      type: 'relationship',
+      relationTo: 'pages',
+      label: 'Sayfa',
+      admin: {
+        condition: (data) => data?.linkType === 'page',
+        description: 'Link tıklanınca gidilecek kampanya / özel sayfa',
+      },
+    },
+    {
       name: 'customUrl',
       type: 'text',
       label: 'Özel URL',
       admin: {
         condition: (data) => data?.linkType === 'custom',
-        description: 'Örn: /kampanya/yaz-2024 veya harici link',
+        description: 'Örn: p/yaz-kampanyasi veya https://...',
       },
     },
     {
