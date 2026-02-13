@@ -129,9 +129,8 @@ export const mergeWishlistWithBackend = createAsyncThunk(
       // 3. Sync merged list to Backend
       await dispatch(syncWishlist(mergedIds));
 
-      // 4. Update Local State (via fetchWishlist or manually setting state)
-      await dispatch(fetchWishlist());
-      
+      // 4. Update local state (avoid extra GET)
+      dispatch(setWishlist(mergedIds));
     } catch (err) {
        console.error('Merge wishlist failed', err);
     }

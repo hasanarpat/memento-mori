@@ -8,6 +8,34 @@ import { removeFromCart, updateQuantity } from '../../lib/redux/slices/cartSlice
 import { products } from '../../data/shop';
 import AvailableCoupons from '../../components/AvailableCoupons';
 
+function CartLoadingSkeleton() {
+  return (
+    <div className='cart-page'>
+      <div className='cart-loading-skeleton'>
+        <div className='cart-loading-title' />
+        <div className='cart-loading-layout'>
+          <div className='cart-loading-items'>
+            {[1, 2].map((i) => (
+              <div key={i} className='cart-loading-item'>
+                <div className='cart-loading-thumb' />
+                <div className='cart-loading-details'>
+                  <div className='cart-loading-line cart-loading-name' />
+                  <div className='cart-loading-line cart-loading-meta' />
+                  <div className='cart-loading-qty' />
+                </div>
+                <div className='cart-loading-prices' />
+              </div>
+            ))}
+          </div>
+          <div className='cart-loading-sidebar'>
+            <div className='cart-loading-summary' />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CartSummaryContent({ 
   total, 
   appliedCoupon,
@@ -92,8 +120,12 @@ function CartSummaryContent({
 export default function CartPage() {
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state) => state.cart.items);
-  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
-  const isEmpty = cartItems.length === 0;
+  const cartLoading = useAppSelector((state) => state.cart.loading);
+  const { user, isAuthenticated, loading: authLoading } = useAppSelector((state) => state.auth);
+
+  const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('payload-token');
+  const isLoading = (hasToken && authLoading) || (isAuthenticated && cartLoading);
+  const isEmpty = !isLoading && cartItems.length === 0;
 
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [discount, setDiscount] = useState(0);
@@ -148,7 +180,9 @@ export default function CartPage() {
 
   return (
     <div className='cart-page'>
-      {isEmpty ? (
+      {isLoading ? (
+        <CartLoadingSkeleton />
+      ) : isEmpty ? (
         <div className='cart-empty'>
           <ShoppingBag className='cart-empty-icon' size={80} />
           <h1 className='cart-empty-title'>Your cart is empty</h1>

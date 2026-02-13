@@ -23,12 +23,17 @@ export interface CartItem {
 
 interface CartState {
   items: CartItem[];
-  isOpen: boolean; // UI State (Sidebar)
+  isOpen: boolean;
+  dirty: boolean;
+  /** True while fetchCart or mergeCartWithBackend is in progress */
+  loading: boolean;
 }
 
 const initialState: CartState = {
   items: [],
   isOpen: false,
+  dirty: false,
+  loading: false,
 };
 
 
@@ -83,6 +88,7 @@ const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action: PayloadAction<CartItem>) => {
+      state.dirty = true;
       const existingItem = state.items.find((item) => item.id === action.payload.id);
       if (existingItem) {
         existingItem.quantity += action.payload.quantity;
@@ -91,13 +97,19 @@ const cartSlice = createSlice({
       }
     },
     removeFromCart: (state, action: PayloadAction<string | number>) => {
+      state.dirty = true;
       state.items = state.items.filter((item) => item.id !== action.payload);
     },
     updateQuantity: (state, action: PayloadAction<{ id: string | number; quantity: number }>) => {
+      state.dirty = true;
       const item = state.items.find((i) => i.id === action.payload.id);
       if (item) {
         item.quantity = Math.max(1, action.payload.quantity);
       }
+    },
+    setCartItems: (state, action: PayloadAction<CartItem[]>) => {
+      state.items = action.payload;
+      state.dirty = false;
     },
     toggleCart: (state) => {
       state.isOpen = !state.isOpen;
@@ -110,18 +122,34 @@ const cartSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchCart.fulfilled, (state, action) => {
-      // Merge strategy: Server has truth
-      // Or local overrides?
-      // Since we want persist across devices, server wins on login.
-      // But if user added items as guest then logged in?
-      // For now, simpler: Server wins.
-      state.items = action.payload;
-    });
+    builder
+      .addCase(fetchCart.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchCart.fulfilled, (state, action) => {
+        state.items = action.payload;
+        state.dirty = false;
+        state.loading = false;
+      })
+      .addCase(fetchCart.rejected, (state) => {
+        state.loading = false;
+      })
+      .addCase(mergeCartWithBackend.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(mergeCartWithBackend.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(mergeCartWithBackend.rejected, (state) => {
+        state.loading = false;
+      })
+      .addCase(syncCart.fulfilled, (state) => {
+        state.dirty = false;
+      });
   }
 });
 
-export const { addToCart, removeFromCart, updateQuantity, toggleCart, setCartOpen, clearCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateQuantity, toggleCart, setCartOpen, clearCart, setCartItems } = cartSlice.actions;
 
 export const mergeCartWithBackend = createAsyncThunk(
   'cart/mergeCartWithBackend',
@@ -153,11 +181,11 @@ export const mergeCartWithBackend = createAsyncThunk(
       // Add backend items first
       backendItems.forEach(item => mergedMap.set(item.id, { ...item }));
 
-      // Merge local items
+      // Merge local items: same product → take max quantity (avoid double-count on F5)
       localItems.forEach(localItem => {
          if (mergedMap.has(localItem.id)) {
             const existing = mergedMap.get(localItem.id)!;
-            existing.quantity += localItem.quantity;
+            existing.quantity = Math.max(existing.quantity, localItem.quantity);
          } else {
             mergedMap.set(localItem.id, localItem);
          }
@@ -168,10 +196,8 @@ export const mergeCartWithBackend = createAsyncThunk(
       // 3. Sync merged list to Backend
       await dispatch(syncCart(mergedItems));
 
-      // 4. Update Local State (via fetchCart or manually setting state)
-      // Since syncCart updates backend, we can just set state or re-fetch.
-      // Re-fetching is safer to ensure backend consistency.
-      await dispatch(fetchCart());
+      // 4. Update local state from merged result (avoid extra GET)
+      dispatch(setCartItems(mergedItems));
 
     } catch (err) {
       console.error('Merge cart failed', err);

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Check } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Check, ChevronDown, CreditCard, Plus } from 'lucide-react';
 
 const STEPS = ['Shipping', 'Payment', 'Review'];
 
@@ -27,6 +27,21 @@ export default function CheckoutPage() {
     { id: 1, brand: 'Visa', last4: '4242', expiry: '12/26' },
     { id: 2, brand: 'Mastercard', last4: '8888', expiry: '09/25' },
   ];
+
+  const cardsDropdownRef = useRef<HTMLDivElement>(null);
+  const [cardsDropdownOpen, setCardsDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (cardsDropdownRef.current && !cardsDropdownRef.current.contains(e.target as Node)) {
+        setCardsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selectedCardData = selectedCard != null ? savedCards.find((c) => c.id === selectedCard) : null;
 
   return (
     <div className='checkout-page'>
@@ -129,37 +144,63 @@ export default function CheckoutPage() {
               <h2>Payment Method</h2>
 
               {!isAddingNewCard && savedCards.length > 0 && (
-                <div className='saved-items-container'>
-                  <h3 className='saved-items-title'>Select a Saved Card</h3>
-                  <div className='saved-items-grid'>
-                    {savedCards.map((card) => (
-                      <div
-                        key={card.id}
-                        className={`saved-item-card ${selectedCard === card.id ? 'active' : ''}`}
+                <div className='checkout-cards-dropdown-wrap' ref={cardsDropdownRef}>
+                  <h3 className='saved-items-title'>Payment method</h3>
+                  <button
+                    type='button'
+                    className='checkout-cards-trigger'
+                    onClick={() => setCardsDropdownOpen((o) => !o)}
+                    aria-expanded={cardsDropdownOpen}
+                    aria-haspopup='listbox'
+                    aria-label={selectedCardData ? `${selectedCardData.brand} ending ${selectedCardData.last4}` : 'Select a saved card'}
+                  >
+                    <CreditCard size={20} className='checkout-cards-trigger-icon' />
+                    {selectedCardData ? (
+                      <span className='checkout-cards-trigger-detail'>
+                        <span className='checkout-cards-trigger-brand'>{selectedCardData.brand}</span>
+                        <span className='checkout-cards-trigger-meta'>
+                          **** {selectedCardData.last4} · Expires {selectedCardData.expiry}
+                        </span>
+                      </span>
+                    ) : (
+                      <span className='checkout-cards-trigger-placeholder'>Select a saved card</span>
+                    )}
+                    <ChevronDown size={18} className={`checkout-cards-trigger-chevron ${cardsDropdownOpen ? 'open' : ''}`} />
+                  </button>
+                  {cardsDropdownOpen && (
+                    <div className='checkout-cards-dropdown-list' role='listbox'>
+                      {savedCards.map((card) => (
+                        <button
+                          key={card.id}
+                          type='button'
+                          role='option'
+                          aria-selected={selectedCard === card.id}
+                          className={`checkout-cards-dropdown-item ${selectedCard === card.id ? 'selected' : ''}`}
+                          onClick={() => {
+                            setSelectedCard(card.id);
+                            setCardsDropdownOpen(false);
+                          }}
+                        >
+                          <span className='checkout-cards-item-brand'>{card.brand}</span>
+                          <span className='checkout-cards-item-number'>**** {card.last4}</span>
+                          <span className='checkout-cards-item-expiry'>Exp {card.expiry}</span>
+                          {selectedCard === card.id && <Check size={16} className='checkout-cards-item-check' />}
+                        </button>
+                      ))}
+                      <button
+                        type='button'
+                        className='checkout-cards-dropdown-new'
                         onClick={() => {
-                          setSelectedCard(card.id);
-                          setIsAddingNewCard(false);
+                          setSelectedCard(null);
+                          setIsAddingNewCard(true);
+                          setCardsDropdownOpen(false);
                         }}
                       >
-                        <div className='saved-item-header'>
-                          <strong>
-                            {card.brand} **** {card.last4}
-                          </strong>
-                          {selectedCard === card.id && <Check size={14} />}
-                        </div>
-                        <p>Expires: {card.expiry}</p>
-                      </div>
-                    ))}
-                    <button
-                      className='add-new-item-btn'
-                      onClick={() => {
-                        setSelectedCard(null);
-                        setIsAddingNewCard(true);
-                      }}
-                    >
-                      + New Card
-                    </button>
-                  </div>
+                        <Plus size={18} />
+                        Add new card
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
