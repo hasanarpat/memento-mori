@@ -1,9 +1,10 @@
 import { MetadataRoute } from "next";
+import { getPayload } from "payload";
+import configPromise from "@payload-config";
 import { SITE_URL } from "@/app/lib/site";
-import { products, genres } from "@/app/data/shop";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const base = [
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const base: MetadataRoute.Sitemap = [
     { url: SITE_URL, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 1 },
     { url: `${SITE_URL}/collections`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
     { url: `${SITE_URL}/worlds`, lastModified: new Date(), changeFrequency: "weekly" as const, priority: 0.9 },
@@ -22,19 +23,36 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/kargo`, lastModified: new Date(), changeFrequency: "monthly" as const, priority: 0.5 },
   ];
 
-  const genreUrls = genres.map((g) => ({
-    url: `${SITE_URL}/collections/${g.slug}`,
-    lastModified: new Date(),
+  const payload = await getPayload({ config: configPromise });
+
+  const [categoriesResult, productsResult] = await Promise.all([
+    payload.find({
+      collection: "categories",
+      limit: 500,
+      pagination: false,
+      select: { slug: true, updatedAt: true },
+    }),
+    payload.find({
+      collection: "products",
+      limit: 2000,
+      pagination: false,
+      select: { slug: true, id: true, updatedAt: true },
+    }),
+  ]);
+
+  const categoryUrls: MetadataRoute.Sitemap = categoriesResult.docs.map((c) => ({
+    url: `${SITE_URL}/collections/${c.slug}`,
+    lastModified: c.updatedAt ? new Date(c.updatedAt) : new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
 
-  const productUrls = products.map((p) => ({
+  const productUrls: MetadataRoute.Sitemap = productsResult.docs.map((p) => ({
     url: `${SITE_URL}/product/${p.slug ?? p.id}`,
-    lastModified: new Date(),
+    lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));
 
-  return [...base, ...genreUrls, ...productUrls];
+  return [...base, ...categoryUrls, ...productUrls];
 }
