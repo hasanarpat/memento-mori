@@ -857,6 +857,26 @@
   border-bottom: 1px solid rgba(139, 115, 85, 0.15);
 }
 
+.mobile-menu-close {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(139, 115, 85, 0.35);
+  color: var(--aged-silver);
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.mobile-menu-close:hover {
+  border-color: var(--accent);
+  color: var(--bone);
+  background: rgba(184, 134, 11, 0.08);
+}
+
 .mobile-menu-search-container {
   padding: 1.5rem;
 }
@@ -7109,6 +7129,17 @@
 @media (max-width: 1024px) {
   .nav {
     display: none;
+  }
+
+  .header-actions .search-trigger,
+  .header-actions .icon-button,
+  .header-actions .header-login,
+  .header-actions .nav-dropdown-wrapper {
+    display: none !important;
+  }
+
+  .header-actions {
+    gap: 0.5rem;
   }
 
   .mobile-menu-btn {
