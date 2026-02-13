@@ -1,12 +1,36 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { ShoppingBag, X, Minus, Plus } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../lib/redux/hooks';
 import { removeFromCart, updateQuantity } from '../../lib/redux/slices/cartSlice';
 import { products } from '../../data/shop';
+import AvailableCoupons from '../../components/AvailableCoupons';
 
-function CartSummaryContent({ total }: { total: number }) {
+function CartSummaryContent({ 
+  total, 
+  appliedCoupon,
+  discount,
+  onApplyCoupon,
+  onRemoveCoupon
+}: { 
+  total: number;
+  appliedCoupon: string | null;
+  discount: number;
+  onApplyCoupon: (code: string) => void;
+  onRemoveCoupon: () => void;
+}) {
+  const [couponInput, setCouponInput] = useState('');
+
+  const handleApplyCoupon = () => {
+    if (couponInput.trim()) {
+      onApplyCoupon(couponInput.trim().toUpperCase());
+    }
+  };
+
+  const finalTotal = total - discount;
+
   return (
     <>
       <h2 className='cart-summary-title'>Order Summary</h2>
@@ -14,6 +38,22 @@ function CartSummaryContent({ total }: { total: number }) {
         <span>Subtotal</span>
         <span>₺{total.toFixed(2)}</span>
       </div>
+      {appliedCoupon && (
+        <div className='cart-summary-row cart-summary-discount'>
+          <span>
+            Coupon ({appliedCoupon})
+            <button 
+              type='button' 
+              onClick={onRemoveCoupon}
+              className='cart-coupon-remove'
+              aria-label='Remove coupon'
+            >
+              <X size={14} />
+            </button>
+          </span>
+          <span className='discount-amount'>-₺{discount.toFixed(2)}</span>
+        </div>
+      )}
       <div className='cart-summary-row'>
         <span>Shipping</span>
         <span>Calculated at checkout</span>
@@ -24,15 +64,18 @@ function CartSummaryContent({ total }: { total: number }) {
       </div>
       <div className='cart-summary-row cart-summary-total'>
         <span>Total</span>
-        <span>₺{total.toFixed(2)}</span>
+        <span>₺{finalTotal.toFixed(2)}</span>
       </div>
       <div className='cart-coupon'>
         <input
           type='text'
           placeholder='Coupon code'
           className='cart-coupon-input'
+          value={couponInput}
+          onChange={(e) => setCouponInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
         />
-        <button type='button' className='cart-coupon-btn'>
+        <button type='button' className='cart-coupon-btn' onClick={handleApplyCoupon}>
           Apply
         </button>
       </div>
@@ -49,7 +92,12 @@ function CartSummaryContent({ total }: { total: number }) {
 export default function CartPage() {
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector((state) => state.cart.items);
+  const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const isEmpty = cartItems.length === 0;
+
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+  const [discount, setDiscount] = useState(0);
+  const [couponError, setCouponError] = useState<string | null>(null);
 
   const handleRemoveItem = (id: string | number) => {
     dispatch(removeFromCart(id));
@@ -64,6 +112,39 @@ export default function CartPage() {
   };
 
   const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  const handleApplyCoupon = async (code: string) => {
+    try {
+      setCouponError(null);
+      const res = await fetch('/api/shop/validate-coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code,
+          orderAmount: total,
+          userId: user?.id,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.valid) {
+        setCouponError(data.error || 'Invalid coupon code');
+        return;
+      }
+
+      setAppliedCoupon(code);
+      setDiscount(data.coupon.discountAmount);
+    } catch (error) {
+      setCouponError('Failed to apply coupon');
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setDiscount(0);
+    setCouponError(null);
+  };
 
   return (
     <div className='cart-page'>
@@ -155,15 +236,31 @@ export default function CartPage() {
               ))}
             </div>
             <aside className='cart-sidebar'>
+              {couponError && (
+                <div className='cart-coupon-error'>{couponError}</div>
+              )}
+              <AvailableCoupons onApplyCoupon={handleApplyCoupon} />
               <div className='cart-summary-standalone cart-summary'>
-                <CartSummaryContent total={total} />
+                <CartSummaryContent 
+                  total={total}
+                  appliedCoupon={appliedCoupon}
+                  discount={discount}
+                  onApplyCoupon={handleApplyCoupon}
+                  onRemoveCoupon={handleRemoveCoupon}
+                />
               </div>
               <details className='cart-summary-collapse' open>
                 <summary>
-                  Order Summary — ₺{total.toFixed(2)}
+                  Order Summary — ₺{(total - discount).toFixed(2)}
                 </summary>
                 <div className='cart-summary'>
-                  <CartSummaryContent total={total} />
+                  <CartSummaryContent 
+                    total={total}
+                    appliedCoupon={appliedCoupon}
+                    discount={discount}
+                    onApplyCoupon={handleApplyCoupon}
+                    onRemoveCoupon={handleRemoveCoupon}
+                  />
                 </div>
               </details>
             </aside>

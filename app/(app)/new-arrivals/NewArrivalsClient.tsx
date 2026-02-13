@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -32,9 +32,25 @@ export default function NewArrivalsClient({
   categories,
 }: NewArrivalsClientProps) {
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
   const [priceRange, setPriceRange] = useState([0, 2000]);
+  const currentMinPrice = priceRange[0];
+  const currentMaxPrice = priceRange[1];
   const [newThisWeekOnly, setNewThisWeekOnly] = useState(false);
   const [openSection, setOpenSection] = useState<DateGroup | null>('this-week');
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target as Node)) {
+        setCategoryDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const categoryLabel = categoryFilter === 'all' ? 'All Worlds' : (categories.find((c) => c.slug === categoryFilter)?.title ?? 'All Worlds');
 
   const filterProduct = (p: Product) => {
     // Category check
@@ -106,34 +122,98 @@ export default function NewArrivalsClient({
           <h3 className='filter-title'>Filters</h3>
           <div className='filter-section'>
             <span className='filter-label'>Category</span>
-            <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              className='filter-select'
-              aria-label='Filter by category'
-            >
-              <option value='all'>All Worlds</option>
-              {categories.map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {c.title}
-                </option>
-              ))}
-            </select>
+            <div className='category-dropdown-wrap' ref={categoryDropdownRef}>
+              <button
+                type='button'
+                className='category-dropdown-trigger'
+                onClick={() => setCategoryDropdownOpen((o) => !o)}
+                aria-expanded={categoryDropdownOpen}
+                aria-haspopup='listbox'
+                aria-label='Filter by category'
+              >
+                <span className='category-dropdown-value'>{categoryLabel}</span>
+                <ChevronDown size={14} className={categoryDropdownOpen ? 'rotate-180' : ''} />
+              </button>
+              {categoryDropdownOpen && (
+                <div className='category-dropdown-list' role='listbox'>
+                  <button
+                    type='button'
+                    role='option'
+                    aria-selected={categoryFilter === 'all'}
+                    className={`category-dropdown-item ${categoryFilter === 'all' ? 'active' : ''}`}
+                    onClick={() => {
+                      setCategoryFilter('all');
+                      setCategoryDropdownOpen(false);
+                    }}
+                  >
+                    All Worlds
+                  </button>
+                  {categories.map((c) => (
+                    <button
+                      key={c.slug}
+                      type='button'
+                      role='option'
+                      aria-selected={categoryFilter === c.slug}
+                      className={`category-dropdown-item ${categoryFilter === c.slug ? 'active' : ''}`}
+                      onClick={() => {
+                        setCategoryFilter(c.slug);
+                        setCategoryDropdownOpen(false);
+                      }}
+                    >
+                      {c.title}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
           <div className='filter-section'>
-            <span className='filter-label'>Price Cap</span>
+            <span className='filter-label'>Price</span>
             <div className='filter-price-display'>
-              Up to ₺{priceRange[1]}
+              ₺{currentMinPrice} – ₺{currentMaxPrice}
             </div>
-            <input
-              type='range'
-              min={0}
-              max={2000}
-              step={50}
-              value={priceRange[1]}
-              onChange={(e) => setPriceRange([0, parseInt(e.target.value, 10)])}
-              className='price-slider'
-            />
+
+            <div className='dual-slider-container'>
+              <div className='slider-track'></div>
+              <input
+                type='range'
+                min={0}
+                max={2000}
+                step={10}
+                value={currentMinPrice}
+                onChange={(e) => {
+                  const val = Math.min(parseInt(e.target.value, 10), currentMaxPrice - 100);
+                  setPriceRange([val, currentMaxPrice]);
+                }}
+                className='price-slider min-slider'
+                style={{ zIndex: currentMinPrice > 1000 ? 5 : 3 }}
+              />
+              <input
+                type='range'
+                min={0}
+                max={2000}
+                step={10}
+                value={currentMaxPrice}
+                onChange={(e) => {
+                  const val = Math.max(parseInt(e.target.value, 10), currentMinPrice + 100);
+                  setPriceRange([currentMinPrice, val]);
+                }}
+                className='price-slider max-slider'
+                style={{ zIndex: currentMinPrice > 1000 ? 3 : 5 }}
+              />
+            </div>
+
+            <div className='price-inputs-row'>
+              <div className='price-input-wrap static'>
+                <span className='price-currency'>₺</span>
+                <span className='price-value'>{currentMinPrice}</span>
+              </div>
+              <span className='price-separator'>-</span>
+              <div className='price-input-wrap static'>
+                <span className='price-currency'>₺</span>
+                <span className='price-value'>{currentMaxPrice}</span>
+              </div>
+            </div>
           </div>
           <label className='filter-checkbox'>
             <input

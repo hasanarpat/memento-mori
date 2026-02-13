@@ -992,9 +992,156 @@
 
 .mobile-menu-quick-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
   margin-bottom: 1.5rem;
+}
+
+/* Account Section Styles */
+.mobile-menu-account-section {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobile-account-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(26, 10, 31, 0.8), rgba(43, 13, 13, 0.6));
+  border: 1px solid rgba(139, 115, 85, 0.3);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-account-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(184, 134, 11, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.mobile-account-card:hover::before {
+  transform: translateX(100%);
+}
+
+.mobile-account-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(184, 134, 11, 0.15);
+  border: 1px solid rgba(184, 134, 11, 0.3);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.mobile-account-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.mobile-account-card-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--bone);
+  letter-spacing: 0.5px;
+}
+
+.mobile-account-card-desc {
+  font-size: 0.75rem;
+  color: var(--aged-silver);
+  opacity: 0.8;
+}
+
+.mobile-account-card-arrow {
+  color: var(--accent);
+  flex-shrink: 0;
+  opacity: 0.7;
+  transition: transform 0.3s ease;
+}
+
+.mobile-account-card:hover .mobile-account-card-arrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
+
+/* Login Card Styles */
+.mobile-login-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(26, 10, 31, 0.8), rgba(43, 13, 13, 0.6));
+  border: 1px solid rgba(139, 115, 85, 0.3);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.mobile-login-card:hover {
+  border-color: rgba(184, 134, 11, 0.5);
+  transform: translateY(-2px);
+}
+
+.mobile-login-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.mobile-login-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--bone);
+  letter-spacing: 0.5px;
+}
+
+.mobile-login-desc {
+  font-size: 0.75rem;
+  color: var(--aged-silver);
+  opacity: 0.8;
+}
+
+/* Logout Button */
+.mobile-logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem;
+  background: rgba(92, 10, 10, 0.3);
+  border: 1px solid rgba(92, 10, 10, 0.5);
+  color: #e88a8a;
+  font-family: 'Cinzel', serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.mobile-logout-btn:hover {
+  background: rgba(92, 10, 10, 0.5);
+  border-color: rgba(92, 10, 10, 0.8);
+  color: #ff6b6b;
 }
 
 .mobile-quick-action {
@@ -1010,6 +1157,13 @@
   font-size: 0.75rem;
   font-family: 'Cinzel', serif;
   letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.mobile-quick-action:hover {
+  background: rgba(26, 10, 31, 0.8);
+  border-color: rgba(139, 115, 85, 0.4);
+  transform: translateY(-2px);
 }
 
 .mobile-quick-action span {
@@ -1019,6 +1173,11 @@
 .mobile-quick-action.action-accent {
   border-color: rgba(184, 134, 11, 0.4);
   color: var(--accent);
+}
+
+.mobile-quick-action.action-accent:hover {
+  border-color: rgba(184, 134, 11, 0.6);
+  background: rgba(184, 134, 11, 0.1);
 }
 
 .action-icon-wrap {
@@ -4544,6 +4703,222 @@
   color: var(--bone);
   font-family: 'Cinzel', serif;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cart-coupon-btn:hover {
+  background: var(--aged-brass);
+  color: var(--midnight);
+}
+
+/* Coupon Error */
+.cart-coupon-error {
+  padding: 0.875rem;
+  background: rgba(92, 10, 10, 0.2);
+  border: 1px solid rgba(92, 10, 10, 0.5);
+  color: #e88a8a;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+/* Discount Display */
+.cart-summary-discount {
+  color: var(--accent);
+}
+
+.cart-summary-discount .discount-amount {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.cart-coupon-remove {
+  background: none;
+  border: none;
+  color: #e88a8a;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.5rem;
+  transition: color 0.2s;
+  vertical-align: middle;
+}
+
+.cart-coupon-remove:hover {
+  color: #ff6b6b;
+}
+
+/* Available Coupons Component */
+.available-coupons {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba(26, 10, 31, 0.6), rgba(43, 13, 13, 0.4));
+  border: 1px solid rgba(139, 115, 85, 0.3);
+}
+
+.available-coupons-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--accent);
+}
+
+.available-coupons-header h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.available-coupons-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  color: var(--aged-silver);
+  font-size: 0.875rem;
+}
+
+.coupon-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(139, 115, 85, 0.2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.available-coupons-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.coupon-card {
+  background: rgba(13, 10, 15, 0.7);
+  border: 1px solid rgba(139, 115, 85, 0.3);
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.coupon-card:hover {
+  border-color: rgba(184, 134, 11, 0.5);
+  transform: translateY(-2px);
+}
+
+.coupon-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.coupon-code-badge {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0.375rem 0.75rem;
+  background: rgba(184, 134, 11, 0.15);
+  border: 1px dashed var(--accent);
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+.coupon-new-user-badge {
+  font-size: 0.625rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(92, 10, 10, 0.3);
+  border: 1px solid rgba(92, 10, 10, 0.5);
+  color: #e88a8a;
+  font-family: 'Cinzel', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.coupon-card-body {
+  margin-bottom: 0.75rem;
+}
+
+.coupon-discount {
+  margin-bottom: 0.5rem;
+}
+
+.coupon-discount-value {
+  font-family: 'Cinzel', serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+}
+
+.coupon-description {
+  font-size: 0.8125rem;
+  color: var(--aged-silver);
+  margin: 0.5rem 0;
+  line-height: 1.4;
+}
+
+.coupon-conditions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.coupon-condition {
+  font-size: 0.75rem;
+  color: var(--aged-silver);
+  opacity: 0.8;
+}
+
+.coupon-card-actions {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem;
+}
+
+.coupon-copy-btn,
+.coupon-apply-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  padding: 0.5rem 0.875rem;
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid;
+}
+
+.coupon-copy-btn {
+  background: rgba(26, 10, 31, 0.5);
+  border-color: rgba(139, 115, 85, 0.4);
+  color: var(--aged-silver);
+}
+
+.coupon-copy-btn:hover {
+  background: rgba(26, 10, 31, 0.8);
+  border-color: rgba(139, 115, 85, 0.6);
+  color: var(--bone);
+}
+
+.coupon-apply-btn {
+  background: transparent;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.coupon-apply-btn:hover {
+  background: var(--accent);
+  color: var(--midnight);
 }
 
 .cart-checkout-btn {
@@ -6063,6 +6438,89 @@
   border: 2px solid rgba(139, 115, 85, 0.3);
   color: var(--bone);
   font-family: 'Crimson Text', serif;
+}
+
+/* New Arrivals – Category custom dropdown */
+.new-arrivals-filters .category-dropdown-wrap {
+  position: relative;
+  width: 100%;
+  z-index: 50;
+}
+
+.new-arrivals-filters .category-dropdown-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: rgba(13, 10, 15, 0.8);
+  border: 2px solid rgba(139, 115, 85, 0.3);
+  color: var(--bone);
+  font-family: 'Crimson Text', serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.new-arrivals-filters .category-dropdown-trigger:hover {
+  border-color: rgba(139, 115, 85, 0.5);
+  background: rgba(26, 10, 31, 0.6);
+}
+
+.new-arrivals-filters .category-dropdown-trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.new-arrivals-filters .category-dropdown-value {
+  flex: 1;
+  text-align: left;
+}
+
+.new-arrivals-filters .category-dropdown-trigger .rotate-180 {
+  transform: rotate(180deg);
+}
+
+.new-arrivals-filters .category-dropdown-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 0.35rem;
+  background: #0d0a0f;
+  border: 2px solid rgba(139, 115, 85, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  animation: dropdownFadeIn 0.2s ease;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.new-arrivals-filters .category-dropdown-item {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  color: var(--aged-silver);
+  text-align: left;
+  font-family: 'Crimson Text', serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-left-color 0.2s ease;
+}
+
+.new-arrivals-filters .category-dropdown-item:hover {
+  background: rgba(184, 134, 11, 0.08);
+  color: var(--bone);
+  border-left-color: rgba(139, 115, 85, 0.5);
+}
+
+.new-arrivals-filters .category-dropdown-item.active {
+  color: var(--accent);
+  background: rgba(139, 115, 85, 0.06);
+  border-left-color: var(--accent);
 }
 
 .new-arrivals-filters .filter-checkbox {

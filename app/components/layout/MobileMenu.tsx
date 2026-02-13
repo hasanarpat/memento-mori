@@ -186,35 +186,48 @@ export default function MobileMenu({
         </div>
 
         <div className='mobile-menu-footer'>
-          <div className='mobile-menu-quick-grid'>
-            {isAuthenticated ? (
-              <>
-                <Link
-                  href='/account'
-                  className='mobile-quick-action'
-                  onClick={onClose}
-                >
-                  <User size={20} />
-                  <span>ACCOUNT</span>
-                </Link>
-                <button
-                   type="button"
-                   className='mobile-quick-action'
-                   onClick={handleLogout}
-                >
-                   <span>LOGOUT</span>
-                </button>
-              </>
-            ) : (
+          {isAuthenticated ? (
+            <div className='mobile-menu-account-section'>
               <Link
-                href='/login'
-                className='mobile-quick-action'
+                href='/account'
+                className='mobile-account-card'
                 onClick={onClose}
               >
-                <User size={20} />
-                <span>LOGIN</span>
+                <div className='mobile-account-card-icon'>
+                  <User size={24} />
+                </div>
+                <div className='mobile-account-card-content'>
+                  <span className='mobile-account-card-title'>My Account</span>
+                  <span className='mobile-account-card-desc'>Orders, Profile & Settings</span>
+                </div>
+                <ArrowRight size={18} className='mobile-account-card-arrow' />
               </Link>
-            )}
+              
+              <button
+                type="button"
+                className='mobile-logout-btn'
+                onClick={handleLogout}
+              >
+                <X size={18} />
+                <span>Logout</span>
+              </button>
+            </div>
+          ) : (
+            <Link
+              href='/login'
+              className='mobile-login-card'
+              onClick={onClose}
+            >
+              <User size={24} />
+              <div className='mobile-login-content'>
+                <span className='mobile-login-title'>Sign In</span>
+                <span className='mobile-login-desc'>Access your account</span>
+              </div>
+              <ArrowRight size={18} />
+            </Link>
+          )}
+          
+          <div className='mobile-menu-quick-grid'>
             <Link
               href='/wishlist'
               className='mobile-quick-action'
