@@ -45,7 +45,7 @@ export default function RitualClient({ products: ritualProducts }: { products: P
 
           return (
             <article key={product.id} className="ritual-card home-product-card">
-              <Link href={`/product/${product.id}`} className="ritual-card-image">
+              <Link href={`/product/${product.slug ?? product.id}`} className="ritual-card-image">
                 <div className="home-product-image">
                   {imageUrl && (
                     <Image
@@ -66,7 +66,7 @@ export default function RitualClient({ products: ritualProducts }: { products: P
               </Link>
               <div className="home-product-info">
                 <h3 className="home-product-name">
-                  <Link href={`/product/${product.id}`}>{product.name}</Link>
+                  <Link href={`/product/${product.slug ?? product.id}`}>{product.name}</Link>
                 </h3>
                 <p className="home-product-category">{categoryTitle}</p>
                 <p className="home-product-price">₺{product.price}</p>

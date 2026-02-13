@@ -199,7 +199,7 @@ export default function SearchModal({
         router.push(`/collections/${item.data.slug}`);
       } else {
         addRecent(item.data.name);
-        router.push(`/product/${item.data.id}`);
+        router.push(`/product/${item.data.slug ?? item.data.id}`);
       }
       onClose();
     }
@@ -215,7 +215,7 @@ export default function SearchModal({
       router.push(`/collections/${item.data.slug}`);
     } else {
       addRecent(item.data.name);
-      router.push(`/product/${item.data.id}`);
+      router.push(`/product/${item.data.slug ?? item.data.id}`);
     }
     onClose();
   };

@@ -51,7 +51,7 @@ export default function AccountWishlistPage() {
         {items.map((product) => (
           <article key={product.id} className='wishlist-card home-product-card'>
             <Link
-              href={`/product/${product.id}`}
+              href={`/product/${product.slug ?? product.id}`}
               className='wishlist-card-image-wrap'
             >
               <div
@@ -62,7 +62,7 @@ export default function AccountWishlistPage() {
             </Link>
             <div className='home-product-info'>
               <h2 className='home-product-name' style={{ fontSize: '1rem' }}>
-                <Link href={`/product/${product.id}`}>{product.name}</Link>
+                <Link href={`/product/${product.slug ?? product.id}`}>{product.name}</Link>
               </h2>
               <p className='home-product-price'>₺{product.price}</p>
               <div

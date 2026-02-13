@@ -167,7 +167,7 @@ export default function CartPage() {
 
       setAppliedCoupon(code);
       setDiscount(data.coupon.discountAmount);
-    } catch (error) {
+    } catch {
       setCouponError('Failed to apply coupon');
     }
   };
@@ -195,7 +195,7 @@ export default function CartPage() {
               {products.slice(0, 4).map((p) => (
                 <Link
                   key={p.id}
-                  href={`/product/${p.id}`}
+                  href={`/product/${p.slug ?? p.id}`}
                   className='home-product-card'
                 >
                   <div className='home-product-image' />
@@ -215,24 +215,40 @@ export default function CartPage() {
             <div className='cart-items'>
               {cartItems.map((item) => (
                 <div key={item.id} className='cart-item'>
-                  <div
-                    className='cart-item-thumb'
-                    style={{
-                      width: 100,
-                      height: 100,
-                      background: item.product.images?.[0]?.url 
-                        ? `url(${item.product.images[0].url}) center/cover` 
-                        : 'rgba(26,10,31,0.8)',
-                      border: '2px solid rgba(139,115,85,0.3)',
-                    }}
-                  />
+                  <Link
+                    href={`/product/${item.product.slug ?? item.id}`}
+                    className='cart-item-thumb-link'
+                    aria-label={`View ${item.product.name}`}
+                  >
+                    <div
+                      className='cart-item-thumb'
+                      style={{
+                        width: 100,
+                        height: 100,
+                        background: (() => {
+                          const img = item.product.images;
+                          const url = Array.isArray(img)
+                            ? img[0]?.url
+                            : (img as { url?: string } | null)?.url;
+                          return url
+                            ? `url(${url}) center/cover`
+                            : 'rgba(26,10,31,0.8)';
+                        })(),
+                        border: '2px solid rgba(139,115,85,0.3)',
+                      }}
+                    />
+                  </Link>
                   <div className='cart-item-details'>
-                    <h3 className='cart-item-name'>{item.product.name}</h3>
+                    <Link
+                      href={`/product/${item.product.slug ?? item.id}`}
+                      className='cart-item-name-link'
+                    >
+                      <h3 className='cart-item-name'>{item.product.name}</h3>
+                    </Link>
                     <p className='cart-item-meta'>
-                      {item.product.productType && item.product.theme 
+                      {item.product.productType && item.product.theme
                         ? `${item.product.productType} · ${item.product.theme}`
-                        : item.product.productType || item.product.theme || 'Product'
-                      }
+                        : item.product.productType || item.product.theme || 'Product'}
                     </p>
                     <div className='cart-item-qty'>
                       <button 

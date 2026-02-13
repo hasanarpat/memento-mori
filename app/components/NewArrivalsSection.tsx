@@ -89,7 +89,7 @@ export default function NewArrivalsSection({
           return (
             <Link
               key={product.id}
-              href={`/product/${product.id}`}
+              href={`/product/${product.slug ?? product.id}`}
               className='home-product-card'
             >
               <div className='home-product-image'>

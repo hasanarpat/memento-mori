@@ -196,7 +196,7 @@ export default function QuickViewModal({
 
                 <div className='qv-footer-links'>
                   <Link
-                    href={`/product/${product.id}`}
+                    href={`/product/${product.slug ?? product.id}`}
                     className='qv-detail-link'
                     onClick={onClose}
                   >

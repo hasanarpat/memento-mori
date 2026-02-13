@@ -797,7 +797,7 @@ export default function ProductDetailClient({
               {related.map((p) => (
                 <Link
                   key={p.id}
-                  href={`/product/${p.id}`}
+                  href={`/product/${p.slug ?? p.id}`}
                   className='home-product-card product-detail-related-card'
                 >
                   <div className='home-product-image' />

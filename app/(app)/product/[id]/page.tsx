@@ -12,25 +12,45 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+const OBJECT_ID_REGEX = /^[0-9a-fA-F]{24}$/;
+
+async function getProduct(slugOrId: string) {
+  const payload = await getPayload({ config: configPromise });
+  if (OBJECT_ID_REGEX.test(slugOrId)) {
+    try {
+      const doc = await payload.findByID({
+        collection: 'products',
+        id: slugOrId,
+        depth: 1,
+      });
+      return doc;
+    } catch {
+      return null;
+    }
+  }
+  const result = await payload.find({
+    collection: 'products',
+    where: { slug: { equals: slugOrId } },
+    limit: 1,
+    depth: 1,
+  });
+  return result.docs[0] ?? null;
+}
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { id } = await params;
-  const payload = await getPayload({ config: configPromise });
+  const { id: slug } = await params;
 
   try {
-    const product = await payload.findByID({
-      collection: 'products',
-      id,
-      depth: 1,
-    });
+    const product = await getProduct(slug);
 
     if (!product) return { title: 'Product Not Found' };
 
     const categoryTitle = getCategoryTitle(product.category, 'Artifact');
     const title = `${product.name} | ${categoryTitle} — ${SITE_NAME}`;
     const description = `${product.name} — ${categoryTitle}. ₺${product.price}. Dark fashion & subculture artifacts.`;
-    const url = absoluteUrl(`/product/${product.id}`);
+    const url = absoluteUrl(`/product/${product.slug}`);
     const image = getProductImageUrl(product.images) || DEFAULT_OG_IMAGE;
 
     return {
@@ -71,23 +91,13 @@ export async function generateMetadata({
 }
 
 export default async function ProductPage({ params }: PageProps) {
-  const { id } = await params;
-  const payload = await getPayload({ config: configPromise });
+  const { id: slug } = await params;
 
-  let product;
-  try {
-    product = await payload.findByID({
-      collection: 'products',
-      id,
-      depth: 1,
-    });
-  } catch {
-    notFound();
-  }
-
+  const product = await getProduct(slug);
   if (!product) notFound();
 
   // Fetch Related Products (same category, excluding current)
+  const payload = await getPayload({ config: configPromise });
   const categoryIds = getCategoryIds(product.category);
 
   const relatedResult = await payload.find({
@@ -108,12 +118,12 @@ export default async function ProductPage({ params }: PageProps) {
     name: product.name,
     description: `${product.name}. Dark fashion, subculture apparel.`,
     image: getProductImageUrl(product.images) || DEFAULT_OG_IMAGE,
-    url: absoluteUrl(`/product/${product.id}`),
+    url: absoluteUrl(`/product/${product.slug}`),
     sku: product.id,
     brand: { '@type': 'Brand', name: SITE_NAME },
     offers: {
       '@type': 'Offer',
-      url: absoluteUrl(`/product/${product.id}`),
+      url: absoluteUrl(`/product/${product.slug}`),
       priceCurrency: 'TRY',
       price: product.price,
       availability: 'https://schema.org/InStock',
@@ -141,7 +151,7 @@ export default async function ProductPage({ params }: PageProps) {
         '@type': 'ListItem',
         position: 3,
         name: product.name,
-        item: absoluteUrl(`/product/${product.id}`),
+        item: absoluteUrl(`/product/${product.slug}`),
       },
     ],
   };

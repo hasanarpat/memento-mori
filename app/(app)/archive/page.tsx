@@ -38,7 +38,7 @@ export default async function ArchivePage() {
     return (
       <Link
         key={product.id}
-        href={`/product/${product.id}`}
+        href={`/product/${product.slug ?? product.id}`}
         className="home-product-card archive-product-card"
       >
         <div className="home-product-image" />

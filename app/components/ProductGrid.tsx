@@ -48,7 +48,7 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
           return (
             <div key={product.id} className='product-card'>
               <div className='product-image'>
-                <Link href={`/product/${product.id}`} className='product-image-link'>
+                <Link href={`/product/${product.slug ?? product.id}`} className='product-image-link'>
                   {imageUrl ? (
                     <Image
                       src={imageUrl}
@@ -105,7 +105,7 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
                     : (product.category as any)?.title || (typeof product.category === 'string' ? product.category : product.theme)}
                 </div>
                 <h3 className='product-name'>
-                  <Link href={`/product/${product.id}`}>{product.name}</Link>
+                  <Link href={`/product/${product.slug ?? product.id}`}>{product.name}</Link>
                 </h3>
                 <div className='product-footer'>
                   <div className='product-price'>₺{product.price}</div>

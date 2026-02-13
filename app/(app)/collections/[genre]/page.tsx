@@ -88,7 +88,7 @@ export default async function GenreCollectionPage({
     itemListElement: genreProducts.slice(0, 20).map((p: any, i) => ({
       '@type': 'ListItem',
       position: i + 1,
-      url: absoluteUrl(`/product/${p.id}`),
+      url: absoluteUrl(`/product/${p.slug ?? p.id}`),
       name: p.name,
     })),
   };

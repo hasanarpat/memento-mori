@@ -124,6 +124,7 @@ export const genres: {
 
 export type Product = {
   id: number;
+  slug?: string;
   name: string;
   price: number;
   category: string;

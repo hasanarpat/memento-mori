@@ -23,12 +23,11 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // User's cart is in user.cart array (populated or id)
-    // We should populate products to send full details to frontend
+    // Populate cart products and their images (media) for frontend
     const userWithCart = (await payload.findByID({
       collection: 'users',
       id: user.id,
-      depth: 1, // Populate relationships
+      depth: 2, // cart[].product + product.images (media with url)
     })) as UserWithCart;
 
     return NextResponse.json({

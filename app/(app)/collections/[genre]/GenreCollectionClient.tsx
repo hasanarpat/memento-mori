@@ -47,7 +47,7 @@ export default function GenreCollectionClient({
               className='genre-product-card home-product-card'
             >
               <Link
-                href={`/product/${product.id}`}
+                href={`/product/${product.slug ?? product.id}`}
                 className='genre-card-image-wrap'
               >
                 <div className='home-product-image' />
@@ -64,14 +64,27 @@ export default function GenreCollectionClient({
               </Link>
               <div className='home-product-info'>
                 <h3 className='home-product-name'>
-                  <Link href={`/product/${product.id}`}>{product.name}</Link>
+                  <Link href={`/product/${product.slug ?? product.id}`}>{product.name}</Link>
                 </h3>
                 <p className='home-product-price'>₺{product.price}</p>
                 <div className='genre-card-actions'>
                   <button
                     type='button'
                     className='product-detail-btn-primary'
-                    onClick={() => addToCart()}
+                    onClick={() =>
+                      addToCart({
+                        id: product.id,
+                        product: {
+                          ...product,
+                          id: String(product.id),
+                          name: product.name,
+                          slug: product.slug ?? String(product.id),
+                          price: product.price,
+                        },
+                        quantity: 1,
+                        price: product.price,
+                      })
+                    }
                   >
                     Add to Cart
                   </button>

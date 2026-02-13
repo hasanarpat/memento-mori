@@ -7,15 +7,19 @@ import Image from 'next/image';
 
 type DateGroup = 'this-week' | 'last-week' | 'this-month';
 
+type CategoryRef = { slug?: string; title?: string };
+type ProductImageRef = { url?: string } | null;
+
 interface Product {
   id: string;
+  slug?: string;
   name: string;
   price: number;
-  category: any;
+  category: CategoryRef | CategoryRef[];
   theme: string;
   badge?: string;
   isNewArrival?: boolean;
-  images: any;
+  images: ProductImageRef;
 }
 
 interface NewArrivalsClientProps {
@@ -42,7 +46,10 @@ export default function NewArrivalsClient({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target as Node)) {
+      if (
+        categoryDropdownRef.current &&
+        !categoryDropdownRef.current.contains(event.target as Node)
+      ) {
         setCategoryDropdownOpen(false);
       }
     }
@@ -50,20 +57,23 @@ export default function NewArrivalsClient({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const categoryLabel = categoryFilter === 'all' ? 'All Worlds' : (categories.find((c) => c.slug === categoryFilter)?.title ?? 'All Worlds');
+  const categoryLabel =
+    categoryFilter === 'all'
+      ? 'All Worlds'
+      : (categories.find((c) => c.slug === categoryFilter)?.title ??
+        'All Worlds');
 
   const filterProduct = (p: Product) => {
     // Category check
-    const categoriesList = Array.isArray(p.category) 
-      ? p.category.map((c: any) => c.slug) 
-      : [(p.category as any)?.slug].filter(Boolean);
-    
-    const matchCat = 
-      categoryFilter === 'all' || 
-      categoriesList.includes(categoryFilter);
-      
+    const categoriesList = Array.isArray(p.category)
+      ? p.category.map((c: CategoryRef) => c.slug).filter(Boolean)
+      : [p.category && !Array.isArray(p.category) ? p.category.slug : undefined].filter(Boolean);
+
+    const matchCat =
+      categoryFilter === 'all' || categoriesList.includes(categoryFilter);
+
     const matchPrice = p.price >= priceRange[0] && p.price <= priceRange[1];
-    
+
     // In this view, "newThisWeekOnly" means we only show items from the thisWeek group
     // But the groupings are already filtered by server.
     // So if newThisWeekOnly is true, we effectively hide other sections.
@@ -76,14 +86,18 @@ export default function NewArrivalsClient({
 
   const ProductCard = ({ product }: { product: Product }) => {
     const categoryTitle = Array.isArray(product.category)
-      ? product.category.map((c: any) => (typeof c === 'object' ? c.title : c)).join(' / ')
-      : (product.category as any)?.title || product.theme;
-    
-    const imageUrl = (product.images as any)?.url;
+      ? product.category
+          .map((c: CategoryRef) => c.title ?? '')
+          .join(' / ')
+      : (product.category && !Array.isArray(product.category)
+          ? product.category.title
+          : null) || product.theme;
+
+    const imageUrl = product.images?.url;
 
     return (
       <Link
-        href={`/product/${product.id}`}
+        href={`/product/${product.slug ?? product.id}`}
         className='home-product-card new-arrivals-card'
       >
         <div className='home-product-image'>
@@ -132,7 +146,10 @@ export default function NewArrivalsClient({
                 aria-label='Filter by category'
               >
                 <span className='category-dropdown-value'>{categoryLabel}</span>
-                <ChevronDown size={14} className={categoryDropdownOpen ? 'rotate-180' : ''} />
+                <ChevronDown
+                  size={14}
+                  className={categoryDropdownOpen ? 'rotate-180' : ''}
+                />
               </button>
               {categoryDropdownOpen && (
                 <div className='category-dropdown-list' role='listbox'>
@@ -182,7 +199,10 @@ export default function NewArrivalsClient({
                 step={10}
                 value={currentMinPrice}
                 onChange={(e) => {
-                  const val = Math.min(parseInt(e.target.value, 10), currentMaxPrice - 100);
+                  const val = Math.min(
+                    parseInt(e.target.value, 10),
+                    currentMaxPrice - 100,
+                  );
                   setPriceRange([val, currentMaxPrice]);
                 }}
                 className='price-slider min-slider'
@@ -195,7 +215,10 @@ export default function NewArrivalsClient({
                 step={10}
                 value={currentMaxPrice}
                 onChange={(e) => {
-                  const val = Math.max(parseInt(e.target.value, 10), currentMinPrice + 100);
+                  const val = Math.max(
+                    parseInt(e.target.value, 10),
+                    currentMinPrice + 100,
+                  );
                   setPriceRange([currentMinPrice, val]);
                 }}
                 className='price-slider max-slider'
@@ -221,37 +244,44 @@ export default function NewArrivalsClient({
               checked={newThisWeekOnly}
               onChange={(e) => setNewThisWeekOnly(e.target.checked)}
             />
-            Show "This Week" Only
+            Show &quot;This Week&quot; Only
           </label>
         </aside>
 
         <div className='new-arrivals-main'>
-          <ArrivalsGroup 
-            title="This Week" 
-            id="this-week" 
-            products={thisWeekFiltered} 
+          <ArrivalsGroup
+            title='This Week'
+            products={thisWeekFiltered}
             isOpen={openSection === 'this-week'}
-            onToggle={() => setOpenSection(openSection === 'this-week' ? null : 'this-week')}
+            onToggle={() =>
+              setOpenSection(openSection === 'this-week' ? null : 'this-week')
+            }
             renderCard={(p) => <ProductCard key={p.id} product={p} />}
           />
 
           {!newThisWeekOnly && (
             <>
-              <ArrivalsGroup 
-                title="Last Week" 
-                id="last-week" 
-                products={lastWeekFiltered} 
+              <ArrivalsGroup
+                title='Last Week'
+                products={lastWeekFiltered}
                 isOpen={openSection === 'last-week'}
-                onToggle={() => setOpenSection(openSection === 'last-week' ? null : 'last-week')}
+                onToggle={() =>
+                  setOpenSection(
+                    openSection === 'last-week' ? null : 'last-week',
+                  )
+                }
                 renderCard={(p) => <ProductCard key={p.id} product={p} />}
               />
 
-              <ArrivalsGroup 
-                title="This Month" 
-                id="this-month" 
-                products={thisMonthFiltered} 
+              <ArrivalsGroup
+                title='This Month'
+                products={thisMonthFiltered}
                 isOpen={openSection === 'this-month'}
-                onToggle={() => setOpenSection(openSection === 'this-month' ? null : 'this-month')}
+                onToggle={() =>
+                  setOpenSection(
+                    openSection === 'this-month' ? null : 'this-month',
+                  )
+                }
                 renderCard={(p) => <ProductCard key={p.id} product={p} />}
               />
             </>
@@ -262,20 +292,18 @@ export default function NewArrivalsClient({
   );
 }
 
-function ArrivalsGroup({ 
-  title, 
-  id, 
-  products, 
-  isOpen, 
+function ArrivalsGroup({
+  title,
+  products,
+  isOpen,
   onToggle,
-  renderCard 
-}: { 
-  title: string; 
-  id: string; 
-  products: any[]; 
-  isOpen: boolean; 
+  renderCard,
+}: {
+  title: string;
+  products: Product[];
+  isOpen: boolean;
   onToggle: () => void;
-  renderCard: (p: any) => React.ReactNode;
+  renderCard: (p: Product) => React.ReactNode;
 }) {
   return (
     <section className='new-arrivals-group'>
