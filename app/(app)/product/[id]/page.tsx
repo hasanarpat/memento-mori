@@ -1,11 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getPayload } from 'payload';
 import configPromise from '@payload-config';
-import {
-  SITE_NAME,
-  DEFAULT_OG_IMAGE,
-  absoluteUrl,
-} from '../../../lib/site';
+import { SITE_NAME, DEFAULT_OG_IMAGE, absoluteUrl } from '../../../lib/site';
 import JsonLd from '../../../components/JsonLd';
 import ProductDetailClient from './ProductDetailClient';
 import type { Metadata } from 'next';
@@ -29,8 +25,8 @@ export async function generateMetadata({
 
     if (!product) return { title: 'Product Not Found' };
 
-    const categoryTitle = Array.isArray(product.category) 
-      ? (product.category[0] as any)?.title 
+    const categoryTitle = Array.isArray(product.category)
+      ? (product.category[0] as any)?.title
       : (product.category as any)?.title || 'Artifact';
 
     const title = `${product.name} | ${categoryTitle} — ${SITE_NAME}`;
@@ -75,9 +71,7 @@ export async function generateMetadata({
   }
 }
 
-export default async function ProductPage({
-  params,
-}: PageProps) {
+export default async function ProductPage({ params }: PageProps) {
   const { id } = await params;
   const payload = await getPayload({ config: configPromise });
 
@@ -95,8 +89,8 @@ export default async function ProductPage({
   if (!product) notFound();
 
   // Fetch Related Products (same category, excluding current)
-  const categoryIds = Array.isArray(product.category) 
-    ? product.category.map((c: any) => c.id) 
+  const categoryIds = Array.isArray(product.category)
+    ? product.category.map((c: any) => c.id)
     : [(product.category as any)?.id].filter(Boolean);
 
   const relatedResult = await payload.find({
@@ -104,10 +98,10 @@ export default async function ProductPage({
     where: {
       and: [
         { id: { not_equals: product.id } },
-        { category: { in: categoryIds } }
-      ]
+        { category: { in: categoryIds } },
+      ],
     },
-    limit: 4,
+    limit: 6,
     depth: 1,
   });
 
@@ -134,7 +128,12 @@ export default async function ProductPage({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: absoluteUrl('/') },
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: absoluteUrl('/'),
+      },
       {
         '@type': 'ListItem',
         position: 2,
@@ -153,9 +152,9 @@ export default async function ProductPage({
   return (
     <>
       <JsonLd data={[productJsonLd, breadcrumbJsonLd]} />
-      <ProductDetailClient 
-        product={product as any} 
-        related={relatedResult.docs as any} 
+      <ProductDetailClient
+        product={product as any}
+        related={relatedResult.docs as any}
       />
     </>
   );

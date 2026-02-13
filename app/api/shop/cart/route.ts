@@ -90,11 +90,6 @@ export async function POST(request: Request) {
         };
       });
 
-    console.log(
-      'Processed Cart for Update:',
-      JSON.stringify(processedCart, null, 2),
-    );
-
     // Update User's cart
     await payload.update({
       collection: 'users',
