@@ -20,6 +20,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import NewsletterForm from '../components/NewsletterForm';
+import ReelCard from '../components/ReelCard';
 import { SITE_URL, SITE_NAME, DEFAULT_OG_IMAGE } from '../lib/site';
 import JsonLd from '../components/JsonLd';
 import NewArrivalsSection from '../components/NewArrivalsSection';
@@ -125,6 +126,15 @@ export default async function HomePage() {
     where: { showOnHomepage: { equals: true } },
     sort: 'order',
     limit: 6,
+    depth: 1,
+  });
+
+  // 5. Sponsor / influencer reels (admin-selected)
+  const { docs: reels } = await payload.find({
+    collection: 'reels',
+    where: { showOnHomepage: { equals: true } },
+    sort: 'order',
+    limit: 12,
     depth: 1,
   });
 
@@ -334,6 +344,50 @@ export default async function HomePage() {
                     </div>
                   </div>
                 </article>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Section 3.6: Sponsor / influencer reels */}
+      {reels.length > 0 && (
+        <section className='home-reels' aria-labelledby='reels-heading'>
+          <h2 id='reels-heading' className='home-section-title'>
+            Sponsor Reelleri
+          </h2>
+          <p className='home-reels-intro'>
+            Influencer ve sponsorlarımızın paylaştığı reeller
+          </p>
+          <div className='home-reels-list'>
+            {reels.map((r) => {
+              const thumb = typeof r.thumbnail === 'object' && r.thumbnail && 'url' in r.thumbnail ? (r.thumbnail as { url?: string }).url : null;
+              const video = typeof r.video === 'object' && r.video && 'url' in r.video ? (r.video as { url?: string }).url : null;
+              const product = typeof r.product === 'object' && r.product && 'slug' in r.product ? (r.product as { slug?: string; name?: string }) : null;
+              const category = typeof r.category === 'object' && r.category && 'slug' in r.category ? (r.category as { slug?: string; title?: string }) : null;
+              const href = r.linkType === 'product' && product?.slug
+                ? `/product/${product.slug}`
+                : r.linkType === 'category' && category?.slug
+                  ? `/collections/${category.slug}`
+                  : r.linkType === 'custom' && r.customUrl
+                    ? r.customUrl.startsWith('http') ? r.customUrl : `/${r.customUrl.replace(/^\//, '')}`
+                    : null;
+              const isExternalHref = !!href && href.startsWith('http');
+              const linkLabel = r.linkLabel?.trim() || (r.linkType === 'product' ? 'Ürünü Gör' : r.linkType === 'category' ? 'Koleksiyona Git' : 'Git');
+              return (
+                <ReelCard
+                  key={r.id}
+                  videoSrc={video || null}
+                  thumbSrc={thumb}
+                  title={r.title}
+                  description={r.description}
+                  campaignTitle={r.campaignTitle}
+                  campaignSubline={r.campaignSubline}
+                  href={href}
+                  linkLabel={linkLabel}
+                  videoUrl={r.videoUrl || null}
+                  isExternalHref={isExternalHref}
+                />
               );
             })}
           </div>
