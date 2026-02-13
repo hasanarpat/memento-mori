@@ -3,18 +3,27 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X, ArrowRight, Package, Layers } from 'lucide-react';
-import { products, genres } from '@/app/data/shop';
-import type { Product } from '@/app/data/shop';
+import { genres } from '@/app/data/shop';
 
 const RECENT_KEY = 'memento-search-recent';
 const MAX_RECENT = 5;
 const DEBOUNCE_MS = 280;
 const MAX_PRODUCTS = 8;
 const MAX_GENRES = 4;
+const SEARCH_API = '/api/shop/search';
 
 type QuickLink = { label: string; href: string; type: 'quick' };
+type SearchProduct = {
+  id: string;
+  slug?: string;
+  name: string;
+  price: number;
+  theme?: string;
+  productType?: string;
+  category?: unknown;
+};
 type SearchResultItem =
-  | { type: 'product'; data: Product }
+  | { type: 'product'; data: SearchProduct }
   | { type: 'genre'; data: (typeof genres)[0] }
   | QuickLink;
 
@@ -24,24 +33,6 @@ function normalize(s: string): string {
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
     .trim();
-}
-
-function scoreProduct(p: Product, q: string): number {
-  const nq = normalize(q);
-  const nName = normalize(p.name);
-  const nCat = normalize(p.category);
-  const nTheme = normalize(p.theme);
-  if (nName.includes(nq)) return 100;
-  if (nName.startsWith(nq)) return 90;
-  if (nCat.includes(nq) || nTheme.includes(nq)) return 70;
-  const words = nq.split(/\s+/).filter(Boolean);
-  const nameWords = nName.split(/\s+/);
-  const matchCount = words.filter((w) =>
-    nameWords.some((nw) => nw.startsWith(w) || nw.includes(w)),
-  ).length;
-  if (matchCount === words.length) return 60 + matchCount * 10;
-  if (nName.includes(nq) || nCat.includes(nq)) return 50;
-  return 0;
 }
 
 function scoreGenre(g: (typeof genres)[0], q: string): number {
@@ -76,6 +67,8 @@ export default function SearchModal({
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [highlightIndex, setHighlightIndex] = useState(0);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [searchProducts, setSearchProducts] = useState<SearchProduct[]>([]);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   // Debounce query for search
   useEffect(() => {
@@ -84,17 +77,48 @@ export default function SearchModal({
     return () => clearTimeout(t);
   }, [query, isOpen]);
 
+  // Fetch product search from API (single optimized request per debounced query)
+  useEffect(() => {
+    if (!debouncedQuery) return;
+    let cancelled = false;
+    queueMicrotask(() => setSearchLoading(true));
+    fetch(
+      `${SEARCH_API}?q=${encodeURIComponent(debouncedQuery)}&limit=${MAX_PRODUCTS}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        setSearchProducts(Array.isArray(data.results) ? data.results : []);
+      })
+      .catch(() => {
+        if (!cancelled) setSearchProducts([]);
+      })
+      .finally(() => {
+        if (!cancelled) setSearchLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedQuery]);
+
   // Focus input and reset when open
   useEffect(() => {
     if (isOpen) {
       const stored =
         typeof window !== 'undefined' ? localStorage.getItem(RECENT_KEY) : null;
-      setRecentSearches(stored ? JSON.parse(stored) : []);
-      requestAnimationFrame(() => inputRef.current?.focus());
+      const next = stored ? (() => {
+        try { return JSON.parse(stored) as string[]; } catch { return []; }
+      })() : [];
+      requestAnimationFrame(() => {
+        setRecentSearches(next);
+        inputRef.current?.focus();
+      });
     } else {
-      setQuery('');
-      setDebouncedQuery('');
-      setHighlightIndex(0);
+      queueMicrotask(() => {
+        setQuery('');
+        setDebouncedQuery('');
+        setHighlightIndex(0);
+      });
     }
   }, [isOpen]);
 
@@ -149,21 +173,19 @@ export default function SearchModal({
     const quick = QUICK_LINKS.filter((l) =>
       normalize(l.label).includes(normalize(q)),
     );
-    const productScores = products
-      .map((p) => ({ p, score: scoreProduct(p, q) }))
-      .filter((x) => x.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, MAX_PRODUCTS)
-      .map((x) => ({ type: 'product' as const, data: x.p }));
     const genreScores = genres
       .map((g) => ({ g, score: scoreGenre(g, q) }))
       .filter((x) => x.score > 0)
       .sort((a, b) => b.score - a.score)
       .slice(0, MAX_GENRES)
       .map((x) => ({ type: 'genre' as const, data: x.g }));
+    const productItems: SearchResultItem[] = (debouncedQuery
+      ? searchProducts
+      : []
+    ).map((p) => ({ type: 'product' as const, data: p }));
 
-    return [...quick, ...genreScores, ...productScores];
-  }, [debouncedQuery, recentSearches]);
+    return [...quick, ...genreScores, ...productItems];
+  }, [debouncedQuery, recentSearches, searchProducts]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
@@ -275,7 +297,11 @@ export default function SearchModal({
           role='listbox'
           aria-label='Search results'
         >
-          {results.length === 0 ? (
+          {searchLoading && debouncedQuery ? (
+            <div className='search-modal-empty' aria-busy='true'>
+              Searching…
+            </div>
+          ) : results.length === 0 ? (
             <div className='search-modal-empty'>
               {debouncedQuery ? (
                 <>No results for &ldquo;{debouncedQuery}&rdquo;</>
@@ -334,7 +360,10 @@ export default function SearchModal({
                         {item.data.name}
                       </span>
                       <span className='search-modal-result-meta'>
-                        {item.data.category} · ₺{item.data.price}
+                        {[item.data.theme, item.data.productType]
+                          .filter(Boolean)
+                          .join(' · ') || 'Product'}{' '}
+                        · ₺{item.data.price}
                       </span>
                     </div>
                     <ArrowRight

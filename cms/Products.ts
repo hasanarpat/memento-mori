@@ -19,12 +19,14 @@ export const Products: CollectionConfig = {
       type: 'text',
       required: true,
       label: 'Product Name',
+      index: true, // search endpoint performance
     },
     {
       name: 'slug',
       type: 'text',
       required: true,
       unique: true,
+      index: true, // search endpoint performance
       admin: {
         position: 'sidebar',
       },
