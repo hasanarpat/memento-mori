@@ -11,6 +11,7 @@ import { Products } from './cms/Products.ts';
 import { Categories } from './cms/Categories.ts';
 import { Orders } from './cms/Orders.ts';
 import { Coupons } from './cms/Coupons.ts';
+import { Testimonials } from './cms/Testimonials.ts';
 import { seed } from './cms/seed.ts';
 
 const dirname = path.resolve(__dirname);
@@ -31,7 +32,7 @@ export default buildConfig({
   admin: {
     user: Users.slug,
   },
-  collections: [Users, Media, Products, Categories, Orders, Coupons],
+  collections: [Users, Media, Products, Categories, Orders, Coupons, Testimonials],
   editor: lexicalEditor({}),
   secret,
   typescript: {

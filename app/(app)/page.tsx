@@ -14,6 +14,9 @@ import {
   Ghost,
   Skull,
   Flame,
+  Star,
+  Quote,
+  User,
   type LucideIcon,
 } from 'lucide-react';
 import NewsletterForm from '../components/NewsletterForm';
@@ -115,6 +118,15 @@ export default async function HomePage() {
   });
 
   const heroProduct = featuredProducts[0];
+
+  // 4. Testimonials to show on homepage (admin-selected)
+  const { docs: testimonials } = await payload.find({
+    collection: 'testimonials',
+    where: { showOnHomepage: { equals: true } },
+    sort: 'order',
+    limit: 6,
+    depth: 1,
+  });
 
   return (
     <>
@@ -270,6 +282,63 @@ export default async function HomePage() {
         totalPages={newArrivalsResult.totalPages || 0}
         initialPage={newArrivalsResult.page || 1}
       />
+
+      {/* Section 3.5: Selected testimonials */}
+      {testimonials.length > 0 && (
+        <section className='home-testimonials' aria-labelledby='testimonials-heading'>
+          <h2 id='testimonials-heading' className='home-section-title'>
+            Müşteri Yorumları
+          </h2>
+          <div className='home-testimonials-grid'>
+            {testimonials.map((t) => {
+              const avatar = typeof t.authorAvatar === 'object' && t.authorAvatar && 'url' in t.authorAvatar ? (t.authorAvatar as { url?: string }).url : null;
+              const product = typeof t.product === 'object' && t.product && 'slug' in t.product ? (t.product as { slug?: string; name?: string }) : null;
+              return (
+                <article key={t.id} className='home-testimonial-card'>
+                  <Quote className='home-testimonial-quote' size={28} aria-hidden />
+                  <div className='home-testimonial-stars' aria-label={`${t.rating} yıldız`}>
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <Star
+                        key={i}
+                        size={18}
+                        fill={i < (t.rating ?? 0) ? 'var(--accent)' : 'none'}
+                        stroke='var(--accent)'
+                        strokeWidth={1.5}
+                      />
+                    ))}
+                  </div>
+                  <p className='home-testimonial-text'>{t.text}</p>
+                  <div className='home-testimonial-footer'>
+                    {avatar ? (
+                      <Image
+                        src={avatar}
+                        alt=''
+                        width={48}
+                        height={48}
+                        className='home-testimonial-avatar'
+                        unoptimized
+                      />
+                    ) : (
+                      <div className='home-testimonial-avatar-placeholder' aria-hidden>
+                        <User size={24} />
+                      </div>
+                    )}
+                    <div className='home-testimonial-meta'>
+                      <span className='home-testimonial-author'>{t.author}</span>
+                      {t.date && <span className='home-testimonial-date'>{t.date}</span>}
+                      {product?.slug && (
+                        <Link href={`/product/${product.slug}`} className='home-testimonial-product'>
+                          {product.name || 'Ürün'}
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* Section 4: Manifesto */}
       <section className='home-manifesto' aria-labelledby='manifesto-heading'>
