@@ -1,14 +1,26 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X, ZoomIn, ZoomOut, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
+
+function getTouchDistance(t1: Touch, t2: Touch): number {
+  return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+}
+
+export type ViewerSlideCaption = {
+  reviewText?: string;
+  reviewAuthor?: string;
+  reviewRating?: number;
+};
 
 type ImageViewerProps = {
   images: string[];
   currentIndex: number;
   onClose: () => void;
   onNavigate?: (index: number) => void;
+  /** Optional: per-image captions (e.g. review text). Same length as images. */
+  captions?: (ViewerSlideCaption | null)[];
 };
 
 const MIN_ZOOM = 0.5;
@@ -20,14 +32,22 @@ export default function ImageViewer({
   currentIndex,
   onClose,
   onNavigate,
+  captions,
 }: ImageViewerProps) {
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
+  const touchSwipeStartX = useRef<number>(0);
+  const touchPinchStart = useRef<{ distance: number; zoom: number } | null>(null);
+  const touchPanStart = useRef<{ clientX: number; clientY: number; panX: number; panY: number } | null>(null);
+  const touchWasPinch = useRef(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
   const currentImage = images[currentIndex];
   const hasMultiple = images.length > 1;
+  const currentCaption = captions?.[currentIndex];
 
   const zoomIn = useCallback(() => {
     setZoom((z) => Math.min(MAX_ZOOM, z + ZOOM_STEP));
@@ -43,20 +63,20 @@ export default function ImageViewer({
   }, []);
 
   const goPrev = useCallback(() => {
-    if (!hasMultiple || !onNavigate) return;
+    if (images.length === 0 || !onNavigate) return;
     const next = currentIndex <= 0 ? images.length - 1 : currentIndex - 1;
     onNavigate(next);
     setZoom(1);
     setPan({ x: 0, y: 0 });
-  }, [hasMultiple, currentIndex, images.length, onNavigate]);
+  }, [currentIndex, images.length, onNavigate]);
 
   const goNext = useCallback(() => {
-    if (!hasMultiple || !onNavigate) return;
+    if (images.length === 0 || !onNavigate) return;
     const next = currentIndex >= images.length - 1 ? 0 : currentIndex + 1;
     onNavigate(next);
     setZoom(1);
     setPan({ x: 0, y: 0 });
-  }, [hasMultiple, currentIndex, images.length, onNavigate]);
+  }, [currentIndex, images.length, onNavigate]);
 
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -76,6 +96,16 @@ export default function ImageViewer({
     return () => window.removeEventListener("keydown", handleKey);
   }, [onClose, goPrev, goNext]);
 
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2) e.preventDefault();
+    };
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => el.removeEventListener("touchmove", onTouchMove);
+  }, []);
+
   const handleMouseDown = (e: React.MouseEvent) => {
     if (zoom <= 1) return;
     setIsDragging(true);
@@ -87,6 +117,78 @@ export default function ImageViewer({
   };
   const handleMouseUp = () => setIsDragging(false);
   const handleMouseLeave = () => setIsDragging(false);
+
+  const SWIPE_THRESHOLD = 50;
+
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (e.touches.length === 2) {
+        touchWasPinch.current = true;
+        touchPanStart.current = null;
+        touchPinchStart.current = {
+          distance: getTouchDistance(e.touches[0], e.touches[1]),
+          zoom,
+        };
+      } else if (e.touches.length === 1) {
+        touchWasPinch.current = false;
+        touchSwipeStartX.current = e.touches[0].clientX;
+        touchPinchStart.current = null;
+        if (zoom > 1) {
+          touchPanStart.current = {
+            clientX: e.touches[0].clientX,
+            clientY: e.touches[0].clientY,
+            panX: pan.x,
+            panY: pan.y,
+          };
+        } else {
+          touchPanStart.current = null;
+        }
+      }
+    },
+    [zoom, pan.x, pan.y]
+  );
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (e.touches.length === 2 && touchPinchStart.current) {
+        e.preventDefault();
+        const distance = getTouchDistance(e.touches[0], e.touches[1]);
+        const scale = distance / touchPinchStart.current.distance;
+        setZoom((z) => {
+          const next = touchPinchStart.current!.zoom * scale;
+          return Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, next));
+        });
+      } else if (
+        e.touches.length === 1 &&
+        !touchWasPinch.current &&
+        touchPanStart.current
+      ) {
+        const t = e.touches[0];
+        setPan({
+          x: touchPanStart.current.panX + (t.clientX - touchPanStart.current.clientX),
+          y: touchPanStart.current.panY + (t.clientY - touchPanStart.current.clientY),
+        });
+      }
+    },
+    []
+  );
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (e.touches.length > 0) return;
+      touchPanStart.current = null;
+      if (touchWasPinch.current) {
+        touchPinchStart.current = null;
+        touchWasPinch.current = false;
+        return;
+      }
+      if (e.changedTouches.length === 0 || !hasMultiple || !onNavigate || zoom > 1) return;
+      const deltaX = e.changedTouches[0].clientX - touchSwipeStartX.current;
+      if (deltaX > SWIPE_THRESHOLD) goPrev();
+      else if (deltaX < -SWIPE_THRESHOLD) goNext();
+    },
+    [hasMultiple, onNavigate, goPrev, goNext, zoom]
+  );
 
   const viewerContent = (
     <div
@@ -142,13 +244,32 @@ export default function ImageViewer({
         </>
       )}
 
+      {currentCaption?.reviewText && (
+        <div className="image-viewer-caption" aria-live="polite">
+          <p className="image-viewer-caption-text">{currentCaption.reviewText}</p>
+          {(currentCaption.reviewAuthor != null || currentCaption.reviewRating != null) && (
+            <span className="image-viewer-caption-meta">
+              {currentCaption.reviewAuthor != null && currentCaption.reviewAuthor}
+              {currentCaption.reviewRating != null && ` · ${currentCaption.reviewRating}/5`}
+            </span>
+          )}
+        </div>
+      )}
+
       <div
+        ref={contentRef}
         className="image-viewer-content"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
-        style={{ cursor: zoom > 1 && isDragging ? "grabbing" : zoom > 1 ? "grab" : "default" }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        style={{
+          cursor: zoom > 1 && isDragging ? "grabbing" : zoom > 1 ? "grab" : "default",
+          touchAction: zoom > 1 ? "none" : "pan-y",
+        }}
       >
         <div
           className="image-viewer-transform"

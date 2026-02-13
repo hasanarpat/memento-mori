@@ -7299,6 +7299,39 @@
   z-index: 100001;
 }
 
+.image-viewer-caption {
+  position: absolute;
+  bottom: 5.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width:  min(90vw, 560px);
+  padding: 0.75rem 1.25rem;
+  background: rgba(13, 10, 15, 0.75);
+  border: 1px solid rgba(139, 115, 85, 0.2);
+  z-index: 100001;
+  pointer-events: none;
+}
+
+.image-viewer-caption-text {
+  margin: 0 0 0.35rem 0;
+  font-family: 'Crimson Text', serif;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: rgba(232, 220, 196, 0.7);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.image-viewer-caption-meta {
+  font-family: 'Cinzel', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: rgba(139, 115, 85, 0.8);
+}
+
 /* ========== LOGIN / REGISTER (AUTH) ========== */
 .auth-page {
   min-height: 100vh;

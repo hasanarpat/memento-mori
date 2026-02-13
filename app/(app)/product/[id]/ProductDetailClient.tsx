@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import { Heart, Minus, Plus, ChevronDown, ChevronUp, Star, ImagePlus, X, ZoomIn } from "lucide-react";
 import { useCart, useWishlist } from "@/components/ShopLayout";
-import ImageViewer from "@/app/components/ImageViewer";
+import ImageViewer, { type ViewerSlideCaption } from "@/app/components/ImageViewer";
 import { useAppSelector } from "@/app/lib/redux/hooks";
 
 const COLORS = ["#1a0a1f", "#2b0d0d", "#3d1f1f", "#4a2c2a"];
@@ -105,20 +105,53 @@ export default function ProductDetailClient({
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerImages, setViewerImages] = useState<string[]>([]);
   const [viewerIndex, setViewerIndex] = useState(0);
+  const [viewerCaptions, setViewerCaptions] = useState<(ViewerSlideCaption | null)[] | null>(null);
   const [viewerIsProductGallery, setViewerIsProductGallery] = useState(false);
   const [reviewFormOpen, setReviewFormOpen] = useState(false);
+
+  const allReviewSlides = useMemo(() => {
+    return reviews.flatMap((r) =>
+      r.photos.map((src) => ({
+        src,
+        reviewText: r.text,
+        reviewAuthor: r.author,
+        reviewRating: r.rating,
+      }))
+    );
+  }, [reviews]);
+
+  const getReviewPhotoGlobalIndex = useCallback(
+    (reviewIndex: number, photoIndex: number) => {
+      let idx = 0;
+      for (let i = 0; i < reviewIndex; i++) idx += reviews[i].photos.length;
+      return idx + photoIndex;
+    },
+    [reviews]
+  );
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
   const [reviewPhotos, setReviewPhotos] = useState<string[]>([]);
   const [reviewPhotoFiles, setReviewPhotoFiles] = useState<File[]>([]);
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
-  const openPhotoViewer = useCallback((images: string[], index: number) => {
-    setViewerImages(images);
-    setViewerIndex(index);
-    setViewerIsProductGallery(false);
-    setViewerOpen(true);
-  }, []);
+  const openReviewPhotoViewer = useCallback(
+    (reviewIndex: number, photoIndex: number) => {
+      if (allReviewSlides.length === 0) return;
+      const globalIndex = getReviewPhotoGlobalIndex(reviewIndex, photoIndex);
+      setViewerImages(allReviewSlides.map((s) => s.src));
+      setViewerCaptions(
+        allReviewSlides.map((s) => ({
+          reviewText: s.reviewText,
+          reviewAuthor: s.reviewAuthor,
+          reviewRating: s.reviewRating,
+        }))
+      );
+      setViewerIndex(globalIndex);
+      setViewerIsProductGallery(false);
+      setViewerOpen(true);
+    },
+    [allReviewSlides, getReviewPhotoGlobalIndex]
+  );
 
   const allImages = [
     product.images?.url,
@@ -128,6 +161,7 @@ export default function ProductDetailClient({
   const openProductGalleryViewer = useCallback(() => {
     setViewerImages(allImages as string[]);
     setViewerIndex(mainImage);
+    setViewerCaptions(null);
     setViewerIsProductGallery(true);
     setViewerOpen(true);
   }, [mainImage, allImages]);
@@ -425,7 +459,7 @@ export default function ProductDetailClient({
               Reviews ({reviews.length})
             </h2>
             <ul className="product-reviews-list">
-              {reviews.map((r) => (
+              {reviews.map((r, reviewIndex) => (
                 <li key={r.id} className="product-review-item">
                   <div className="product-review-header">
                     <span className="product-review-author">{r.author}</span>
@@ -449,7 +483,7 @@ export default function ProductDetailClient({
                           key={i}
                           type="button"
                           className="product-review-photo-thumb"
-                          onClick={() => openPhotoViewer(r.photos, i)}
+                          onClick={() => openReviewPhotoViewer(reviewIndex, i)}
                           aria-label={`View photo ${i + 1}`}
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -570,6 +604,7 @@ export default function ProductDetailClient({
           currentIndex={viewerIndex}
           onClose={() => setViewerOpen(false)}
           onNavigate={handleViewerNavigate}
+          captions={viewerCaptions ?? undefined}
         />
       )}
 
