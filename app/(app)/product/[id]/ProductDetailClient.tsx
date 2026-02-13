@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
-import { Heart, Minus, Plus, ChevronDown, ChevronUp, Star, ImagePlus, X, ZoomIn } from "lucide-react";
+import { Heart, Minus, Plus, ChevronDown, ChevronUp, Star, ImagePlus, X, ZoomIn, User } from "lucide-react";
 import { useCart, useWishlist } from "@/components/ShopLayout";
 import ImageViewer, { type ViewerSlideCaption } from "@/app/components/ImageViewer";
 import { useAppSelector } from "@/app/lib/redux/hooks";
@@ -44,6 +44,9 @@ type Review = {
   date: string;
   text: string;
   photos: string[];
+  authorAvatar?: string | null;
+  age?: number | null;
+  size?: string | null;
 };
 
 const DEMO_REVIEWS: Review[] = [
@@ -54,6 +57,9 @@ const DEMO_REVIEWS: Review[] = [
     date: "Jan 2024",
     text: "Stunning craftsmanship. The leather ages beautifully. Exactly the dark aesthetic I was looking for.",
     photos: ["https://picsum.photos/400/400?random=10", "https://picsum.photos/400/400?random=11"],
+    authorAvatar: "https://picsum.photos/200/200?random=avatar1",
+    age: 28,
+    size: "S",
   },
   {
     id: "2",
@@ -62,6 +68,8 @@ const DEMO_REVIEWS: Review[] = [
     date: "Dec 2023",
     text: "Worth every penny. Wore it to a ritual and got so many compliments.",
     photos: ["https://picsum.photos/400/400?random=12"],
+    age: 34,
+    size: "M",
   },
   {
     id: "3",
@@ -70,6 +78,9 @@ const DEMO_REVIEWS: Review[] = [
     date: "Dec 2023",
     text: "Sizing was spot on. Only minor note: brass could be slightly heavier. Still love it.",
     photos: [],
+    authorAvatar: "https://picsum.photos/200/200?random=avatar3",
+    age: 22,
+    size: "L",
   },
 ];
 
@@ -116,6 +127,9 @@ export default function ProductDetailClient({
         reviewText: r.text,
         reviewAuthor: r.author,
         reviewRating: r.rating,
+        reviewAuthorAvatar: r.authorAvatar ?? null,
+        reviewAge: r.age ?? null,
+        reviewSize: r.size ?? null,
       }))
     );
   }, [reviews]);
@@ -144,6 +158,9 @@ export default function ProductDetailClient({
           reviewText: s.reviewText,
           reviewAuthor: s.reviewAuthor,
           reviewRating: s.reviewRating,
+          reviewAuthorAvatar: s.reviewAuthorAvatar,
+          reviewAge: s.reviewAge,
+          reviewSize: s.reviewSize,
         }))
       );
       setViewerIndex(globalIndex);
@@ -462,9 +479,26 @@ export default function ProductDetailClient({
               {reviews.map((r, reviewIndex) => (
                 <li key={r.id} className="product-review-item">
                   <div className="product-review-header">
-                    <span className="product-review-author">{r.author}</span>
+                    <div className="product-review-author-wrap">
+                      <div className="product-review-avatar" aria-hidden>
+                        {r.authorAvatar ? (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img src={r.authorAvatar} alt="" />
+                        ) : (
+                          <User size={20} className="product-review-avatar-icon" />
+                        )}
+                      </div>
+                      <span className="product-review-author">{r.author}</span>
+                    </div>
                     <span className="product-review-date">{r.date}</span>
                   </div>
+                  {(r.age != null || r.size != null) && (
+                    <div className="product-review-details">
+                      {r.age != null && `${r.age} yaş`}
+                      {r.age != null && r.size != null && " · "}
+                      {r.size != null && `${r.size} beden`}
+                    </div>
+                  )}
                   <div className="product-review-stars">
                     {[1, 2, 3, 4, 5].map((i) => (
                       <Star

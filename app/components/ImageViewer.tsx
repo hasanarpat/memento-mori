@@ -2,9 +2,12 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { X, ZoomIn, ZoomOut, RotateCcw, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ZoomIn, ZoomOut, RotateCcw, ChevronLeft, ChevronRight, User } from "lucide-react";
 
-function getTouchDistance(t1: Touch, t2: Touch): number {
+function getTouchDistance(
+  t1: { clientX: number; clientY: number },
+  t2: { clientX: number; clientY: number }
+): number {
   return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
 }
 
@@ -12,6 +15,9 @@ export type ViewerSlideCaption = {
   reviewText?: string;
   reviewAuthor?: string;
   reviewRating?: number;
+  reviewAuthorAvatar?: string | null;
+  reviewAge?: number | null;
+  reviewSize?: string | null;
 };
 
 type ImageViewerProps = {
@@ -154,7 +160,7 @@ export default function ImageViewer({
         e.preventDefault();
         const distance = getTouchDistance(e.touches[0], e.touches[1]);
         const scale = distance / touchPinchStart.current.distance;
-        setZoom((z) => {
+        setZoom(() => {
           const next = touchPinchStart.current!.zoom * scale;
           return Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, next));
         });
@@ -244,14 +250,35 @@ export default function ImageViewer({
         </>
       )}
 
-      {currentCaption?.reviewText && (
+      {(currentCaption?.reviewText ?? currentCaption?.reviewAuthor) && (
         <div className="image-viewer-caption" aria-live="polite">
-          <p className="image-viewer-caption-text">{currentCaption.reviewText}</p>
-          {(currentCaption.reviewAuthor != null || currentCaption.reviewRating != null) && (
-            <span className="image-viewer-caption-meta">
-              {currentCaption.reviewAuthor != null && currentCaption.reviewAuthor}
-              {currentCaption.reviewRating != null && ` · ${currentCaption.reviewRating}/5`}
-            </span>
+          <div className="image-viewer-caption-header">
+            <div className="image-viewer-caption-avatar">
+              {currentCaption?.reviewAuthorAvatar ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img src={currentCaption.reviewAuthorAvatar} alt="" />
+              ) : (
+                <User size={18} className="image-viewer-caption-avatar-icon" />
+              )}
+            </div>
+            <div className="image-viewer-caption-meta-wrap">
+              {(currentCaption?.reviewAuthor != null || currentCaption?.reviewRating != null) && (
+                <span className="image-viewer-caption-meta">
+                  {currentCaption?.reviewAuthor != null && currentCaption.reviewAuthor}
+                  {currentCaption?.reviewRating != null && ` · ${currentCaption.reviewRating}/5`}
+                </span>
+              )}
+              {(currentCaption?.reviewAge != null || currentCaption?.reviewSize != null) && (
+                <span className="image-viewer-caption-details">
+                  {currentCaption?.reviewAge != null && `${currentCaption.reviewAge} yaş`}
+                  {currentCaption?.reviewAge != null && currentCaption?.reviewSize != null && " · "}
+                  {currentCaption?.reviewSize != null && `${currentCaption.reviewSize} beden`}
+                </span>
+              )}
+            </div>
+          </div>
+          {currentCaption?.reviewText && (
+            <p className="image-viewer-caption-text">{currentCaption.reviewText}</p>
           )}
         </div>
       )}
