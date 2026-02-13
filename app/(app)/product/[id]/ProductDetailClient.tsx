@@ -21,24 +21,36 @@ import ImageViewer, {
   type ViewerSlideCaption,
 } from '@/app/components/ImageViewer';
 import { useAppSelector } from '@/app/lib/redux/hooks';
+import type {
+  Product,
+  RichTextContent,
+  RichTextNode,
+  RichTextChild,
+} from './types';
+import {
+  getCategoryTitle,
+  getProductImageUrl,
+  getAdditionalImageUrls,
+} from './types';
 
 const COLORS = ['#1a0a1f', '#2b0d0d', '#3d1f1f', '#4a2c2a'];
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
-const RichText = ({ content }: { content: any }) => {
-  if (!content || !content.root || !content.root.children) return null;
+const RichText = ({ content }: { content: RichTextContent }) => {
+  if (!content?.root?.children) return null;
 
   return (
     <div className='rich-text'>
-      {content.root.children.map((node: any, i: number) => {
+      {content.root.children.map((node: RichTextNode, i: number) => {
         if (node.type === 'paragraph') {
           return (
             <p key={i}>
-              {node.children?.map((child: any, j: number) => {
+              {node.children?.map((child: RichTextChild, j: number) => {
                 if (child.type === 'text') {
-                  let text = child.text;
-                  if (child.format & 1) text = <strong key={j}>{text}</strong>;
-                  if (child.format & 2) text = <em key={j}>{text}</em>;
+                  let text: React.ReactNode = child.text;
+                  const format = child.format ?? 0;
+                  if (format & 1) text = <strong key={j}>{text}</strong>;
+                  if (format & 2) text = <em key={j}>{text}</em>;
                   return text;
                 }
                 return null;
@@ -112,19 +124,6 @@ const DEMO_REVIEWS: Review[] = [
     size: 'L',
   },
 ];
-
-type Product = {
-  id: string;
-  name: string;
-  price: number;
-  category: any;
-  badge: string | null;
-  theme: string;
-  description?: any;
-  images: any;
-  additionalImages?: { image: any }[];
-  stock?: number;
-};
 
 export default function ProductDetailClient({
   product,
@@ -241,14 +240,12 @@ export default function ProductDetailClient({
   );
 
   const allImages = [
-    product.images?.url,
-    ...(product.additionalImages
-      ?.map((img: any) => img.image?.url)
-      .filter(Boolean) || []),
-  ].filter(Boolean);
+    getProductImageUrl(product.images),
+    ...getAdditionalImageUrls(product.additionalImages),
+  ].filter((url): url is string => Boolean(url));
 
   const openProductGalleryViewer = useCallback(() => {
-    setViewerImages(allImages as string[]);
+    setViewerImages(allImages);
     setViewerIndex(mainImage);
     setViewerCaptions(null);
     setViewerIsProductGallery(true);
@@ -332,14 +329,7 @@ export default function ProductDetailClient({
         <Link href='/collections'>Collections</Link>
         <span aria-hidden='true'> / </span>
         <span>
-          {Array.isArray(product.category)
-            ? product.category
-                .map((c: any) => (typeof c === 'object' ? c.title : c))
-                .join(' / ')
-            : (product.category as any)?.title ||
-              (typeof product.category === 'string'
-                ? product.category
-                : product.theme)}
+          {getCategoryTitle(product.category, product.theme)}
         </span>
         <span aria-hidden='true'> / </span>
         <span>{product.name}</span>
@@ -361,7 +351,7 @@ export default function ProductDetailClient({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={
-                  product.images?.url ||
+                  getProductImageUrl(product.images) ||
                   'https://picsum.photos/800/800?random=1'
                 }
                 alt={`${product.name} view ${mainImage + 1}`}
@@ -384,7 +374,7 @@ export default function ProductDetailClient({
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={img as string}
+                  src={img}
                   alt=''
                   className='product-detail-thumb-img'
                 />
@@ -396,14 +386,7 @@ export default function ProductDetailClient({
         <div className='product-detail-info'>
           <h1 className='product-detail-name'>{product.name}</h1>
           <span className='product-detail-category-badge'>
-            {Array.isArray(product.category)
-              ? product.category
-                  .map((c: any) => (typeof c === 'object' ? c.title : c))
-                  .join(' / ')
-              : (product.category as any)?.title ||
-                (typeof product.category === 'string'
-                  ? product.category
-                  : product.theme)}
+            {getCategoryTitle(product.category, product.theme)}
           </span>
           <p className='product-detail-price'>₺{product.price}</p>
           <div className='product-detail-rating'>
@@ -821,16 +804,7 @@ export default function ProductDetailClient({
                   <div className='home-product-info'>
                     <h3 className='home-product-name'>{p.name}</h3>
                     <p className='home-product-category'>
-                      {Array.isArray(p.category)
-                        ? p.category
-                            .map((c: any) =>
-                              typeof c === 'object' ? c.title : c,
-                            )
-                            .join(' / ')
-                        : (p.category as any)?.title ||
-                          (typeof p.category === 'string'
-                            ? p.category
-                            : p.theme)}
+                      {getCategoryTitle(p.category, p.theme)}
                     </p>
                     <p className='home-product-price'>₺{p.price}</p>
                   </div>

@@ -5,6 +5,8 @@ import { SITE_NAME, DEFAULT_OG_IMAGE, absoluteUrl } from '../../../lib/site';
 import JsonLd from '../../../components/JsonLd';
 import ProductDetailClient from './ProductDetailClient';
 import type { Metadata } from 'next';
+import type { Product } from './types';
+import { getCategoryTitle, getProductImageUrl, getCategoryIds } from './types';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -25,14 +27,11 @@ export async function generateMetadata({
 
     if (!product) return { title: 'Product Not Found' };
 
-    const categoryTitle = Array.isArray(product.category)
-      ? (product.category[0] as any)?.title
-      : (product.category as any)?.title || 'Artifact';
-
+    const categoryTitle = getCategoryTitle(product.category, 'Artifact');
     const title = `${product.name} | ${categoryTitle} — ${SITE_NAME}`;
     const description = `${product.name} — ${categoryTitle}. ₺${product.price}. Dark fashion & subculture artifacts.`;
     const url = absoluteUrl(`/product/${product.id}`);
-    const image = (product.images as any)?.url || DEFAULT_OG_IMAGE;
+    const image = getProductImageUrl(product.images) || DEFAULT_OG_IMAGE;
 
     return {
       title,
@@ -66,7 +65,7 @@ export async function generateMetadata({
         'product:price:currency': 'TRY',
       },
     };
-  } catch (err) {
+  } catch {
     return { title: 'Product' };
   }
 }
@@ -82,16 +81,14 @@ export default async function ProductPage({ params }: PageProps) {
       id,
       depth: 1,
     });
-  } catch (err) {
+  } catch {
     notFound();
   }
 
   if (!product) notFound();
 
   // Fetch Related Products (same category, excluding current)
-  const categoryIds = Array.isArray(product.category)
-    ? product.category.map((c: any) => c.id)
-    : [(product.category as any)?.id].filter(Boolean);
+  const categoryIds = getCategoryIds(product.category);
 
   const relatedResult = await payload.find({
     collection: 'products',
@@ -110,7 +107,7 @@ export default async function ProductPage({ params }: PageProps) {
     '@type': 'Product',
     name: product.name,
     description: `${product.name}. Dark fashion, subculture apparel.`,
-    image: (product.images as any)?.url || DEFAULT_OG_IMAGE,
+    image: getProductImageUrl(product.images) || DEFAULT_OG_IMAGE,
     url: absoluteUrl(`/product/${product.id}`),
     sku: product.id,
     brand: { '@type': 'Brand', name: SITE_NAME },
@@ -153,8 +150,8 @@ export default async function ProductPage({ params }: PageProps) {
     <>
       <JsonLd data={[productJsonLd, breadcrumbJsonLd]} />
       <ProductDetailClient
-        product={product as any}
-        related={relatedResult.docs as any}
+        product={product as Product}
+        related={relatedResult.docs as Product[]}
       />
     </>
   );
