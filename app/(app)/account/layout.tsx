@@ -45,9 +45,9 @@ export default function AccountLayout({
     // Only redirect if absolutely sure: not loading, not auth in state, AND no token in storage
     // (If checkAuth fails, it clears storage, so this will eventually redirect)
     if (!loading && !isAuthenticated && !hasToken) {
-      router.push('/login');
+      router.push(`/login?return=${encodeURIComponent(pathname)}`);
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, loading, router, pathname]);
 
   const handleLogout = () => {
     dispatch(logout());

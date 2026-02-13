@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, Lock } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../lib/redux/hooks';
@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useAppDispatch();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
@@ -73,7 +74,10 @@ export default function LoginPage() {
         // Token is also saved to localStorage by the setUser reducer
         // Dispatch auth-change event for any other listeners
         window.dispatchEvent(new Event('auth-change'));
-        router.push('/account');
+        // Redirect back to the page user was on, or account
+        const returnTo = searchParams.get('return') || searchParams.get('redirect') || '';
+        const safeReturn = returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') && !returnTo.toLowerCase().startsWith('/login');
+        router.push(safeReturn ? returnTo : '/account');
         return;
       }
 

@@ -3,6 +3,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   X,
   Search,
@@ -32,6 +33,7 @@ export default function MobileMenu({
   wishlistCount,
   cartCount,
 }: MobileMenuProps) {
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const [mobileShopOpen, setMobileShopOpen] = useState(false);
   const [mobileExploreOpen, setMobileExploreOpen] = useState(false);
@@ -214,7 +216,7 @@ export default function MobileMenu({
             </div>
           ) : (
             <Link
-              href='/login'
+              href={pathname === '/login' ? '/login' : `/login?return=${encodeURIComponent(pathname)}`}
               className='mobile-login-card'
               onClick={onClose}
             >

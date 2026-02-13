@@ -249,7 +249,7 @@ export default function Header({
               </div>
             </div>
           ) : (
-            <Link href='/login' className='nav-link header-login'>
+            <Link href={pathname === '/login' ? '/login' : `/login?return=${encodeURIComponent(pathname)}`} className='nav-link header-login'>
               LOGIN
             </Link>
           )}
