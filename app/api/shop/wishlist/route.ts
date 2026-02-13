@@ -4,6 +4,14 @@ import configPromise from '@payload-config';
 
 export const dynamic = 'force-dynamic';
 
+type UserWithWishlist = {
+  wishlist?: unknown[];
+};
+
+function isValidObjectId(id: unknown): id is string {
+  return typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
+}
+
 export async function GET(request: Request) {
   const payload = await getPayload({ config: configPromise });
 
@@ -18,7 +26,7 @@ export async function GET(request: Request) {
       collection: 'users',
       id: user.id,
       depth: 1, // Populate products for frontend
-    })) as any;
+    })) as UserWithWishlist;
 
     return NextResponse.json({
       wishlist: userData.wishlist || [],
@@ -52,21 +60,13 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log('Wishlist Update IDs:', productIds);
-
-    const validIds = productIds
-      .filter((id: any) => {
-        // AcceptONLY 24-char hex (ObjectId). Reject integers/legacy IDs.
-        const isObjectId =
-          typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
-
-        if (!isObjectId) {
-          console.warn(`Skipping invalid wishlist item ID: ${id}`);
-          return false;
-        }
-        return true;
-      })
-      .map((id: any) => id);
+    const validIds = productIds.filter((id: unknown): id is string => {
+      if (!isValidObjectId(id)) {
+        console.warn(`Skipping invalid wishlist item ID: ${id}`);
+        return false;
+      }
+      return true;
+    });
 
     await payload.update({
       collection: 'users',

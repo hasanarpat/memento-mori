@@ -4,6 +4,15 @@ import configPromise from '@payload-config';
 
 export const dynamic = 'force-dynamic';
 
+type CartItemInput = {
+  product?: string | { id?: string };
+  quantity: number;
+};
+
+type UserWithCart = {
+  cart?: unknown[];
+};
+
 export async function GET(request: Request) {
   const payload = await getPayload({ config: configPromise });
 
@@ -20,7 +29,7 @@ export async function GET(request: Request) {
       collection: 'users',
       id: user.id,
       depth: 1, // Populate relationships
-    })) as any;
+    })) as UserWithCart;
 
     return NextResponse.json({
       cart: userWithCart.cart || [],
@@ -54,11 +63,12 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log('Cart Update Request Items:', JSON.stringify(items, null, 2));
-
     const processedCart = items
-      .filter((item: any) => {
-        const id = item.product?.id || item.product;
+      .filter((item: CartItemInput) => {
+        const id =
+          item.product && typeof item.product === 'object'
+            ? item.product.id
+            : item.product;
         // AcceptONLY 24-char hex (ObjectId). Reject integers/legacy IDs.
         const isObjectId =
           typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
@@ -69,8 +79,11 @@ export async function POST(request: Request) {
         }
         return true;
       })
-      .map((item: any) => {
-        const id = item.product?.id || item.product;
+      .map((item: CartItemInput) => {
+        const id =
+          item.product && typeof item.product === 'object'
+            ? item.product.id
+            : item.product;
         return {
           product: id,
           quantity: item.quantity,
@@ -87,8 +100,11 @@ export async function POST(request: Request) {
       collection: 'users',
       id: user.id,
       data: {
-        cart: items.map((item: any) => ({
-          product: item.product.id || item.product, // ensure ID is used
+        cart: items.map((item: CartItemInput) => ({
+          product:
+            item.product && typeof item.product === 'object'
+              ? item.product.id
+              : item.product,
           quantity: item.quantity,
         })),
       },
