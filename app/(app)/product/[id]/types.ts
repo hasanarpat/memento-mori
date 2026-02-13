@@ -31,6 +31,7 @@ export type RichTextContent = {
 
 export type Product = {
   id: string;
+  slug?: string;
   name: string;
   price: number;
   category: CategoryRef | CategoryRef[];

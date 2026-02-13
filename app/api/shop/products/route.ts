@@ -9,12 +9,20 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url)
   const category = searchParams.get('category')
+  const idsParam = searchParams.get('ids') // comma-separated ids for wishlist etc.
   const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit') as string) : 10
   const page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : 1
 
   try {
-    const where: any = {}
-    
+    const where: Record<string, unknown> = {}
+
+    if (idsParam) {
+      const ids = idsParam.split(',').map((id) => id.trim()).filter(Boolean)
+      if (ids.length > 0) {
+        where.id = { in: ids }
+      }
+    }
+
     if (category) {
       where.category = {
         equals: category,

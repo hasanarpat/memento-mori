@@ -1,12 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ShoppingBag, X, Minus, Plus } from 'lucide-react';
+import Image from 'next/image';
 import { useAppSelector, useAppDispatch } from '../../lib/redux/hooks';
 import { removeFromCart, updateQuantity } from '../../lib/redux/slices/cartSlice';
-import { products } from '../../data/shop';
 import AvailableCoupons from '../../components/AvailableCoupons';
+
+type RecommendedProduct = {
+  id: string;
+  slug?: string;
+  name: string;
+  price: number;
+  images?: { url?: string } | null;
+};
 
 function CartLoadingSkeleton() {
   return (
@@ -30,6 +38,70 @@ function CartLoadingSkeleton() {
           <div className='cart-loading-sidebar'>
             <div className='cart-loading-summary' />
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CartEmptyWithRecommended() {
+  const [recommended, setRecommended] = useState<RecommendedProduct[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/shop/products?limit=4&depth=1')
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        const docs = data.docs ?? data;
+        setRecommended(Array.isArray(docs) ? docs : []);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return (
+    <div className='cart-empty'>
+      <ShoppingBag className='cart-empty-icon' size={80} />
+      <h1 className='cart-empty-title'>Your cart is empty</h1>
+      <Link href='/collections' className='home-cta-primary'>
+        Start Shopping
+      </Link>
+      <div className='cart-recommended'>
+        <h2 className='home-section-title'>Recommended</h2>
+        <div className='home-products-grid'>
+          {recommended.map((p) => {
+            const imageUrl =
+              p.images && typeof p.images === 'object' && 'url' in p.images
+                ? (p.images as { url?: string }).url
+                : undefined;
+            return (
+              <Link
+                key={p.id}
+                href={`/product/${p.slug ?? p.id}`}
+                className='home-product-card'
+              >
+                <div className='home-product-image'>
+                  {imageUrl ? (
+                    <Image
+                      src={imageUrl}
+                      alt={p.name}
+                      fill
+                      sizes='(max-width: 768px) 50vw, 25vw'
+                      className='object-cover'
+                      unoptimized
+                    />
+                  ) : null}
+                </div>
+                <div className='home-product-info'>
+                  <h3 className='home-product-name'>{p.name}</h3>
+                  <p className='home-product-price'>₺{p.price}</p>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -183,31 +255,7 @@ export default function CartPage() {
       {isLoading ? (
         <CartLoadingSkeleton />
       ) : isEmpty ? (
-        <div className='cart-empty'>
-          <ShoppingBag className='cart-empty-icon' size={80} />
-          <h1 className='cart-empty-title'>Your cart is empty</h1>
-          <Link href='/collections' className='home-cta-primary'>
-            Start Shopping
-          </Link>
-          <div className='cart-recommended'>
-            <h2 className='home-section-title'>Recommended</h2>
-            <div className='home-products-grid'>
-              {products.slice(0, 4).map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/product/${p.slug ?? p.id}`}
-                  className='home-product-card'
-                >
-                  <div className='home-product-image' />
-                  <div className='home-product-info'>
-                    <h3 className='home-product-name'>{p.name}</h3>
-                    <p className='home-product-price'>₺{p.price}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
+        <CartEmptyWithRecommended />
       ) : (
         <>
           <h1 className='cart-title'>Shopping Cart ({cartItems.length} {cartItems.length === 1 ? 'item' : 'items'})</h1>

@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Heart,
   Minus,
@@ -794,14 +795,27 @@ export default function ProductDetailClient({
               role='region'
               aria-label='Related products carousel'
             >
-              {related.map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/product/${p.slug ?? p.id}`}
-                  className='home-product-card product-detail-related-card'
-                >
-                  <div className='home-product-image' />
-                  <div className='home-product-info'>
+              {related.map((p) => {
+                const relatedImageUrl = getProductImageUrl(p.images);
+                return (
+                  <Link
+                    key={p.id}
+                    href={`/product/${p.slug ?? p.id}`}
+                    className='home-product-card product-detail-related-card'
+                  >
+                    <div className='home-product-image'>
+                      {relatedImageUrl ? (
+                        <Image
+                          src={relatedImageUrl}
+                          alt={p.name}
+                          fill
+                          sizes='(max-width: 768px) 50vw, 260px'
+                          className='object-cover'
+                          unoptimized
+                        />
+                      ) : null}
+                    </div>
+                    <div className='home-product-info'>
                     <h3 className='home-product-name'>{p.name}</h3>
                     <p className='home-product-category'>
                       {getCategoryTitle(p.category, p.theme)}
@@ -809,7 +823,8 @@ export default function ProductDetailClient({
                     <p className='home-product-price'>₺{p.price}</p>
                   </div>
                 </Link>
-              ))}
+                );
+              })}
             </div>
             <div
               className={`product-detail-related-fade product-detail-related-fade-left ${relatedScrollState.canScrollLeft ? 'visible' : ''}`}
