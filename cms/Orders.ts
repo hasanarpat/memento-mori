@@ -117,6 +117,14 @@ export const Orders: CollectionConfig = {
       },
     },
     {
+      name: 'couponCode',
+      type: 'text',
+      admin: {
+        position: 'sidebar',
+        description: 'Coupon code applied to this order (for usage limits)',
+      },
+    },
+    {
       name: 'shippingAddress',
       type: 'group',
       fields: [

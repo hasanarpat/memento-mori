@@ -81,8 +81,10 @@ export async function POST(request: NextRequest) {
       const { docs: userOrders } = await payload.find({
         collection: 'orders',
         where: {
-          user: { equals: userId },
-          orderStatus: { not_equals: 'cancelled' },
+          and: [
+            { user: { equals: userId } },
+            { status: { not_equals: 'cancelled' } },
+          ],
         },
         limit: 1,
       });
@@ -100,9 +102,11 @@ export async function POST(request: NextRequest) {
       const { docs: userCouponUsage } = await payload.find({
         collection: 'orders',
         where: {
-          user: { equals: userId },
-          couponCode: { equals: code.toUpperCase() },
-          orderStatus: { not_equals: 'cancelled' },
+          and: [
+            { user: { equals: userId } },
+            { couponCode: { equals: code.toUpperCase() } },
+            { status: { not_equals: 'cancelled' } },
+          ],
         },
       });
 
