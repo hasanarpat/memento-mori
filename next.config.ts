@@ -1,3 +1,6 @@
+// Set DNS before any MongoDB SRV lookups (fixes querySrv ECONNREFUSED on Windows)
+require('dns').setServers(['1.1.1.1', '8.8.8.8']);
+
 import { withPayload } from '@payloadcms/next/withPayload';
 import type { NextConfig } from 'next';
 

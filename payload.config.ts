@@ -23,7 +23,8 @@ if (!secret) {
   throw new Error('PAYLOAD_SECRET is missing from environment variables');
 }
 
-const dbUrl = process.env.DATABASE_URL;
+// Prefer standard URL (no SRV) when querySrv fails on your network
+const dbUrl = process.env.DATABASE_URL_STANDARD || process.env.DATABASE_URL;
 if (!dbUrl) {
   throw new Error('DATABASE_URL is missing from environment variables');
 }
