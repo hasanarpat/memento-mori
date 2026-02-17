@@ -83,6 +83,9 @@ export const metadata: Metadata = {
   icons: {
     icon: '/logo.png',
   },
+  verification: {
+    google: 'vV8iTEK_cYvsYsgwwxm3_6uc-eV3yekg0TBaaioRgaE',
+  },
 };
 
 const websiteJsonLd = {
