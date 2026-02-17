@@ -71,15 +71,38 @@ export default function CheckoutPage() {
 
     try {
       // Construct Shipping Address (Mock data if using existing ID, or form data if new)
-      // For this demo, we'll just use a mock address since we selected an ID.
-      // In a real app, you'd pull the full address object based on selectedAddress ID.
-      const shippingAddress = {
-        fullName: 'Test User',
-        addressLine1: 'Galata Tower District',
-        city: 'Istanbul',
-        postalCode: '34421',
-        country: 'Turkey',
-      };
+      let shippingAddress;
+      let guestEmail = null;
+
+      if (selectedAddress) {
+        // If using saved address (mock for now)
+        shippingAddress = {
+          fullName: 'Test User',
+          addressLine1: 'Galata Tower District',
+          city: 'Istanbul',
+          postalCode: '34421',
+          country: 'Turkey',
+        };
+      } else {
+        // Gather from form (simple dom selection for this demo, ideally use state/react-hook-form)
+        const form = document.querySelector('.checkout-form') as HTMLFormElement;
+        if (!form && savedAddresses.length === 0) throw new Error("Shipping address required");
+
+        if (form) {
+          const formData = new FormData(form);
+          shippingAddress = {
+            fullName: formData.get('fullName') as string,
+            addressLine1: formData.get('addressLine1') as string,
+            city: formData.get('city') as string,
+            postalCode: formData.get('postalCode') as string,
+            country: 'Turkey', // Default
+          };
+          guestEmail = formData.get('email') as string;
+        }
+      }
+
+      // If we still don't have address (shouldn't happen with validation)
+      if (!shippingAddress) throw new Error("Please provide a shipping address");
 
       const res = await fetch('/api/shop/checkout', {
         method: 'POST',
@@ -93,6 +116,7 @@ export default function CheckoutPage() {
             price: item.price
           })),
           shippingAddress,
+          email: guestEmail, // Send email if collected
           paymentMethod: 'credit_card',
           user: user?.id
         }),
@@ -193,8 +217,9 @@ export default function CheckoutPage() {
                 </div>
               )}
 
+
               {(isAddingNewAddress || savedAddresses.length === 0) && (
-                <form className='checkout-form'>
+                <form className='checkout-form' onSubmit={(e) => e.preventDefault()}>
                   <div className='form-header-row'>
                     <h3>New Shipping Address</h3>
                     {savedAddresses.length > 0 && (
@@ -208,21 +233,37 @@ export default function CheckoutPage() {
                     )}
                   </div>
                   <label>
-                    Full Name <input type='text' required />
+                    Full Name <input
+                      type='text'
+                      required
+                      name="fullName"
+                    />
                   </label>
+
+                  {/* Email field required for guests */}
                   <label>
-                    Email <input type='email' required />
+                    Email Address (for order confirmation)
+                    <input
+                      type='email'
+                      required={!user}
+                      className={user ? 'opacity-50 cursor-not-allowed' : ''}
+                      defaultValue={user?.email}
+                      readOnly={!!user}
+                      name="email"
+                      placeholder="citizen@example.com"
+                    />
                   </label>
+
                   <div className='checkout-form-row'>
                     <label>
-                      City <input type='text' required />
+                      City <input type='text' required name="city" />
                     </label>
                     <label>
-                      Postal Code <input type='text' required />
+                      Postal Code <input type='text' required name="postalCode" />
                     </label>
                   </div>
                   <label>
-                    Address <input type='text' required />
+                    Address <input type='text' required name="addressLine1" />
                   </label>
                   <label className='checkout-checkbox'>
                     <input type='checkbox' defaultChecked /> Save this address

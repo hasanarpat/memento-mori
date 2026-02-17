@@ -26,6 +26,7 @@ const checkoutSchema = z.object({
   shippingAddress: addressSchema,
   paymentMethod: z.enum(['credit_card', 'paypal']),
   user: z.string().optional(), // User ID if logged in
+  email: z.string().email().optional(), // Email for guest checkout
 });
 
 export async function POST(request: Request) {
@@ -42,7 +43,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
-    const { items, shippingAddress, paymentMethod } = validationResult.data;
+
+    const { items, shippingAddress, paymentMethod, email } = validationResult.data;
 
     // Authenticate User
     const { user } = await payload.auth(request);
@@ -250,11 +252,17 @@ export async function POST(request: Request) {
         </html>
       `;
 
-      await payload.sendEmail({
-        to: user ? (user as any).email : 'customer@example.com', // Use actual user email if available, or fallback/shipping email
-        subject: `Order Confirmed - #${order.id}`,
-        html: emailHtml,
-      });
+      const recipientEmail = user ? (user as any).email : email;
+
+      if (recipientEmail) {
+        await payload.sendEmail({
+          to: recipientEmail,
+          subject: `Order Confirmed - #${order.id}`,
+          html: emailHtml,
+        });
+      } else {
+        console.warn('No email address available for order confirmation', order.id);
+      }
 
     } catch (emailErr) {
       console.error('Failed to send order email:', emailErr);
