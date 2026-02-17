@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAppDispatch } from '../../lib/redux/hooks';
 import { logout } from '../../lib/redux/slices/authSlice';
+import { SITE_NAME } from '../../lib/site';
 
 interface HeaderProps {
   cartCount: number;
@@ -81,7 +82,7 @@ export default function Header({
     <header className='header'>
       <div className='header-content'>
         <Link href='/' className='logo'>
-          MEMENTO MORI
+          <img src="/logo.png" alt={SITE_NAME} className="h-10 w-auto object-contain" />
         </Link>
         <nav className='nav'>
           <Link
@@ -234,7 +235,7 @@ export default function Header({
                   <span>Wishlist</span>
                 </Link>
                 <div className='user-dropdown-divider' />
-                <button 
+                <button
                   type="button"
                   className="user-dropdown-link user-dropdown-logout"
                   onClick={handleLogout}

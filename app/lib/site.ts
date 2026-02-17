@@ -7,7 +7,7 @@ export const SITE_NAME = "Memento Mori";
 export const SITE_TAGLINE = "Umbra Aesthetica — Where Shadows Take Form";
 export const DEFAULT_DESCRIPTION =
   "Dark fashion & subculture apparel. Gothic, steampunk, metal, occult, dark academia. Leather, brass, velvet, ritual objects. Handmade and limited editions.";
-export const DEFAULT_OG_IMAGE = `${SITE_URL}/og-default.png`;
+export const DEFAULT_OG_IMAGE = `${SITE_URL}/logo.png`;
 export const TWITTER_HANDLE = "@mementomori";
 export const LOCALE = "en_US";
 export const LOCALE_ALT = "tr_TR";
