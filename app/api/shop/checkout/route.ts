@@ -136,6 +136,22 @@ export async function POST(request: Request) {
       },
     });
 
+    // 5. Clear User Cart (Server-Side)
+    if (user) {
+      try {
+        await payload.update({
+          collection: 'users',
+          id: user.id,
+          data: {
+            cart: [],
+          },
+        });
+      } catch (cartErr) {
+        console.error('Failed to clear user cart:', cartErr);
+        // Don't fail the request, just log it
+      }
+    }
+
     // 5. Send Order Summary Email
     try {
       const emailHtml = `

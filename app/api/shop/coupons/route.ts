@@ -31,12 +31,12 @@ export async function GET(_request: NextRequest) {
         if (coupon.maxUses && coupon.usageCount >= coupon.maxUses) {
           return false;
         }
-        
+
         // Check valid from date
         if (coupon.validFrom && new Date(coupon.validFrom) > new Date()) {
           return false;
         }
-        
+
         return true;
       })
       .map((coupon) => ({
@@ -58,7 +58,7 @@ export async function GET(_request: NextRequest) {
   } catch (error) {
     console.error('Error fetching coupons:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch coupons' },
+      { error: 'Failed to fetch coupons', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
