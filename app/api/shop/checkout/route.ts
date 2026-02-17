@@ -192,15 +192,15 @@ export async function POST(request: Request) {
             </div>
 
             <div class="items">
-              ${orderItems.map((item, index) => {
+              ${orderItems.map((item) => {
         const product = products.find(p => p.id === item.product);
         // Safely get image URL
         let imgUrl = '';
         if (product && product.images) {
-          if (Array.isArray(product.images) && product.images[0]?.url) {
-            imgUrl = product.images[0].url;
+          if (Array.isArray(product.images) && (product.images[0] as { url?: string })?.url) {
+            imgUrl = (product.images[0] as { url: string }).url;
           } else if (typeof product.images === 'object' && 'url' in product.images) {
-            imgUrl = (product.images as any).url;
+            imgUrl = (product.images as { url: string }).url;
           }
         }
 
@@ -252,7 +252,7 @@ export async function POST(request: Request) {
         </html>
       `;
 
-      const recipientEmail = user ? (user as any).email : email;
+      const recipientEmail = user ? (user as { email?: string }).email : email;
 
       if (recipientEmail) {
         await payload.sendEmail({

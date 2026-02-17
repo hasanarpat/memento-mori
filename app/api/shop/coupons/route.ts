@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getPayload } from 'payload';
 import configPromise from '@payload-config';
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const payload = await getPayload({ config: configPromise });
 

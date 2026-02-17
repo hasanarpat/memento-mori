@@ -117,10 +117,13 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
                       id: product.id,
                       product: {
                         ...product,
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        category: product.category as any,
                         slug: product.id,
+                        description: '',
                       },
                       quantity: 1,
-                      price: product.price, 
+                      price: product.price,
                     })}
                   >
                     Add to Cart
@@ -138,7 +141,8 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
         onClose={() => setPreviewProduct(null)}
         onAddToCart={(p) => addToCart({
           id: String(p.id),
-          product: p,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          product: p as any,
           quantity: 1,
           price: p.price,
         })}

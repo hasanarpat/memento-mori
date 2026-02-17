@@ -505,6 +505,10 @@ export default function ProductDetailClient({
                     slug: String(product.id),
                     price: product.price,
                     description: '',
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    category: product.category as any,
+                    theme: product.theme,
+                    images: product.images,
                   },
                   quantity: qty,
                   price: product.price,

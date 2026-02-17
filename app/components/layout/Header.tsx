@@ -13,7 +13,6 @@ import {
 } from 'lucide-react';
 import { useAppDispatch } from '../../lib/redux/hooks';
 import { logout } from '../../lib/redux/slices/authSlice';
-import { SITE_NAME } from '../../lib/site';
 
 interface HeaderProps {
   cartCount: number;

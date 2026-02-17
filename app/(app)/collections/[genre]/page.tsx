@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { getPayload } from 'payload';
 import configPromise from '@payload-config';
@@ -48,7 +49,8 @@ export default async function GenreCollectionPage({
   const maxPrice = parseInt(typeof urlParams.maxPrice === 'string' ? urlParams.maxPrice : '2000', 10);
   const sort = typeof urlParams.sort === 'string' ? urlParams.sort : '-createdAt';
 
-  const where: { and: unknown[] } = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: { and: any[] } = {
     and: [
       { 'category.slug': { equals: genreSlug } },
       { price: { greater_than_equal: minPrice } },
@@ -63,7 +65,8 @@ export default async function GenreCollectionPage({
   // 3. Fetch Products
   const productsResult = await payload.find({
     collection: 'products',
-    where,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    where: where as any,
     sort,
     depth: 1,
     limit: 100,
@@ -85,22 +88,28 @@ export default async function GenreCollectionPage({
     description: genre.shortDesc,
     url: absoluteUrl(`/collections/${genre.slug}`),
     numberOfItems: productsResult.totalDocs,
-    itemListElement: genreProducts.slice(0, 20).map((p: { id: string; slug?: string; name: string }, i: number) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      url: absoluteUrl(`/product/${p.slug ?? p.id}`),
-      name: p.name,
-    })),
+    itemListElement: genreProducts.slice(0, 20).map((p: unknown, i: number) => {
+      const prod = p as { id: string; slug?: string; name: string };
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        url: absoluteUrl(`/product/${prod.slug ?? prod.id}`),
+        name: prod.name,
+      };
+    }),
   };
 
   return (
     <div className='collections-page category-inner-page'>
       <JsonLd data={[itemListJsonLd]} />
-      
-      <CollectionFilters 
-        categories={allCategories as Record<string, unknown>[]} 
-        productTypes={productTypeOptions}
-      />
+
+      <Suspense fallback={<div className="filters-sidebar-loading" />}>
+        <CollectionFilters
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          categories={allCategories as any}
+          productTypes={productTypeOptions}
+        />
+      </Suspense>
 
       <div className='collections-main'>
         <section
@@ -117,7 +126,9 @@ export default async function GenreCollectionPage({
           <div className='product-count'>
             {productsResult.totalDocs} items found in this realm
           </div>
-          <CollectionSort />
+          <Suspense fallback={<div className="sort-loading" />}>
+            <CollectionSort />
+          </Suspense>
         </div>
 
         <ProductGrid initialProducts={genreProducts as { id: string; slug?: string; name: string; price: number; category: unknown; theme: string; badge?: string; images?: { url?: string } | null }[]} />

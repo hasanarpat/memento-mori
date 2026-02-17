@@ -2,7 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const checkAuth = createAsyncThunk(
   'auth/checkAuth',
-  async (_, _store) => {
+  async () => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('payload-token') : null;
     if (!token) throw new Error('No token');
 
@@ -14,10 +14,10 @@ export const checkAuth = createAsyncThunk(
 
     if (!res.ok) throw new Error('Auth failed');
     const data = await res.json();
-    
+
     // Payload /api/users/me returns { user: ... }
     if (!data.user) throw new Error('No user found');
-    
+
     return { user: data.user, token };
   }
 );

@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Mail, Lock } from 'lucide-react';
 import { useAppSelector, useAppDispatch } from '../../lib/redux/hooks';
 import { setUser } from '../../lib/redux/slices/authSlice';
 
-export default function LoginPage() {
+function LoginContentByHasan() {
   const [tab, setTab] = useState<'login' | 'register'>('login');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -293,5 +293,12 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginContentByHasan />
+    </Suspense>
   );
 }

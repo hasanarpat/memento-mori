@@ -34,7 +34,13 @@ export default function CheckoutPage() {
   const [lastOrder, setLastOrder] = useState<{
     items: typeof cartItems;
     total: number;
-    shippingAddress: any;
+    shippingAddress: {
+      fullName: string;
+      addressLine1: string;
+      city: string;
+      postalCode: string;
+      country: string;
+    };
     email?: string;
   } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -148,9 +154,10 @@ export default function CheckoutPage() {
       dispatch(clearCart());
       setShowSuccessModal(true);
 
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Something went wrong. Please try again.';
       console.error('Order placement failed', err);
-      setErrorMsg(err.message || 'Something went wrong. Please try again.');
+      setErrorMsg(message);
     } finally {
       setIsProcessing(false);
     }

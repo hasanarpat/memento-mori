@@ -5,15 +5,7 @@ import { Heart, ArrowRight } from "lucide-react";
 import { useWishlist } from "@/components/ShopLayout";
 import ProductGrid from "@/app/components/ProductGrid";
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  category: unknown;
-  theme: string;
-  badge?: string;
-  images?: { url?: string } | null;
-}
+
 
 export default function WishlistPage() {
   const { wishlistIds, wishlistProducts } = useWishlist();

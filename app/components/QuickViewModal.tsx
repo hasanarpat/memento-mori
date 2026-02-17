@@ -24,7 +24,10 @@ interface QuickViewProduct {
   price: number;
   theme: string;
   badge?: string | null;
-  category?: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  category?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  description?: any;
   images?: { url?: string } | null;
 }
 
@@ -33,8 +36,8 @@ interface QuickViewModalProps {
   isOpen: boolean;
   onClose: () => void;
   onAddToCart: (product: QuickViewProduct) => void;
-  onToggleWishlist: (productId: string | number) => void;
-  isInWishlist: (productId: string | number) => boolean;
+  onToggleWishlist: (productId: string) => void;
+  isInWishlist: (productId: string) => boolean;
 }
 
 const themeIcons: Record<
@@ -88,7 +91,7 @@ export default function QuickViewModal({
 
   if (!isOpen || !product) return null;
 
-  const inWishlist = isInWishlist(product.id);
+  const inWishlist = isInWishlist(String(product.id));
   const Icon = themeIcons[product.theme] || Skull;
 
   return (
@@ -194,7 +197,7 @@ export default function QuickViewModal({
                   </button>
                   <button
                     className={`qv-wish-btn ${inWishlist ? 'active' : ''}`}
-                    onClick={() => onToggleWishlist(product.id)}
+                    onClick={() => onToggleWishlist(String(product.id))}
                   >
                     <Heart
                       size={18}

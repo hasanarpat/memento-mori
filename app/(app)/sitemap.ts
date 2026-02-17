@@ -42,14 +42,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const categoryUrls: MetadataRoute.Sitemap = categoriesResult.docs.map((c) => ({
     url: `${SITE_URL}/collections/${c.slug}`,
-    lastModified: c.updatedAt ? new Date(c.updatedAt) : new Date(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    lastModified: c.updatedAt ? new Date(c.updatedAt as any) : new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
 
   const productUrls: MetadataRoute.Sitemap = productsResult.docs.map((p) => ({
     url: `${SITE_URL}/product/${p.slug ?? p.id}`,
-    lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    lastModified: p.updatedAt ? new Date(p.updatedAt as any) : new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.7,
   }));

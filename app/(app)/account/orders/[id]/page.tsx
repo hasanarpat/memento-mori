@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getPayload } from 'payload';
 import configPromise from '@payload-config';
 import { headers } from 'next/headers';
@@ -124,9 +124,9 @@ export default async function OrderDetailsPage({ params }: PageProps) {
             </div>
 
             <div className='divide-y divide-white/5'>
-              {order.items.map((item: any, i: number) => {
+              {order.items.map((item: { product: { slug?: string; images?: unknown; name?: string }; quantity: number; price: number }, i: number) => {
                 const product = item.product;
-                const image = (product.images as any)?.url || (Array.isArray(product.images) ? (product.images[0] as any)?.url : null);
+                const image = (product.images as { url?: string })?.url || (Array.isArray(product.images) ? (product.images[0] as { url?: string })?.url : null);
                 const productSlug = product.slug || '#';
 
                 return (

@@ -48,7 +48,7 @@ export default function ContactPage() {
       <div className="text-center mb-16">
         <h1 className="text-4xl md:text-5xl font-cinzel text-bone mb-4">Contact Us</h1>
         <p className="text-aged-silver font-crimson text-lg italic max-w-2xl mx-auto">
-          "Speak, and let your voice echo in the void. We are listening."
+          &quot;Speak, and let your voice echo in the void. We are listening.&quot;
         </p>
       </div>
 

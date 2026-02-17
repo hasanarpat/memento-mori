@@ -5,11 +5,9 @@ import { useWishlist, useCart } from '../../../components/ShopLayout';
 import type { Product } from '../../../data/shop';
 
 export default function GenreCollectionClient({
-  genreSlug: _genreSlug,
   genreName,
   genreProducts,
 }: {
-  genreSlug: string;
   genreName: string;
   genreProducts: Product[];
 }) {
@@ -80,6 +78,7 @@ export default function GenreCollectionClient({
                           name: product.name,
                           slug: product.slug ?? String(product.id),
                           price: product.price,
+                          description: '', // Required by type
                         },
                         quantity: 1,
                         price: product.price,

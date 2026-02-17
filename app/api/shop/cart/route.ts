@@ -62,32 +62,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const _processedCart = items
-      .filter((item: CartItemInput) => {
-        const id =
-          item.product && typeof item.product === 'object'
-            ? item.product.id
-            : item.product;
-        // AcceptONLY 24-char hex (ObjectId). Reject integers/legacy IDs.
-        const isObjectId =
-          typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
 
-        if (!isObjectId) {
-          console.warn(`Skipping invalid cart item ID: ${id}`);
-          return false;
-        }
-        return true;
-      })
-      .map((item: CartItemInput) => {
-        const id =
-          item.product && typeof item.product === 'object'
-            ? item.product.id
-            : item.product;
-        return {
-          product: id,
-          quantity: item.quantity,
-        };
-      });
 
     // Update User's cart
     await payload.update({

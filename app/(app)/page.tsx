@@ -287,8 +287,8 @@ export default async function HomePage() {
       </section>
 
       {/* Section 3: New Arrivals (Infinite Scroll) */}
-      <NewArrivalsSection 
-        initialProducts={newArrivalsResult.docs as { id: string; name: string; price: number; category: unknown; theme: string; badge?: string; images?: { url?: string } | null }[]} 
+      <NewArrivalsSection
+        initialProducts={newArrivalsResult.docs as { id: string; name: string; price: number; category: unknown; theme: string; badge?: string; images?: { url?: string } | null }[]}
         totalPages={newArrivalsResult.totalPages || 0}
         initialPage={newArrivalsResult.page || 1}
       />
@@ -381,7 +381,7 @@ export default async function HomePage() {
                 <ReelCard
                   key={r.id}
                   videoSrc={video || null}
-                  thumbSrc={thumb}
+                  thumbSrc={thumb || null}
                   title={r.title}
                   description={r.description}
                   campaignTitle={r.campaignTitle}

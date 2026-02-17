@@ -6,10 +6,10 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(
   request: Request,
-  { params }: { params: { slug: string } }
+  context: { params: Promise<{ slug: string }> }
 ) {
   const payload = await getPayload({ config: configPromise })
-  const { slug } = params
+  const { slug } = await context.params
 
   try {
     const products = await payload.find({

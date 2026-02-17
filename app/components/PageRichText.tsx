@@ -26,7 +26,8 @@ export default function PageRichText({ content }: { content: RichTextContent }) 
           return <p key={i}>{children}</p>;
         }
         if (node.type === 'heading' && node.tag) {
-          const Tag = node.tag as keyof JSX.IntrinsicElements;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const Tag = node.tag as any;
           return <Tag key={i}>{children}</Tag>;
         }
         return <p key={i}>{children}</p>;

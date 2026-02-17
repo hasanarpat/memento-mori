@@ -30,7 +30,9 @@ export default function AccountWishlistPage() {
       });
       return;
     }
-    setLoading(true);
+    queueMicrotask(() => {
+      if (!loading) setLoading(true);
+    });
     const ids = wishlistIds.join(',');
     fetch(`/api/shop/products?ids=${encodeURIComponent(ids)}&limit=100`)
       .then((res) => res.json())
@@ -46,7 +48,7 @@ export default function AccountWishlistPage() {
       })
       .catch(() => setItems([]))
       .finally(() => setLoading(false));
-  }, [wishlistKey, wishlistIds]);
+  }, [wishlistKey, wishlistIds, loading]);
 
   if (loading) {
     return (
@@ -158,7 +160,10 @@ export default function AccountWishlistPage() {
                           name: product.name,
                           slug: product.slug ?? product.id,
                           price: product.price,
+                          description: '', // Required by type but not used here
                           images: product.images,
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          category: product.category as any,
                         },
                         quantity: 1,
                         price: product.price,

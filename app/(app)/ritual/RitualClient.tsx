@@ -79,6 +79,8 @@ export default function RitualClient({ products: ritualProducts }: { products: P
                       id: product.id,
                       product: {
                         ...product,
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        category: product.category as any,
                         slug: product.id,
                         description: '',
                       },

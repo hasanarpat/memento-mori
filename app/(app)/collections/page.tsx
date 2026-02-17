@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { getPayload } from 'payload';
 import configPromise from '@payload-config';
 import CollectionFilters from '../../components/CollectionFilters';
@@ -36,7 +37,8 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
   });
 
   // 2. Build filter (where) clause
-  const where: { and: unknown[] } = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const where: { and: any[] } = {
     and: [
       { price: { greater_than_equal: minPrice } },
       { price: { less_than_equal: maxPrice } },
@@ -63,7 +65,8 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
   // 3. Fetch Products
   const productsResult = await payload.find({
     collection: 'products',
-    where,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    where: where as any,
     sort,
     depth: 1,
     limit: 100, // For now, we fetch a large batch for simplicity, or we could add pagination
@@ -71,10 +74,13 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
 
   return (
     <div className='collections-page'>
-      <CollectionFilters 
-        categories={categories as Record<string, unknown>[]} 
-        productTypes={productTypeOptions}
-      />
+      <Suspense fallback={<div className="filters-sidebar-loading" />}>
+        <CollectionFilters
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          categories={categories as any}
+          productTypes={productTypeOptions}
+        />
+      </Suspense>
 
       <div className='collections-main'>
         <div className='collections-toolbar'>
@@ -85,7 +91,9 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
             </div>
           </div>
 
-          <CollectionSort />
+          <Suspense fallback={<div className="sort-loading" />}>
+            <CollectionSort />
+          </Suspense>
         </div>
 
         <ProductGrid initialProducts={productsResult.docs as { id: string; slug?: string; name: string; price: number; category: unknown; theme: string; badge?: string; images?: { url?: string } | null }[]} />

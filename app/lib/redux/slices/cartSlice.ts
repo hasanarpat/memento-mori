@@ -11,7 +11,7 @@ export interface CartItem {
     images?: { url?: string } | unknown;
     productType?: string;
     theme?: string;
-    category?: unknown[];
+    category?: string | unknown[];
     stock?: number;
     badge?: string | null;
     isNewArrival?: boolean;

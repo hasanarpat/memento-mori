@@ -96,7 +96,7 @@ export default async function ArchivePage() {
         {limitedProducts.length > 0 ? (
           <div className="archive-products-grid">
             {limitedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product as unknown as ArchiveProduct} />
             ))}
           </div>
         ) : (
