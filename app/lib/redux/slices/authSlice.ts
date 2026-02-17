@@ -2,7 +2,7 @@ import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const checkAuth = createAsyncThunk(
   'auth/checkAuth',
-  async (_, { dispatch }) => {
+  async (_, _store) => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('payload-token') : null;
     if (!token) throw new Error('No token');
 

@@ -1,5 +1,4 @@
 import { buildPageMetadata } from "@/app/lib/metadata";
-import { absoluteUrl } from "@/app/lib/site";
 import JsonLd from "@/app/components/JsonLd";
 
 export const metadata = buildPageMetadata({

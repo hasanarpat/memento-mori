@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { getPayload } from 'payload';
 import configPromise from '@payload-config';
 import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { Package, ChevronRight, Calculator, Calendar } from 'lucide-react';
+import { Package, ChevronRight, Calendar } from 'lucide-react';
 
 export default async function OrdersPage() {
   const payload = await getPayload({ config: configPromise });
@@ -29,7 +28,7 @@ export default async function OrdersPage() {
      // Let's NOT redirect server side for now, just show empty or "Please login".
   }
 
-  let orders: any[] = [];
+  let orders: Record<string, unknown>[] = [];
   
   if (user) {
     const result = await payload.find({

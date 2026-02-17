@@ -49,10 +49,10 @@ export default async function NewArrivalsPage() {
 
   return (
     <NewArrivalsClient 
-      thisWeek={thisWeek as any} 
-      lastWeek={lastWeek as any} 
-      thisMonth={thisMonth as any}
-      categories={categoriesResult.docs as any}
+      thisWeek={thisWeek as { id: string; name: string; price: number; slug?: string }[]} 
+      lastWeek={lastWeek as { id: string; name: string; price: number; slug?: string }[]} 
+      thisMonth={thisMonth as { id: string; name: string; price: number; slug?: string }[]}
+      categories={categoriesResult.docs as { id: string; title?: string; slug?: string }[]}
     />
   );
 }

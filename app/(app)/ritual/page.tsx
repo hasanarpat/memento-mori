@@ -40,7 +40,7 @@ export default async function RitualPage() {
           <Sparkles size={32} aria-hidden="true" />
         </div>
       </section>
-      <RitualClient products={ritualProductsResult.docs as any} />
+      <RitualClient products={ritualProductsResult.docs as { id: string; slug?: string; name: string; price: number; category: unknown; theme: string; badge?: string; images?: { url?: string } | null }[]} />
       <section className="ritual-cta">
         <h2 className="ritual-cta-title">Deeper into the craft</h2>
         <p className="ritual-cta-desc">

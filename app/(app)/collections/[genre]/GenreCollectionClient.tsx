@@ -5,7 +5,7 @@ import { useWishlist, useCart } from '../../../components/ShopLayout';
 import type { Product } from '../../../data/shop';
 
 export default function GenreCollectionClient({
-  genreSlug,
+  genreSlug: _genreSlug,
   genreName,
   genreProducts,
 }: {

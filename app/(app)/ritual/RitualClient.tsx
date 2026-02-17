@@ -6,12 +6,13 @@ import { useCart, useWishlist } from "@/components/ShopLayout";
 
 interface Product {
   id: string;
+  slug?: string;
   name: string;
   price: number;
-  category: any;
+  category: unknown;
   theme: string;
   badge?: string;
-  images: any;
+  images?: { url?: string } | null;
 }
 
 export default function RitualClient({ products: ritualProducts }: { products: Product[] }) {
@@ -38,10 +39,10 @@ export default function RitualClient({ products: ritualProducts }: { products: P
         {ritualProducts.map((product) => {
           const inWishlist = isInWishlist(product.id);
           const categoryTitle = Array.isArray(product.category)
-            ? product.category.map((c: any) => (typeof c === 'object' ? c.title : c)).join(' / ')
-            : (product.category as any)?.title || product.theme;
-          
-          const imageUrl = (product.images as any)?.url;
+            ? (product.category as { title?: string }[]).map((c) => (typeof c === 'object' ? c.title : c)).join(' / ')
+            : (product.category as { title?: string } | null)?.title || product.theme;
+
+          const imageUrl = product.images?.url;
 
           return (
             <article key={product.id} className="ritual-card home-product-card">

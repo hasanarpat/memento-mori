@@ -185,7 +185,7 @@ export default async function HomePage() {
 
               <div className='hero-oval-frame'>
                 <Image
-                  src={(heroProduct?.images as any)?.url || '/atlas-conan.jpg'}
+                  src={(heroProduct?.images as { url?: string } | null)?.url || '/atlas-conan.jpg'}
                   alt={heroProduct?.name || 'Gothic Art'}
                   fill
                   className='hero-frame-img'
@@ -288,7 +288,7 @@ export default async function HomePage() {
 
       {/* Section 3: New Arrivals (Infinite Scroll) */}
       <NewArrivalsSection 
-        initialProducts={newArrivalsResult.docs as any} 
+        initialProducts={newArrivalsResult.docs as { id: string; name: string; price: number; category: unknown; theme: string; badge?: string; images?: { url?: string } | null }[]} 
         totalPages={newArrivalsResult.totalPages || 0}
         initialPage={newArrivalsResult.page || 1}
       />

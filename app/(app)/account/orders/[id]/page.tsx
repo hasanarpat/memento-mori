@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getPayload } from 'payload';
 import configPromise from '@payload-config';
 import { headers } from 'next/headers';
@@ -29,7 +29,7 @@ export default async function OrderDetailsPage({ params }: PageProps) {
         id,
         depth: 2, // Ensure we get product details
       });
-    } catch (error) {
+    } catch {
       notFound();
     }
   }
@@ -103,9 +103,9 @@ export default async function OrderDetailsPage({ params }: PageProps) {
               </h2>
             </div>
             <div className='divide-y divide-[#333]'>
-              {order.items.map((item: any, i: number) => {
+              {order.items.map((item: { product: { name?: string; images?: { url?: string } | null }; quantity: number }, i: number) => {
                 const product = item.product;
-                const image = (product.images as any)?.url;
+                const image = product.images?.url;
                 
                 return (
                   <div key={i} className='p-4 flex gap-4'>

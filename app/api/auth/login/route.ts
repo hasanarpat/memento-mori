@@ -36,7 +36,7 @@ export async function POST(request: Request) {
         email,
         password,
       },
-      req: request as any, // Payload login takes req
+      req: request as unknown as Request,
     })
 
     if (!result.token) {
@@ -44,13 +44,15 @@ export async function POST(request: Request) {
     }
 
     // 4. Secure Response
-    // Return token and minimal user info. 
+    // Return token and minimal user info.
     // Ideally set cookie here, but for now returning token is fine for API usage.
+    const user = result.user;
+    if (!user) return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     return NextResponse.json({
       success: true,
       user: {
-        email: result.user.email,
-        id: result.user.id,
+        email: user.email,
+        id: user.id,
       },
       token: result.token,
       exp: result.exp,

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { Shield, Star, Heart } from 'lucide-react';
 import NewsletterForm from '../../components/NewsletterForm';
 import { buildPageMetadata } from '../../lib/metadata';

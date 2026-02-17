@@ -28,7 +28,7 @@ export const fetchWishlist = createAsyncThunk(
     
     // Backend returns array of Products or IDs
     // We store IDs as strings in slice
-    return data.wishlist.map((item: any) => typeof item === 'object' ? String(item.id) : String(item));
+    return data.wishlist.map((item: { id?: string } | string) => typeof item === 'object' ? String(item.id) : String(item));
   }
 );
 
@@ -118,7 +118,7 @@ export const mergeWishlistWithBackend = createAsyncThunk(
 
       if (!res.ok) throw new Error('Failed to fetch backend wishlist for merge');
       const data = await res.json();
-      const backendIds = data.wishlist.map((item: any) => 
+      const backendIds = data.wishlist.map((item: { id?: string } | string) =>
          typeof item === 'object' ? String(item.id) : String(item)
       ) as string[];
 

@@ -98,7 +98,7 @@ export async function POST(request: Request) {
         req: request,
       });
       autoLoginToken = loginResult.token || null;
-    } catch (loginError) {
+    } catch {
       // Auto-login failed (likely UnverifiedEmail error) - this is OK
       // User will verify email and login manually
       console.log('Auto-login skipped (likely requires email verification)');

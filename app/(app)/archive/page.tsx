@@ -30,10 +30,11 @@ export default async function ArchivePage() {
 
   const limitedProducts = limitedProductsResult.docs;
 
-  const ProductCard = ({ product }: { product: any }) => {
+  interface ArchiveProduct { id: string; slug?: string; name: string; price: number; category?: unknown; theme?: string }
+  const ProductCard = ({ product }: { product: ArchiveProduct }) => {
     const categoryTitle = Array.isArray(product.category)
-      ? product.category.map((c: any) => (typeof c === 'object' ? c.title : c)).join(' / ')
-      : (product.category as any)?.title || product.theme;
+      ? (product.category as { title?: string }[]).map((c) => (typeof c === 'object' ? c.title : c)).join(' / ')
+      : (product.category as { title?: string } | null)?.title || product.theme;
 
     return (
       <Link

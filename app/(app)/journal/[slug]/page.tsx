@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, User, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, User, Clock } from 'lucide-react';
 import { blogPosts } from '../../../data/shop';
 
 export default function BlogPostPage() {

@@ -17,15 +17,24 @@ import {
   Heart,
   Info,
 } from 'lucide-react';
-import { Product } from '../data/shop';
+interface QuickViewProduct {
+  id: string | number;
+  slug?: string;
+  name: string;
+  price: number;
+  theme: string;
+  badge?: string | null;
+  category?: unknown;
+  images?: { url?: string } | null;
+}
 
 interface QuickViewModalProps {
-  product: Product | null;
+  product: QuickViewProduct | null;
   isOpen: boolean;
   onClose: () => void;
-  onAddToCart: (product: Product) => void;
-  onToggleWishlist: (productId: number) => void;
-  isInWishlist: (productId: number) => boolean;
+  onAddToCart: (product: QuickViewProduct) => void;
+  onToggleWishlist: (productId: string | number) => void;
+  isInWishlist: (productId: string | number) => boolean;
 }
 
 const themeIcons: Record<
@@ -131,8 +140,8 @@ export default function QuickViewModal({
                 <div className='quickview-header'>
                   <span className='qv-category'>
                     {Array.isArray(product.category)
-                      ? product.category.map((c: any) => (typeof c === 'object' ? c.title : c)).join(' × ')
-                      : (product.category as any)?.title || (typeof product.category === 'string' ? product.category : product.theme)}
+                      ? (product.category as { title?: string }[]).map((c) => (typeof c === 'object' ? c.title : c)).join(' × ')
+                      : (product.category as { title?: string } | null)?.title || (typeof product.category === 'string' ? product.category : product.theme)}
                   </span>
                   <h2 className='qv-title'>{product.name}</h2>
                   <div className='qv-price'>₺{product.price}</div>

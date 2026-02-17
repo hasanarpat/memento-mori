@@ -36,7 +36,7 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
   });
 
   // 2. Build filter (where) clause
-  const where: any = {
+  const where: { and: unknown[] } = {
     and: [
       { price: { greater_than_equal: minPrice } },
       { price: { less_than_equal: maxPrice } },
@@ -72,7 +72,7 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
   return (
     <div className='collections-page'>
       <CollectionFilters 
-        categories={categories as any} 
+        categories={categories as Record<string, unknown>[]} 
         productTypes={productTypeOptions}
       />
 
@@ -88,7 +88,7 @@ export default async function CollectionsPage({ searchParams }: PageProps) {
           <CollectionSort />
         </div>
 
-        <ProductGrid initialProducts={productsResult.docs as any} />
+        <ProductGrid initialProducts={productsResult.docs as { id: string; slug?: string; name: string; price: number; category: unknown; theme: string; badge?: string; images?: { url?: string } | null }[]} />
       </div>
     </div>
   );

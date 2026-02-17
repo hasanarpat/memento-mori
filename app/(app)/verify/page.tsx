@@ -14,8 +14,10 @@ function VerifyContent() {
 
   useEffect(() => {
     if (!token) {
-      setStatus('error');
-      setMessage('Invalid verification link.');
+      queueMicrotask(() => {
+        setStatus('error');
+        setMessage('Invalid verification link.');
+      });
       return;
     }
 
@@ -36,7 +38,7 @@ function VerifyContent() {
           setStatus('error');
           setMessage('Verification failed or token expired.');
         }
-      } catch (error) {
+      } catch {
         setStatus('error');
         setMessage('An error occurred during verification.');
       }

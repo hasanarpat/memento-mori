@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       // In production, _verified must be true to proceed
       if (
         process.env.NODE_ENV === 'production' &&
-        (user as any)._verified === false
+        (user as { _verified?: boolean })._verified === false
       ) {
         return NextResponse.json(
           { error: 'Email not verified. Please check your inbox or profile.' },

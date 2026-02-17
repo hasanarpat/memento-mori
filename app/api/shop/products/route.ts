@@ -51,7 +51,7 @@ export async function GET(request: Request) {
 
     const products = await payload.find({
       collection: 'products',
-      where,
+      where: where as Parameters<typeof payload.find>[0]['where'],
       limit,
       page,
       sort,

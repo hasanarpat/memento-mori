@@ -48,7 +48,7 @@ export default async function GenreCollectionPage({
   const maxPrice = parseInt(typeof urlParams.maxPrice === 'string' ? urlParams.maxPrice : '2000', 10);
   const sort = typeof urlParams.sort === 'string' ? urlParams.sort : '-createdAt';
 
-  const where: any = {
+  const where: { and: unknown[] } = {
     and: [
       { 'category.slug': { equals: genreSlug } },
       { price: { greater_than_equal: minPrice } },
@@ -85,7 +85,7 @@ export default async function GenreCollectionPage({
     description: genre.shortDesc,
     url: absoluteUrl(`/collections/${genre.slug}`),
     numberOfItems: productsResult.totalDocs,
-    itemListElement: genreProducts.slice(0, 20).map((p: any, i) => ({
+    itemListElement: genreProducts.slice(0, 20).map((p: { id: string; slug?: string; name: string }, i: number) => ({
       '@type': 'ListItem',
       position: i + 1,
       url: absoluteUrl(`/product/${p.slug ?? p.id}`),
@@ -98,19 +98,19 @@ export default async function GenreCollectionPage({
       <JsonLd data={[itemListJsonLd]} />
       
       <CollectionFilters 
-        categories={allCategories as any} 
+        categories={allCategories as Record<string, unknown>[]} 
         productTypes={productTypeOptions}
       />
 
       <div className='collections-main'>
         <section
           className='genre-hero'
-          style={{ '--genre-accent': (genre as any).accent || 'var(--blood-red)' } as React.CSSProperties}
+          style={{ '--genre-accent': (genre as { accent?: string }).accent || 'var(--blood-red)' } as React.CSSProperties}
         >
           <div className='breadcrumb'>Home / Collections / {genre.title}</div>
           <h1 className='genre-hero-title'>{genre.title}</h1>
-          <p className='genre-hero-tagline'>{(genre as any).tagline}</p>
-          <p className='genre-hero-desc'>{(genre as any).longDesc}</p>
+          <p className='genre-hero-tagline'>{(genre as { tagline?: string }).tagline}</p>
+          <p className='genre-hero-desc'>{(genre as { longDesc?: string }).longDesc}</p>
         </section>
 
         <div className='collections-toolbar'>
@@ -120,7 +120,7 @@ export default async function GenreCollectionPage({
           <CollectionSort />
         </div>
 
-        <ProductGrid initialProducts={genreProducts as any} />
+        <ProductGrid initialProducts={genreProducts as { id: string; slug?: string; name: string; price: number; category: unknown; theme: string; badge?: string; images?: { url?: string } | null }[]} />
       </div>
     </div>
   );

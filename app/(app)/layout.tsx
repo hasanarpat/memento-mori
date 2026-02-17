@@ -115,6 +115,7 @@ export default function AppLayout({
   return (
     <html lang='en' suppressHydrationWarning>
       <head>
+        {/* eslint-disable-next-line @next/next/no-page-custom-font -- App Router: fonts loaded in root layout for all pages */}
         <link
           href='https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800;900&family=Crimson+Text:wght@400;600;700&family=IM+Fell+DW+Pica:ital@0;1&family=Pirata+One&family=UnifrakturMaguntia&display=swap'
           rel='stylesheet'

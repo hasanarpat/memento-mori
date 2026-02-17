@@ -62,7 +62,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const processedCart = items
+    const _processedCart = items
       .filter((item: CartItemInput) => {
         const id =
           item.product && typeof item.product === 'object'

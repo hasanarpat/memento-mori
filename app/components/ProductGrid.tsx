@@ -20,12 +20,13 @@ const themeIcons: Record<string, React.ComponentType<{ size?: number }>> = {
 
 interface Product {
   id: string;
+  slug?: string;
   name: string;
   price: number;
-  category: any;
+  category: unknown;
   theme: string;
   badge?: string;
-  images: any;
+  images?: { url?: string } | null;
 }
 
 interface ProductGridProps {
@@ -43,7 +44,7 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
         {initialProducts.map((product) => {
           const Icon = themeIcons[product.theme] ?? Skull;
           const inWishlist = isInWishlist(product.id);
-          const imageUrl = (product.images as any)?.url;
+          const imageUrl = product.images?.url;
 
           return (
             <div key={product.id} className='product-card'>
@@ -100,9 +101,9 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
               </div>
               <div className='product-info'>
                 <div className='product-category'>
-                  {Array.isArray(product.category) 
-                    ? product.category.map((c: any) => (typeof c === 'object' ? c.title : c)).join(' × ') 
-                    : (product.category as any)?.title || (typeof product.category === 'string' ? product.category : product.theme)}
+                  {Array.isArray(product.category)
+                    ? (product.category as { title?: string }[]).map((c) => (typeof c === 'object' ? c.title : c)).join(' × ')
+                    : (product.category as { title?: string } | null)?.title || (typeof product.category === 'string' ? product.category : product.theme)}
                 </div>
                 <h3 className='product-name'>
                   <Link href={`/product/${product.slug ?? product.id}`}>{product.name}</Link>
@@ -132,7 +133,7 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
       </div>
 
       <QuickViewModal
-        product={previewProduct as any}
+        product={previewProduct}
         isOpen={!!previewProduct}
         onClose={() => setPreviewProduct(null)}
         onAddToCart={(p) => addToCart({
@@ -141,8 +142,8 @@ export default function ProductGrid({ initialProducts }: ProductGridProps) {
           quantity: 1,
           price: p.price,
         })}
-        onToggleWishlist={(id: any) => toggleWishlist(id)}
-        isInWishlist={(id: any) => isInWishlist(id)}
+        onToggleWishlist={(id: string) => toggleWishlist(id)}
+        isInWishlist={(id: string) => isInWishlist(id)}
       />
     </>
   );

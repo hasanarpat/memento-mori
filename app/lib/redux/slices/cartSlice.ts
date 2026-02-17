@@ -7,11 +7,11 @@ export interface CartItem {
     name: string;
     slug: string;
     price: number;
-    description: any; // Lexical editor format
-    images?: any;
+    description: unknown; // Lexical editor format
+    images?: { url?: string } | unknown;
     productType?: string;
     theme?: string;
-    category?: any[];
+    category?: unknown[];
     stock?: number;
     badge?: string | null;
     isNewArrival?: boolean;
@@ -56,7 +56,7 @@ export const fetchCart = createAsyncThunk(
     
     // Map backend response to CartItem structure if needed
     // Backend returns product object populated.
-    return data.cart.map((item: any) => ({
+    return data.cart.map((item: { product: CartItem['product']; quantity: number }) => ({
       id: item.product.id,
       product: item.product,
       quantity: item.quantity,
@@ -167,7 +167,7 @@ export const mergeCartWithBackend = createAsyncThunk(
       if (!res.ok) throw new Error('Failed to fetch backend cart for merge');
       const data = await res.json();
       
-      const backendItems = data.cart.map((item: any) => ({
+      const backendItems = data.cart.map((item: { product: CartItem['product']; quantity: number }) => ({
         id: item.product.id,
         product: item.product,
         quantity: item.quantity,

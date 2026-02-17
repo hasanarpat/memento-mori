@@ -1,18 +1,19 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
 interface Product {
   id: string;
+  slug?: string;
   name: string;
   price: number;
-  category: any;
+  category: unknown;
   theme: string;
   isNewArrival?: boolean;
   badge?: string;
-  images: any;
+  images?: { url?: string } | null;
 }
 
 interface NewArrivalsSectionProps {
@@ -33,7 +34,7 @@ export default function NewArrivalsSection({
   
   const observerTarget = useRef(null);
 
-  const fetchMoreProducts = async () => {
+  const fetchMoreProducts = useCallback(async () => {
     if (loading || !hasMore) return;
 
     setLoading(true);
@@ -53,7 +54,7 @@ export default function NewArrivalsSection({
     } finally {
       setLoading(false);
     }
-  };
+  }, [loading, hasMore, page]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -70,7 +71,7 @@ export default function NewArrivalsSection({
     }
 
     return () => observer.disconnect();
-  }, [hasMore, loading, page]);
+  }, [hasMore, loading, fetchMoreProducts]);
 
   return (
     <section className='home-new-arrivals-wrap' aria-labelledby='new-arrivals-heading'>
@@ -85,7 +86,7 @@ export default function NewArrivalsSection({
       
       <div className='home-products-grid'>
         {products.map((product) => {
-          const imageUrl = (product.images as any)?.url;
+          const imageUrl = product.images?.url;
           return (
             <Link
               key={product.id}
@@ -113,9 +114,9 @@ export default function NewArrivalsSection({
               <div className='home-product-info'>
                 <h3 className='home-product-name'>{product.name}</h3>
                 <p className='home-product-category'>
-                  {Array.isArray(product.category) 
-                    ? product.category.map((c: any) => c.title).join(' × ') 
-                    : (product.category as any)?.title || product.theme}
+                  {Array.isArray(product.category)
+                    ? (product.category as { title?: string }[]).map((c) => c.title).join(' × ')
+                    : (product.category as { title?: string } | null)?.title || product.theme}
                 </p>
                 <p className='home-product-price'>₺{product.price}</p>
               </div>

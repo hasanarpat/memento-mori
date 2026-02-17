@@ -63,7 +63,7 @@ export default async function WorldsPage() {
         </p>
       </section>
       <div className='worlds-grid'>
-        {categories.map((category: any) => {
+        {categories.map((category: { slug: string; icon?: string; accent?: string; title?: string; tagline?: string; shortDesc?: string }) => {
           const Icon = iconMap[category.icon as keyof typeof iconMap] ?? Moon;
           return (
             <Link

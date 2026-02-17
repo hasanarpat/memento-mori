@@ -21,10 +21,13 @@ export default function AccountWishlistPage() {
   const [items, setItems] = useState<WishlistProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const wishlistKey = wishlistIds.join(',');
   useEffect(() => {
     if (wishlistIds.length === 0) {
-      setItems([]);
-      setLoading(false);
+      queueMicrotask(() => {
+        setItems([]);
+        setLoading(false);
+      });
       return;
     }
     setLoading(true);
@@ -43,7 +46,7 @@ export default function AccountWishlistPage() {
       })
       .catch(() => setItems([]))
       .finally(() => setLoading(false));
-  }, [wishlistIds.join(',')]);
+  }, [wishlistKey, wishlistIds]);
 
   if (loading) {
     return (

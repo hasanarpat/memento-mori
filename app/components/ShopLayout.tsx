@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import SearchModal from '@/app/components/SearchModal';
 import { useAppDispatch, useAppSelector } from '../lib/redux/hooks';
 import { modifyWishlist } from '../lib/redux/slices/wishlistSlice';
-import { addToCart } from '../lib/redux/slices/cartSlice';
+import { addToCart, type CartItem } from '../lib/redux/slices/cartSlice';
 
 // Components
 import Header from './layout/Header';
@@ -19,7 +19,7 @@ export function useCart() {
   const cartItems = useAppSelector((state) => state.cart.items);
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
-  const addItem = (item: any) => {
+  const addItem = (item: CartItem) => {
      if (!item) {
         console.error("addToCart now requires an item object");
         return;

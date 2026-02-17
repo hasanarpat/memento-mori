@@ -1,22 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, ShoppingBag, ArrowRight } from "lucide-react";
-import { useWishlist, useCart } from "@/components/ShopLayout";
+import { Heart, ArrowRight } from "lucide-react";
+import { useWishlist } from "@/components/ShopLayout";
 
 interface Product {
   id: string;
   name: string;
   price: number;
-  category: any;
+  category: unknown;
   theme: string;
   badge?: string;
-  images: any;
+  images?: { url?: string } | null;
 }
 
 export default function WishlistPage() {
-  const { wishlistIds, toggleWishlist } = useWishlist();
-  const { addToCart } = useCart();
+  const { wishlistIds } = useWishlist();
   
   // Note: During transition, we might still be filtering static products 
   // or we might need to fetch them. Since useWishlist gives IDs, 
