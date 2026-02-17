@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import StoreProvider from '../lib/redux/provider';
 import ShopLayout from '@/components/ShopLayout';
 import JsonLd from '../components/JsonLd';
+import { Toaster } from 'sonner';
 import {
   SITE_URL,
   SITE_NAME,
@@ -127,6 +128,7 @@ export default function AppLayout({
       >
         <StoreProvider>
           <ShopLayout>{children}</ShopLayout>
+          <Toaster position="top-center" theme="dark" richColors />
         </StoreProvider>
       </body>
     </html>

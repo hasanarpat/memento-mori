@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useCart, useWishlist } from '@/components/ShopLayout';
 import ImageViewer, {
   type ViewerSlideCaption,
@@ -508,6 +509,13 @@ export default function ProductDetailClient({
                   quantity: qty,
                   price: product.price,
                 });
+                toast.success(`${product.name} added to your ritual`, {
+                  description: `${qty} item(s) in cart`,
+                  action: {
+                    label: 'View Cart',
+                    onClick: () => window.location.href = '/cart'
+                  }
+                });
               }}
             >
               Add to Cart
@@ -816,13 +824,13 @@ export default function ProductDetailClient({
                       ) : null}
                     </div>
                     <div className='home-product-info'>
-                    <h3 className='home-product-name'>{p.name}</h3>
-                    <p className='home-product-category'>
-                      {getCategoryTitle(p.category, p.theme)}
-                    </p>
-                    <p className='home-product-price'>₺{p.price}</p>
-                  </div>
-                </Link>
+                      <h3 className='home-product-name'>{p.name}</h3>
+                      <p className='home-product-category'>
+                        {getCategoryTitle(p.category, p.theme)}
+                      </p>
+                      <p className='home-product-price'>₺{p.price}</p>
+                    </div>
+                  </Link>
                 );
               })}
             </div>
