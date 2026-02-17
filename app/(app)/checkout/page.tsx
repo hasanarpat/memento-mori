@@ -455,6 +455,36 @@ export default function CheckoutPage() {
         </main>
         <aside className='checkout-sidebar'>
           <div className='cart-summary'>
+            {/* Mini Cart Items (Visible on all steps) */}
+            <div className='checkout-mini-cart mb-6 border-b border-white/10 pb-6'>
+              <h3 className='text-bone font-cinzel text-lg mb-4'>In Your Cart</h3>
+              <div className='flex flex-col gap-3'>
+                {cartItems.map((item) => (
+                  <div key={item.id} className='flex gap-3 items-start'>
+                    <div className='relative w-12 h-12 bg-white/5 border border-white/10 rounded overflow-hidden flex-shrink-0'>
+                      {(item.product.images as { url?: string })?.url ? (
+                        <Image
+                          src={(item.product.images as { url?: string }).url!}
+                          alt={item.product.name}
+                          fill
+                          className='object-cover'
+                        />
+                      ) : (
+                        <div className='flex items-center justify-center w-full h-full text-xs'>🖼️</div>
+                      )}
+                      <span className='absolute -top-1 -right-1 bg-blood-red text-bone text-[10px] w-4 h-4 flex items-center justify-center rounded-full'>
+                        {item.quantity}
+                      </span>
+                    </div>
+                    <div className='flex-1 min-w-0'>
+                      <p className='text-bone text-sm font-crimson truncate'>{item.product.name}</p>
+                      <p className='text-aged-silver text-xs'>₺{(item.price * item.quantity).toFixed(2)}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <h2 className='cart-summary-title'>Order Summary</h2>
             <div className='cart-summary-row'>
               <span>Subtotal</span>
