@@ -20,11 +20,11 @@ export function useCart() {
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   const addItem = (item: CartItem) => {
-     if (!item) {
-        console.error("addToCart now requires an item object");
-        return;
-     }
-     dispatch(addToCart(item));
+    if (!item) {
+      console.error("addToCart now requires an item object");
+      return;
+    }
+    dispatch(addToCart(item));
   };
 
   return { cartCount, addToCart: addItem };
@@ -33,11 +33,12 @@ export function useCart() {
 export function useWishlist() {
   const dispatch = useAppDispatch();
   const wishlistIds = useAppSelector((state) => state.wishlist.wishlistIds);
+  const wishlistProducts = useAppSelector((state) => state.wishlist.wishlistProducts);
 
   const toggle = (id: string | number) => dispatch(modifyWishlist(String(id)));
   const isIn = (id: string | number) => wishlistIds.includes(String(id));
 
-  return { wishlistIds, toggleWishlist: toggle, isInWishlist: isIn };
+  return { wishlistIds, wishlistProducts, toggleWishlist: toggle, isInWishlist: isIn };
 }
 
 export default function ShopLayout({
@@ -46,7 +47,7 @@ export default function ShopLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  
+
   // Mobile & Search State
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -60,40 +61,40 @@ export default function ShopLayout({
   const hideFooter = pathname === '/login';
 
   return (
-        <div className='dark-cult-shop'>
-          <AuthSync />
-          
-          <div className='grain-overlay' />
-          <div className='web-decoration' />
-          <div className='web-decoration web-decoration-left' />
+    <div className='dark-cult-shop'>
+      <AuthSync />
 
-          <Header 
-            cartCount={cartCount}
-            wishlistCount={wishlistIds.length}
-            isAuthenticated={isAuthenticated}
-            user={user}
-            onMobileMenuOpen={() => setMobileOpen(true)}
-            mobileMenuOpen={mobileOpen}
-            onSearchOpen={() => setSearchOpen(true)}
-          />
+      <div className='grain-overlay' />
+      <div className='web-decoration' />
+      <div className='web-decoration web-decoration-left' />
 
-          <MobileMenu 
-            isOpen={mobileOpen}
-            onClose={() => setMobileOpen(false)}
-            onSearchOpen={() => setSearchOpen(true)}
-            isAuthenticated={isAuthenticated}
-            cartCount={cartCount}
-            wishlistCount={wishlistIds.length}
-          />
+      <Header
+        cartCount={cartCount}
+        wishlistCount={wishlistIds.length}
+        isAuthenticated={isAuthenticated}
+        user={user}
+        onMobileMenuOpen={() => setMobileOpen(true)}
+        mobileMenuOpen={mobileOpen}
+        onSearchOpen={() => setSearchOpen(true)}
+      />
 
-          <SearchModal
-            isOpen={searchOpen}
-            onClose={() => setSearchOpen(false)}
-          />
+      <MobileMenu
+        isOpen={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        onSearchOpen={() => setSearchOpen(true)}
+        isAuthenticated={isAuthenticated}
+        cartCount={cartCount}
+        wishlistCount={wishlistIds.length}
+      />
 
-          <div className='page-container'>{children}</div>
+      <SearchModal
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+      />
 
-          {!hideFooter && <Footer />}
-        </div>
+      <div className='page-container'>{children}</div>
+
+      {!hideFooter && <Footer />}
+    </div>
   );
 }

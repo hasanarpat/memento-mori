@@ -1,17 +1,37 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Check, ChevronDown, CreditCard, Plus } from 'lucide-react';
+import Image from 'next/image';
+import { useAppSelector, useAppDispatch } from '../../lib/redux/hooks';
+import { clearCart } from '../../lib/redux/slices/cartSlice';
+import Modal from '../../components/Modal';
 
 const STEPS = ['Shipping', 'Payment', 'Review'];
 
 export default function CheckoutPage() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state) => state.cart.items);
+  const coupon = useAppSelector((state) => state.cart.coupon);
+  const user = useAppSelector((state) => state.auth.user);
+
+  const cartTotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const discountAmount = coupon?.discountAmount ?? 0;
+  const finalTotal = Math.max(0, cartTotal - discountAmount);
+
   const [step, setStep] = useState(1);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<number | null>(null);
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
   const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
   const [isAddingNewCard, setIsAddingNewCard] = useState(false);
+
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const savedAddresses = [
     {
@@ -43,8 +63,84 @@ export default function CheckoutPage() {
 
   const selectedCardData = selectedCard != null ? savedCards.find((c) => c.id === selectedCard) : null;
 
+  const handlePlaceOrder = async () => {
+    if (!agreeTerms) return;
+
+    setIsProcessing(true);
+    setErrorMsg(null);
+
+    try {
+      // Construct Shipping Address (Mock data if using existing ID, or form data if new)
+      // For this demo, we'll just use a mock address since we selected an ID.
+      // In a real app, you'd pull the full address object based on selectedAddress ID.
+      const shippingAddress = {
+        fullName: 'Test User',
+        addressLine1: 'Galata Tower District',
+        city: 'Istanbul',
+        postalCode: '34421',
+        country: 'Turkey',
+      };
+
+      const res = await fetch('/api/shop/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items: cartItems.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+            price: item.price
+          })),
+          shippingAddress,
+          paymentMethod: 'credit_card',
+          user: user?.id
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to place order');
+      }
+
+      // Success
+      setCreatedOrderId(data.orderId);
+      dispatch(clearCart());
+      setShowSuccessModal(true);
+
+    } catch (err: any) {
+      console.error('Order placement failed', err);
+      setErrorMsg(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <div className='checkout-page'>
+      <Modal
+        isOpen={showSuccessModal}
+        onClose={() => router.push('/account/orders')}
+        title="Siparişiniz Alındı"
+      >
+        <div className="text-center">
+          <p className="mb-4 text-aged-silver">
+            Siparişiniz başarıyla oluşturuldu. Ritüeliniz hazırlanıyor.
+          </p>
+          {createdOrderId && (
+            <p className="mb-6 font-cinzel text-bone">
+              Sipariş No: #{createdOrderId}
+            </p>
+          )}
+          <button
+            onClick={() => router.push('/account/orders')}
+            className="w-full py-3 bg-blood-red text-bone font-cinzel hover:bg-accent transition-colors"
+          >
+            Siparişlerim'e Git
+          </button>
+        </div>
+      </Modal>
       <div className='checkout-progress'>
         {STEPS.map((label, i) => (
           <div
@@ -253,28 +349,45 @@ export default function CheckoutPage() {
               <div className='checkout-review-content'>
                 {/* Order Items Summary */}
                 <div className='review-items-list'>
-                  <div className='review-item'>
-                    <div className='review-item-img-placeholder'>🖼️</div>
-                    <div className='review-item-info'>
-                      <h4>Midnight Velvet Cloak</h4>
-                      <p>Size: Large · Color: Obsidian</p>
-                      <div className='review-item-price-row'>
-                        <span>1 × ₺840</span>
-                        <strong>₺840</strong>
+                  {cartItems.map((item) => {
+                    const imageUrl =
+                      item.product.images &&
+                        typeof item.product.images === 'object' &&
+                        'url' in item.product.images
+                        ? (item.product.images as { url?: string }).url
+                        : undefined;
+
+                    return (
+                      <div key={item.id} className='review-item'>
+                        <div className='review-item-img-placeholder'>
+                          {imageUrl ? (
+                            <Image
+                              src={imageUrl}
+                              alt={item.product.name}
+                              fill
+                              className='object-cover'
+                            />
+                          ) : (
+                            '🖼️'
+                          )}
+                        </div>
+                        <div className='review-item-info'>
+                          <h4>{item.product.name}</h4>
+                          <p>
+                            {/* Display variant info if available, otherwise just quantity */}
+                            Qty: {item.quantity}
+                            {item.product.theme ? ` · ${item.product.theme}` : ''}
+                          </p>
+                          <div className='review-item-price-row'>
+                            <span>
+                              {item.quantity} × ₺{item.price.toFixed(2)}
+                            </span>
+                            <strong>₺{(item.price * item.quantity).toFixed(2)}</strong>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className='review-item'>
-                    <div className='review-item-img-placeholder'>🖼️</div>
-                    <div className='review-item-info'>
-                      <h4>Silver Raven Signet</h4>
-                      <p>Material: Sterling Silver</p>
-                      <div className='review-item-price-row'>
-                        <span>1 × ₺488</span>
-                        <strong>₺488</strong>
-                      </div>
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
 
                 {/* Shipping & Payment Summary Recap */}
@@ -345,11 +458,21 @@ export default function CheckoutPage() {
             <h2 className='cart-summary-title'>Order Summary</h2>
             <div className='cart-summary-row'>
               <span>Subtotal</span>
-              <span>₺1,328</span>
+              <span>₺{cartTotal.toFixed(2)}</span>
+            </div>
+            {coupon && (
+              <div className='cart-summary-row cart-summary-discount'>
+                <span>Coupon ({coupon.code})</span>
+                <span className='discount-amount'>-₺{discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className='cart-summary-row'>
+              <span>Shipping</span>
+              <span>Calculated next step</span>
             </div>
             <div className='cart-summary-row cart-summary-total'>
               <span>Total</span>
-              <span>₺1,328</span>
+              <span>₺{finalTotal.toFixed(2)}</span>
             </div>
 
             {/* Sticky/Sidebar Progression Buttons */}
@@ -375,13 +498,21 @@ export default function CheckoutPage() {
                 </button>
               )}
               {step === 3 && (
-                <button
-                  type='button'
-                  className='checkout-primary-btn confirm-order-btn'
-                  disabled={!agreeTerms}
-                >
-                  Confirm & Finalize Ritual
-                </button>
+                <>
+                  {errorMsg && (
+                    <div className="mb-4 p-3 border border-red-900 bg-red-900/20 text-red-200 text-sm">
+                      {errorMsg}
+                    </div>
+                  )}
+                  <button
+                    type='button'
+                    className='checkout-primary-btn confirm-order-btn'
+                    disabled={!agreeTerms || isProcessing}
+                    onClick={handlePlaceOrder}
+                  >
+                    {isProcessing ? 'İşleniyor...' : 'Siparişi Onayla'}
+                  </button>
+                </>
               )}
               <p className='checkout-sidebar-note'>
                 {step < 3

@@ -2423,6 +2423,21 @@
   transform: translateX(0);
 }
 
+.review-item-img-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: 4px;
+  background: rgba(13, 10, 15, 0.5);
+  border: 1px solid rgba(139, 115, 85, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
 .action-button {
   width: 38px;
   height: 38px;

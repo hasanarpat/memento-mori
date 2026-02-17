@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ShoppingBag, X, Minus, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useAppSelector, useAppDispatch } from '../../lib/redux/hooks';
-import { removeFromCart, updateQuantity } from '../../lib/redux/slices/cartSlice';
+import { removeFromCart, updateQuantity, applyCoupon, removeCoupon } from '../../lib/redux/slices/cartSlice';
 import AvailableCoupons from '../../components/AvailableCoupons';
 
 type RecommendedProduct = {
@@ -56,7 +56,7 @@ function CartEmptyWithRecommended() {
         const docs = data.docs ?? data;
         setRecommended(Array.isArray(docs) ? docs : []);
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => {
       cancelled = true;
     };
@@ -108,13 +108,13 @@ function CartEmptyWithRecommended() {
   );
 }
 
-function CartSummaryContent({ 
-  total, 
+function CartSummaryContent({
+  total,
   appliedCoupon,
   discount,
   onApplyCoupon,
   onRemoveCoupon
-}: { 
+}: {
   total: number;
   appliedCoupon: string | null;
   discount: number;
@@ -142,8 +142,8 @@ function CartSummaryContent({
         <div className='cart-summary-row cart-summary-discount'>
           <span>
             Coupon ({appliedCoupon})
-            <button 
-              type='button' 
+            <button
+              type='button'
               onClick={onRemoveCoupon}
               className='cart-coupon-remove'
               aria-label='Remove coupon'
@@ -194,13 +194,12 @@ export default function CartPage() {
   const cartItems = useAppSelector((state) => state.cart.items);
   const cartLoading = useAppSelector((state) => state.cart.loading);
   const { user, isAuthenticated, loading: authLoading } = useAppSelector((state) => state.auth);
+  const coupon = useAppSelector((state) => state.cart.coupon);
 
   const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('payload-token');
   const isLoading = (hasToken && authLoading) || (isAuthenticated && cartLoading);
   const isEmpty = !isLoading && cartItems.length === 0;
 
-  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
-  const [discount, setDiscount] = useState(0);
   const [couponError, setCouponError] = useState<string | null>(null);
 
   const handleRemoveItem = (id: string | number) => {
@@ -237,16 +236,14 @@ export default function CartPage() {
         return;
       }
 
-      setAppliedCoupon(code);
-      setDiscount(data.coupon.discountAmount);
+      dispatch(applyCoupon({ code, discountAmount: data.coupon.discountAmount }));
     } catch {
       setCouponError('Failed to apply coupon');
     }
   };
 
   const handleRemoveCoupon = () => {
-    setAppliedCoupon(null);
-    setDiscount(0);
+    dispatch(removeCoupon());
     setCouponError(null);
   };
 
@@ -299,16 +296,16 @@ export default function CartPage() {
                         : item.product.productType || item.product.theme || 'Product'}
                     </p>
                     <div className='cart-item-qty'>
-                      <button 
-                        type='button' 
+                      <button
+                        type='button'
                         aria-label='Decrease'
                         onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                       >
                         <Minus size={14} />
                       </button>
                       <span>{item.quantity}</span>
-                      <button 
-                        type='button' 
+                      <button
+                        type='button'
                         aria-label='Increase'
                         onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
                       >
@@ -339,23 +336,23 @@ export default function CartPage() {
               )}
               <AvailableCoupons onApplyCoupon={handleApplyCoupon} />
               <div className='cart-summary-standalone cart-summary'>
-                <CartSummaryContent 
+                <CartSummaryContent
                   total={total}
-                  appliedCoupon={appliedCoupon}
-                  discount={discount}
+                  appliedCoupon={coupon?.code ?? null}
+                  discount={coupon?.discountAmount ?? 0}
                   onApplyCoupon={handleApplyCoupon}
                   onRemoveCoupon={handleRemoveCoupon}
                 />
               </div>
               <details className='cart-summary-collapse' open>
                 <summary>
-                  Order Summary — ₺{(total - discount).toFixed(2)}
+                  Order Summary — ₺{(total - (coupon?.discountAmount ?? 0)).toFixed(2)}
                 </summary>
                 <div className='cart-summary'>
-                  <CartSummaryContent 
+                  <CartSummaryContent
                     total={total}
-                    appliedCoupon={appliedCoupon}
-                    discount={discount}
+                    appliedCoupon={coupon?.code ?? null}
+                    discount={coupon?.discountAmount ?? 0}
                     onApplyCoupon={handleApplyCoupon}
                     onRemoveCoupon={handleRemoveCoupon}
                   />

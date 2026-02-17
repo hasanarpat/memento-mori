@@ -27,6 +27,10 @@ interface CartState {
   dirty: boolean;
   /** True while fetchCart or mergeCartWithBackend is in progress */
   loading: boolean;
+  coupon: {
+    code: string;
+    discountAmount: number;
+  } | null;
 }
 
 const initialState: CartState = {
@@ -34,6 +38,7 @@ const initialState: CartState = {
   isOpen: false,
   dirty: false,
   loading: false,
+  coupon: null,
 };
 
 
@@ -53,7 +58,7 @@ export const fetchCart = createAsyncThunk(
 
     if (!res.ok) throw new Error('Failed to fetch cart');
     const data = await res.json();
-    
+
     // Map backend response to CartItem structure if needed
     // Backend returns product object populated.
     return data.cart.map((item: { product: CartItem['product']; quantity: number }) => ({
@@ -119,6 +124,13 @@ const cartSlice = createSlice({
     },
     clearCart: (state) => {
       state.items = [];
+      state.coupon = null;
+    },
+    applyCoupon: (state, action: PayloadAction<{ code: string; discountAmount: number }>) => {
+      state.coupon = action.payload;
+    },
+    removeCoupon: (state) => {
+      state.coupon = null;
     }
   },
   extraReducers: (builder) => {
@@ -149,7 +161,7 @@ const cartSlice = createSlice({
   }
 });
 
-export const { addToCart, removeFromCart, updateQuantity, toggleCart, setCartOpen, clearCart, setCartItems } = cartSlice.actions;
+export const { addToCart, removeFromCart, updateQuantity, toggleCart, setCartOpen, clearCart, setCartItems, applyCoupon, removeCoupon } = cartSlice.actions;
 
 export const mergeCartWithBackend = createAsyncThunk(
   'cart/mergeCartWithBackend',
@@ -163,10 +175,10 @@ export const mergeCartWithBackend = createAsyncThunk(
       const res = await fetch('/api/shop/cart', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       if (!res.ok) throw new Error('Failed to fetch backend cart for merge');
       const data = await res.json();
-      
+
       const backendItems = data.cart.map((item: { product: CartItem['product']; quantity: number }) => ({
         id: item.product.id,
         product: item.product,
@@ -183,12 +195,12 @@ export const mergeCartWithBackend = createAsyncThunk(
 
       // Merge local items: same product → take max quantity (avoid double-count on F5)
       localItems.forEach(localItem => {
-         if (mergedMap.has(localItem.id)) {
-            const existing = mergedMap.get(localItem.id)!;
-            existing.quantity = Math.max(existing.quantity, localItem.quantity);
-         } else {
-            mergedMap.set(localItem.id, localItem);
-         }
+        if (mergedMap.has(localItem.id)) {
+          const existing = mergedMap.get(localItem.id)!;
+          existing.quantity = Math.max(existing.quantity, localItem.quantity);
+        } else {
+          mergedMap.set(localItem.id, localItem);
+        }
       });
 
       const mergedItems = Array.from(mergedMap.values());

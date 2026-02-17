@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Heart, ArrowRight } from "lucide-react";
 import { useWishlist } from "@/components/ShopLayout";
+import ProductGrid from "@/app/components/ProductGrid";
 
 interface Product {
   id: string;
@@ -15,15 +16,16 @@ interface Product {
 }
 
 export default function WishlistPage() {
-  const { wishlistIds } = useWishlist();
-  
-  // Note: During transition, we might still be filtering static products 
-  // or we might need to fetch them. Since useWishlist gives IDs, 
-  // the client-side filtering needs to be aware of the data source.
-  // For a truly SSR wishlist, we'd fetch these by ID from Payload.
-  
-  // For now, I'll update the component to be Payload-ready in its rendering.
-  // In a real scenario, we'd likely fetch docs where id in wishlistIds.
+  const { wishlistIds, wishlistProducts } = useWishlist();
+
+  // Create a display list of products
+  // We use the full product objects from Redux if available
+  // Fallback to empty if loading or not found
+  const displayProducts = wishlistProducts.map(p => ({
+    ...p,
+    // Ensure category is compatible with Product interface if needed
+    category: p.category || 'unknown'
+  }));
 
   return (
     <div className="wishlist-page">
@@ -54,18 +56,15 @@ export default function WishlistPage() {
           </Link>
         </div>
       ) : (
-        <div className="wishlist-grid">
-          {/* 
-            Placeholder: In a fully SSR'd app, we'd pass products as props.
-            For now, I'm ensuring the rendering logic is safe for Payload objects.
-          */}
-          <p className="wishlist-sync-hint">Syncing your artifacts...</p>
-          {/* Actual items would be mapped here after fetching by ID */}
-          <div className="wishlist-empty" style={{ minHeight: '200px' }}>
-            <p className="wishlist-empty-desc">
-              Your wishlist is curated. (Server-side hydration in progress)
-            </p>
-          </div>
+        <div className="wishlist-content">
+          {/* Note: In a real app we might want a loading state here if products are missing but IDs exist */}
+          {wishlistProducts.length > 0 ? (
+            <ProductGrid initialProducts={displayProducts} />
+          ) : (
+            <div className="wishlist-loading">
+              <p>Loading your artifacts...</p>
+            </div>
+          )}
         </div>
       )}
     </div>
