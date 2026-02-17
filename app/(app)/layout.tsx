@@ -128,7 +128,20 @@ export default function AppLayout({
       >
         <StoreProvider>
           <ShopLayout>{children}</ShopLayout>
-          <Toaster position="top-center" theme="dark" richColors />
+          <Toaster
+            position="top-center"
+            theme="dark"
+            richColors
+            toastOptions={{
+              style: {
+                background: '#1a0a1f', // deep-purple
+                border: '1px solid #5c0a0a', // blood-red
+                color: '#e8dcc4', // bone
+                fontFamily: 'var(--font-crimson-text), serif',
+              },
+              className: 'font-crimson',
+            }}
+          />
         </StoreProvider>
       </body>
     </html>
