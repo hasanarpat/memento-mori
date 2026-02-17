@@ -10,6 +10,27 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Custom Memento Mori Theme */
+  --color-blood-red: var(--blood-red);
+  --color-dark-burgundy: var(--dark-burgundy);
+  --color-rust: var(--rust);
+  --color-aged-brass: var(--aged-brass);
+  --color-tarnished-copper: var(--tarnished-copper);
+  --color-bone: var(--bone);
+  --color-aged-silver: var(--aged-silver);
+  --color-deep-purple: var(--deep-purple);
+  --color-midnight: var(--midnight);
+  --color-ash: var(--ash);
+  --color-accent: var(--accent);
+  --color-accent-glow: var(--accent-glow);
+
+  /* Font Families */
+  --font-cinzel: "Cinzel", serif;
+  --font-crimson: "Crimson Text", serif;
+  --font-fell: "IM Fell DW Pica", serif;
+  --font-pirata: "Pirata One", cursive;
+  --font-unifraktur: "UnifrakturMaguntia", cursive;
 }
 
 body {

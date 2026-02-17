@@ -13,11 +13,8 @@
   --accent-glow: rgba(184, 134, 11, 0.4);
 }
 
-.dark-cult-shop * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* Removed aggressive reset that was overriding Tailwind utility classes */
+
 
 .sr-only {
   position: absolute;
@@ -1244,7 +1241,7 @@
     max-width: 100%;
   }
 
-  .page-container > * {
+  .page-container>* {
     max-width: 100% !important;
     width: 100%;
     box-sizing: border-box;
@@ -1999,7 +1996,7 @@
   .mobile-filter-trigger {
     display: flex;
   }
-  
+
   .sidebar-header-mobile {
     display: flex;
   }
@@ -3769,22 +3766,18 @@
 
 .product-detail-related-fade-left {
   left: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(13, 10, 15, 0.85) 0%,
-    rgba(13, 10, 15, 0.4) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(13, 10, 15, 0.85) 0%,
+      rgba(13, 10, 15, 0.4) 50%,
+      transparent 100%);
 }
 
 .product-detail-related-fade-right {
   right: 0;
-  background: linear-gradient(
-    270deg,
-    rgba(13, 10, 15, 0.85) 0%,
-    rgba(13, 10, 15, 0.4) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(270deg,
+      rgba(13, 10, 15, 0.85) 0%,
+      rgba(13, 10, 15, 0.4) 50%,
+      transparent 100%);
 }
 
 /* ========== HOMEPAGE (SAYFA 4) ========== */
@@ -4261,10 +4254,10 @@
   transform: translateX(-50%);
   width: 200px;
   height: 2px;
-  background: linear-gradient(90deg, 
-    transparent, 
-    var(--blood-red), 
-    transparent);
+  background: linear-gradient(90deg,
+      transparent,
+      var(--blood-red),
+      transparent);
   box-shadow: 0 0 20px var(--blood-red);
 }
 
@@ -4340,7 +4333,7 @@
 .home-view-all:hover {
   color: var(--midnight);
   border-color: var(--accent);
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(184, 134, 11, 0.4),
     inset 0 0 20px rgba(184, 134, 11, 0.1);
   transform: translateY(-2px);
@@ -4441,7 +4434,7 @@
 }
 
 /* Inner frame decoration */
-.home-product-image > * {
+.home-product-image>* {
   position: relative;
   z-index: 2;
 }
@@ -4470,9 +4463,9 @@
 
 .home-product-info {
   padding: 1.75rem 1.5rem;
-  background: linear-gradient(180deg, 
-    rgba(5, 4, 6, 0.95) 0%, 
-    rgba(13, 10, 15, 0.98) 100%);
+  background: linear-gradient(180deg,
+      rgba(5, 4, 6, 0.95) 0%,
+      rgba(13, 10, 15, 0.98) 100%);
   border-top: 1px solid rgba(184, 134, 11, 0.2);
   text-align: center;
   position: relative;
@@ -4744,13 +4737,11 @@
 .reel-card__shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    transparent 35%,
-    rgba(0, 0, 0, 0.4) 65%,
-    rgba(0, 0, 0, 0.88) 100%
-  );
+  background: linear-gradient(180deg,
+      transparent 0%,
+      transparent 35%,
+      rgba(0, 0, 0, 0.4) 65%,
+      rgba(0, 0, 0, 0.88) 100%);
   pointer-events: none;
 }
 
@@ -4923,16 +4914,26 @@
   margin-bottom: 1rem;
 }
 
-.page-rich-text h1, .page-rich-text h2, .page-rich-text h3 {
+.page-rich-text h1,
+.page-rich-text h2,
+.page-rich-text h3 {
   font-family: 'Cinzel', serif;
   color: var(--bone);
   margin-top: 1.5rem;
   margin-bottom: 0.75rem;
 }
 
-.page-rich-text h1 { font-size: 1.75rem; }
-.page-rich-text h2 { font-size: 1.4rem; }
-.page-rich-text h3 { font-size: 1.2rem; }
+.page-rich-text h1 {
+  font-size: 1.75rem;
+}
+
+.page-rich-text h2 {
+  font-size: 1.4rem;
+}
+
+.page-rich-text h3 {
+  font-size: 1.2rem;
+}
 
 .dynamic-page__hero {
   position: relative;
@@ -4959,7 +4960,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, transparent 60%);
 }
 
 .dynamic-page__hero-content {
@@ -5116,7 +5117,8 @@
   .filters-sidebar {
     width: 100%;
     position: static;
-    display: none; /* Controlled by mobile-open class */
+    display: none;
+    /* Controlled by mobile-open class */
     background: rgba(13, 10, 15, 0.8);
     border: 1px solid rgba(139, 115, 85, 0.2);
     margin-bottom: 2rem;
@@ -5497,7 +5499,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .available-coupons-grid {
@@ -5677,12 +5681,10 @@
   width: 280px;
   max-width: 100%;
   margin-bottom: 2rem;
-  background: linear-gradient(
-    90deg,
-    rgba(139, 115, 85, 0.15) 25%,
-    rgba(139, 115, 85, 0.25) 50%,
-    rgba(139, 115, 85, 0.15) 75%
-  );
+  background: linear-gradient(90deg,
+      rgba(139, 115, 85, 0.15) 25%,
+      rgba(139, 115, 85, 0.25) 50%,
+      rgba(139, 115, 85, 0.15) 75%);
   background-size: 200% 100%;
   animation: cart-skeleton-shine 1.2s ease-in-out infinite;
 }
@@ -5718,12 +5720,10 @@
 .cart-loading-thumb {
   width: 100px;
   height: 100px;
-  background: linear-gradient(
-    90deg,
-    rgba(139, 115, 85, 0.12) 25%,
-    rgba(139, 115, 85, 0.22) 50%,
-    rgba(139, 115, 85, 0.12) 75%
-  );
+  background: linear-gradient(90deg,
+      rgba(139, 115, 85, 0.12) 25%,
+      rgba(139, 115, 85, 0.22) 50%,
+      rgba(139, 115, 85, 0.12) 75%);
   background-size: 200% 100%;
   animation: cart-skeleton-shine 1.2s ease-in-out infinite;
 }
@@ -5737,12 +5737,10 @@
 
 .cart-loading-line {
   height: 1rem;
-  background: linear-gradient(
-    90deg,
-    rgba(139, 115, 85, 0.12) 25%,
-    rgba(139, 115, 85, 0.22) 50%,
-    rgba(139, 115, 85, 0.12) 75%
-  );
+  background: linear-gradient(90deg,
+      rgba(139, 115, 85, 0.12) 25%,
+      rgba(139, 115, 85, 0.22) 50%,
+      rgba(139, 115, 85, 0.12) 75%);
   background-size: 200% 100%;
   animation: cart-skeleton-shine 1.2s ease-in-out infinite;
 }
@@ -5759,12 +5757,10 @@
   width: 80px;
   height: 28px;
   margin-top: 0.5rem;
-  background: linear-gradient(
-    90deg,
-    rgba(139, 115, 85, 0.12) 25%,
-    rgba(139, 115, 85, 0.22) 50%,
-    rgba(139, 115, 85, 0.12) 75%
-  );
+  background: linear-gradient(90deg,
+      rgba(139, 115, 85, 0.12) 25%,
+      rgba(139, 115, 85, 0.22) 50%,
+      rgba(139, 115, 85, 0.12) 75%);
   background-size: 200% 100%;
   animation: cart-skeleton-shine 1.2s ease-in-out infinite;
 }
@@ -5772,12 +5768,10 @@
 .cart-loading-prices {
   width: 70px;
   height: 1.5rem;
-  background: linear-gradient(
-    90deg,
-    rgba(139, 115, 85, 0.12) 25%,
-    rgba(139, 115, 85, 0.22) 50%,
-    rgba(139, 115, 85, 0.12) 75%
-  );
+  background: linear-gradient(90deg,
+      rgba(139, 115, 85, 0.12) 25%,
+      rgba(139, 115, 85, 0.22) 50%,
+      rgba(139, 115, 85, 0.12) 75%);
   background-size: 200% 100%;
   animation: cart-skeleton-shine 1.2s ease-in-out infinite;
 }
@@ -5795,12 +5789,10 @@
 
 .cart-loading-summary {
   height: 220px;
-  background: linear-gradient(
-    90deg,
-    rgba(139, 115, 85, 0.12) 25%,
-    rgba(139, 115, 85, 0.22) 50%,
-    rgba(139, 115, 85, 0.12) 75%
-  );
+  background: linear-gradient(90deg,
+      rgba(139, 115, 85, 0.12) 25%,
+      rgba(139, 115, 85, 0.22) 50%,
+      rgba(139, 115, 85, 0.12) 75%);
   background-size: 200% 100%;
   animation: cart-skeleton-shine 1.2s ease-in-out infinite;
   border: 2px solid rgba(139, 115, 85, 0.2);
@@ -9948,13 +9940,11 @@ body {
 
 .user-dropdown-divider {
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(139, 115, 85, 0.3) 20%,
-    rgba(139, 115, 85, 0.3) 80%,
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(139, 115, 85, 0.3) 20%,
+      rgba(139, 115, 85, 0.3) 80%,
+      transparent);
   margin: 0.5rem 0;
 }
 
@@ -9983,14 +9973,14 @@ body {
 }
 
 .user-dropdown-link svg,
-.user-dropdown-link > svg {
+.user-dropdown-link>svg {
   flex-shrink: 0;
   opacity: 0.7;
   transition: opacity 0.2s ease;
 }
 
 .user-dropdown-link:hover svg,
-.user-dropdown-link:hover > svg {
+.user-dropdown-link:hover>svg {
   opacity: 1;
 }
 
@@ -10007,7 +9997,7 @@ body {
 .icon-button.active {
   border-color: var(--accent);
   color: var(--bone);
-  box-shadow: 
+  box-shadow:
     inset 0 0 18px rgba(184, 134, 11, 0.3),
     0 0 14px rgba(184, 134, 11, 0.2);
 }
