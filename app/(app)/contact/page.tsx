@@ -1,163 +1,157 @@
 'use client';
 
-import { useState } from 'react';
-import {
-  Mail,
-  Phone,
-  MapPin,
-  Clock,
-  ChevronDown,
-  ChevronUp,
-} from 'lucide-react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
+import { Send, MapPin, Mail, Loader2 } from 'lucide-react';
 
 export default function ContactPage() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const faqs = [
-    {
-      q: 'How long does shipping take?',
-      a: 'Standard delivery is 5-7 business days. Express options available at checkout.',
-    },
-    {
-      q: 'What is your return policy?',
-      a: '30-day returns for unworn items with original tags. See our Returns page for details.',
-    },
-    {
-      q: 'How do I find my size?',
-      a: 'Use our Size Guide for measurements. When in doubt, size up for a relaxed fit.',
-    },
-    {
-      q: 'How do I care for my pieces?',
-      a: 'Spot clean only for most items. Check the product care label for specifics.',
-    },
-  ];
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to send message');
+      }
+
+      toast.success('Your message has been received. We will respond shortly.');
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className='contact-page'>
-      <h1 className='home-section-title'>Get in Touch</h1>
-      <div className='contact-layout'>
-        <div className='contact-form-wrap'>
-          <form className='contact-form' onSubmit={(e) => e.preventDefault()}>
-            <label>
-              Name <span className='required'>*</span>
-              <input type='text' required />
-            </label>
-            <label>
-              Email <span className='required'>*</span>
-              <input type='email' required />
-            </label>
-            <label>
-              Subject
-              <input type='text' />
-            </label>
-            <label>
-              Message
-              <textarea rows={6} required />
-            </label>
+    <div className="max-w-4xl mx-auto py-16 px-6">
+      <div className="text-center mb-16">
+        <h1 className="text-4xl md:text-5xl font-cinzel text-bone mb-4">Contact Us</h1>
+        <p className="text-aged-silver font-crimson text-lg italic max-w-2xl mx-auto">
+          "Speak, and let your voice echo in the void. We are listening."
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        {/* Contact Info */}
+        <div className="space-y-8">
+          <div className="bg-white/5 border border-white/10 p-8 rounded-sm">
+            <h2 className="font-cinzel text-xl text-bone mb-6 flex items-center gap-3">
+              <MapPin className="text-blood-red" />
+              Sanctuary Location
+            </h2>
+            <address className="not-italic text-aged-silver font-crimson space-y-2">
+              <p>Memento Mori Atelier</p>
+              <p>123 Shadow Lane, Dark District</p>
+              <p>Istanbul, Turkey</p>
+            </address>
+          </div>
+
+          <div className="bg-white/5 border border-white/10 p-8 rounded-sm">
+            <h2 className="font-cinzel text-xl text-bone mb-6 flex items-center gap-3">
+              <Mail className="text-blood-red" />
+              Digital Correspondence
+            </h2>
+            <p className="text-aged-silver font-crimson">
+              For inquiries regarding orders, sizing, or artifacts:
+              <br />
+              <a href="mailto:support@mementomori.com" className="text-bone hover:text-blood-red transition-colors mt-2 inline-block">
+                support@mementomori.com
+              </a>
+            </p>
+          </div>
+        </div>
+
+        {/* Contact Form */}
+        <div className="bg-black/40 border border-white/5 p-8 rounded-sm backdrop-blur-sm">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="name" className="block text-xs font-cinzel text-aged-silver uppercase tracking-wider mb-2">Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full bg-white/5 border border-white/10 text-bone p-3 focus:outline-none focus:border-blood-red/50 transition-colors font-crimson"
+                placeholder="Enter your name"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block text-xs font-cinzel text-aged-silver uppercase tracking-wider mb-2">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full bg-white/5 border border-white/10 text-bone p-3 focus:outline-none focus:border-blood-red/50 transition-colors font-crimson"
+                placeholder="Enter your email"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="subject" className="block text-xs font-cinzel text-aged-silver uppercase tracking-wider mb-2">Subject</label>
+              <input
+                type="text"
+                id="subject"
+                name="subject"
+                value={formData.subject}
+                onChange={handleChange}
+                required
+                className="w-full bg-white/5 border border-white/10 text-bone p-3 focus:outline-none focus:border-blood-red/50 transition-colors font-crimson"
+                placeholder="What is this regarding?"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="message" className="block text-xs font-cinzel text-aged-silver uppercase tracking-wider mb-2">Message</label>
+              <textarea
+                id="message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                required
+                rows={5}
+                className="w-full bg-white/5 border border-white/10 text-bone p-3 focus:outline-none focus:border-blood-red/50 transition-colors font-crimson resize-none"
+                placeholder="Write your message here..."
+              />
+            </div>
+
             <button
-              type='submit'
-              className='home-cta-primary'
-              style={{ width: '100%' }}
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-blood-red text-bone font-cinzel hover:bg-accent transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
+              {loading ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
               Send Message
             </button>
           </form>
         </div>
-        <div className='contact-info'>
-          <div className='contact-info-item'>
-            <Mail size={24} />
-            <div>
-              <strong>Email</strong>
-              <a href='mailto:hello@mementomori.com'>hello@mementomori.com</a>
-            </div>
-          </div>
-          <div className='contact-info-item'>
-            <Phone size={24} />
-            <div>
-              <strong>Phone</strong>
-              <a href='tel:+901234567890'>+90 123 456 78 90</a>
-            </div>
-          </div>
-          <div className='contact-info-item'>
-            <MapPin size={24} />
-            <div>
-              <strong>Address</strong>
-              <span>Istanbul, Turkey</span>
-            </div>
-          </div>
-          <div className='contact-info-item'>
-            <Clock size={24} />
-            <div>
-              <strong>Working Hours</strong>
-              <span>Mon–Fri 10:00 – 18:00</span>
-            </div>
-          </div>
-          <div className='contact-social'>
-            <h3>Follow Us</h3>
-            <div className='contact-social-btns'>
-              <a href='#' aria-label='Instagram'>
-                IG
-              </a>
-              <a href='#' aria-label='Twitter'>
-                TW
-              </a>
-              <a href='#' aria-label='Pinterest'>
-                PN
-              </a>
-              <a href='#' aria-label='TikTok'>
-                TT
-              </a>
-            </div>
-          </div>
-        </div>
       </div>
-
-      <section className='contact-faq'>
-        <h2 className='home-section-title'>Frequently Asked Questions</h2>
-        {faqs.map((faq, i) => (
-          <div key={i} className='contact-faq-item'>
-            <button
-              type='button'
-              className='contact-faq-btn'
-              onClick={() => setOpenFaq(openFaq === i ? null : i)}
-              aria-expanded={openFaq === i}
-            >
-              {faq.q}
-              {openFaq === i ? (
-                <ChevronUp size={18} />
-              ) : (
-                <ChevronDown size={18} />
-              )}
-            </button>
-            {openFaq === i && <div className='contact-faq-answer'>{faq.a}</div>}
-          </div>
-        ))}
-      </section>
-
-      <section className='contact-map-container'>
-        <div className='contact-map-wrap'>
-          <iframe
-            src='https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d192698.62919864223!2d28.847758252270928!3d41.00523120153835!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14caa7040068086b%3A0xe1cc1e01f4ca15a2!2sIstanbul%2C%20Turkey!5e0!3m2!1sen!2str!4v1707240000000!5m2!1sen!2str'
-            style={{ border: 0 }}
-            allowFullScreen={true}
-            loading='lazy'
-            referrerPolicy='no-referrer-when-downgrade'
-            title='Memento Mori Location'
-          ></iframe>
-          <div className='contact-map-overlay'>
-            <MapPin
-              className='mb-2'
-              style={{ color: 'var(--accent)' }}
-              size={24}
-            />
-            <h3>THE ARCHIVE</h3>
-            <p>Galata Tower District, Beyoğlu</p>
-            <p>Istanbul, Turkey</p>
-            <div className='mt-4 border-t border-blood-red pt-2 opacity-60'>
-              <small>Open for rituals by appointment.</small>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

@@ -82,7 +82,7 @@ export default function Header({
     <header className='header'>
       <div className='header-content'>
         <Link href='/' className='logo'>
-          <img src="/logo.png" alt={SITE_NAME} className="h-10 w-auto object-contain" />
+          MEMENTO MORI
         </Link>
         <nav className='nav'>
           <Link
