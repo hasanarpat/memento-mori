@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { getPayload } from 'payload';
 import configPromise from '@payload-config';
 import { headers } from 'next/headers';
@@ -9,23 +10,8 @@ export default async function OrdersPage() {
   const headersList = await headers();
   const { user } = await payload.auth({ headers: headersList });
 
-  // If no user on server, we don't redirect to login immediately to avoid loops.
-  // Instead, we show an empty state or let client-side handle it if needed.
-  // But strictly speaking, if we are here, we should be logged in. 
-
   if (!user) {
-    // Check if we have a cookie at all
-    // const cookieStore = await cookies();
-    // const token = cookieStore.get('payload-token');
-    // if (!token) redirect('/login?redirect=/account/orders'); 
-
-    // For now, return empty or redirect?
-    // User said: "order yok ise uygun şekilde görmem laızm yine de ekranı"
-    // But if NOT LOGGED IN, we can't show orders.
-    // THE BUG is that user IS logged in client side.
-    // With the cookie fix in AuthSync, a refresh should fix it.
-    // But initially, we might still fail if cookie isn't set yet.
-    // Let's NOT redirect server side for now, just show empty or "Please login".
+    redirect('/login?redirect=/account/orders');
   }
 
   // Define a local Order interface as Payload types are not available
