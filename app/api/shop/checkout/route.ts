@@ -136,6 +136,115 @@ export async function POST(request: Request) {
       },
     });
 
+    // 5. Send Order Summary Email
+    try {
+      const emailHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { background-color: #0d0a0f; color: #e8dcc4; font-family: sans-serif; margin: 0; padding: 0; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; background-color: #1a0a1f; border: 1px solid #8b7355; }
+            .header { text-align: center; border-bottom: 1px solid #5c0a0a; padding-bottom: 20px; margin-bottom: 20px; }
+            .logo { font-size: 24px; color: #b8860b; font-weight: bold; text-decoration: none; }
+            .order-info { margin-bottom: 20px; color: #9a9a9a; }
+            .item { display: flex; align-items: center; border-bottom: 1px solid #3d3d3d; padding: 15px 0; }
+            .item img { width: 64px; height: 64px; object-fit: cover; border-radius: 4px; border: 1px solid #5c0a0a; margin-right: 15px; }
+            .item-details { flex: 1; }
+            .item-name { color: #e8dcc4; font-weight: bold; display: block; margin-bottom: 5px; }
+            .item-meta { color: #9a9a9a; font-size: 14px; }
+            .total-section { margin-top: 20px; text-align: right; border-top: 1px solid #5c0a0a; padding-top: 20px; }
+            .total-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: #9a9a9a; }
+            .total-final { font-size: 18px; color: #b8860b; font-weight: bold; margin-top: 10px; }
+            .address { background-color: #0d0a0f; padding: 15px; border-radius: 4px; margin-top: 20px; color: #9a9a9a; font-size: 14px; }
+            .button { display: inline-block; background-color: #5c0a0a; color: #e8dcc4; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin-top: 30px; font-weight: bold; }
+            .footer { text-align: center; margin-top: 40px; color: #555; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <div class="logo">MEMENTO MORI</div>
+              <p>Order Confirmed</p>
+            </div>
+            
+            <div class="order-info">
+              <p>Thank you for your ritual. Your order has been received.</p>
+              <p><strong>Order ID:</strong> ${order.id}</p>
+            </div>
+
+            <div class="items">
+              ${orderItems.map((item, index) => {
+        const product = products.find(p => p.id === item.product);
+        // Safely get image URL
+        let imgUrl = '';
+        if (product && product.images) {
+          if (Array.isArray(product.images) && product.images[0]?.url) {
+            imgUrl = product.images[0].url;
+          } else if (typeof product.images === 'object' && 'url' in product.images) {
+            imgUrl = (product.images as any).url;
+          }
+        }
+
+        return `
+                  <div class="item">
+                    ${imgUrl ? `<img src="${imgUrl}" alt="${product?.name || 'Product'}" />` : '<div style="width:64px;height:64px;background:#333;margin-right:15px;"></div>'}
+                    <div class="item-details">
+                      <span class="item-name">${product?.name || 'Unknown Item'}</span>
+                      <div class="item-meta">Qty: ${item.quantity} × ₺${item.price}</div>
+                    </div>
+                    <div style="color: #e8dcc4;">₺${item.price * item.quantity}</div>
+                  </div>
+                 `;
+      }).join('')}
+            </div>
+
+            <div class="total-section">
+              <div class="total-row">
+                <span>Subtotal</span>
+                <span>₺${total}</span>
+              </div>
+              <div class="total-row">
+                <span>Shipping</span>
+                <span>Free</span>
+              </div>
+              <div class="total-row total-final">
+                <span>Total</span>
+                <span>₺${total}</span>
+              </div>
+            </div>
+
+            <div class="address">
+              <strong>Shipping to:</strong><br/>
+              ${shippingAddress.fullName}<br/>
+              ${shippingAddress.addressLine1}<br/>
+              ${shippingAddress.city}, ${shippingAddress.postalCode}<br/>
+              ${shippingAddress.country}
+            </div>
+
+            <div style="text-align: center;">
+              <a href="${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'}/account/orders" class="button">View Your Order</a>
+            </div>
+
+            <div class="footer">
+              <p>Memento Mori - Digital Rituals</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      await payload.sendEmail({
+        to: user ? (user as any).email : 'customer@example.com', // Use actual user email if available, or fallback/shipping email
+        subject: `Order Confirmed - #${order.id}`,
+        html: emailHtml,
+      });
+
+    } catch (emailErr) {
+      console.error('Failed to send order email:', emailErr);
+      // Don't fail the request, just log it
+    }
+
     return NextResponse.json(
       {
         success: true,
