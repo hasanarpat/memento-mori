@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Check, ChevronDown, CreditCard, Plus } from 'lucide-react';
+import { Check, ChevronDown, CreditCard, Plus, Package, Truck, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import { useAppSelector, useAppDispatch } from '../../lib/redux/hooks';
 import { clearCart } from '../../lib/redux/slices/cartSlice';
@@ -31,6 +31,12 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+  const [lastOrder, setLastOrder] = useState<{
+    items: typeof cartItems;
+    total: number;
+    shippingAddress: any;
+    email?: string;
+  } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const savedAddresses = [
@@ -116,7 +122,7 @@ export default function CheckoutPage() {
             price: item.price
           })),
           shippingAddress,
-          email: guestEmail, // Send email if collected
+          email: user?.email || guestEmail, // Send email if collected or logged in
           paymentMethod: 'credit_card',
           user: user?.id
         }),
@@ -130,6 +136,15 @@ export default function CheckoutPage() {
 
       // Success
       setCreatedOrderId(data.orderId);
+
+      // Preserve order details for modal before clearing cart
+      setLastOrder({
+        items: [...cartItems],
+        total: finalTotal,
+        shippingAddress,
+        email: guestEmail || user?.email,
+      });
+
       dispatch(clearCart());
       setShowSuccessModal(true);
 
@@ -146,23 +161,90 @@ export default function CheckoutPage() {
       <Modal
         isOpen={showSuccessModal}
         onClose={() => router.push('/account/orders')}
-        title="Siparişiniz Alındı"
+        title="Ritual Complete"
       >
         <div className="text-center">
-          <p className="mb-4 text-aged-silver">
-            Siparişiniz başarıyla oluşturuldu. Ritüeliniz hazırlanıyor.
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 rounded-full bg-blood-red/20 flex items-center justify-center border border-blood-red/50">
+              <Check size={32} className="text-blood-red" />
+            </div>
+          </div>
+
+          <h2 className="text-2xl font-cinzel text-bone mb-2">Order Confirmed</h2>
+          <p className="text-aged-silver mb-6 text-sm">
+            Your offering has been accepted. We are preparing your ritual artifacts.
           </p>
+
           {createdOrderId && (
-            <p className="mb-6 font-cinzel text-bone">
-              Sipariş No: #{createdOrderId}
-            </p>
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4 mb-6 text-left">
+              <div className="flex justify-between items-center mb-3 border-b border-white/10 pb-2">
+                <span className="text-aged-silver text-sm">Order ID</span>
+                <span className="font-mono text-bone">#{createdOrderId}</span>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-sm text-bone">
+                  <Calendar size={16} className="text-blood-red" />
+                  <span>Estimated Delivery: <span className="text-aged-silver">5-7 Business Days</span></span>
+                </div>
+                <div className="flex items-center gap-3 text-sm text-bone">
+                  <Truck size={16} className="text-blood-red" />
+                  <span>Standard Shipping</span>
+                </div>
+              </div>
+            </div>
           )}
-          <button
-            onClick={() => router.push('/account/orders')}
-            className="w-full py-3 bg-blood-red text-bone font-cinzel hover:bg-accent transition-colors"
-          >
-            Siparişlerim'e Git
-          </button>
+
+          {lastOrder && lastOrder.items.length > 0 && (
+            <div className="mb-6 text-left">
+              <h3 className="text-sm font-cinzel text-aged-silver mb-3 uppercase tracking-wider">Artifacts</h3>
+              <div className="bg-black/40 rounded-lg border border-white/5 max-h-48 overflow-y-auto custom-scrollbar">
+                {lastOrder.items.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3 p-3 border-b border-white/5 last:border-0">
+                    <div className="relative w-10 h-10 bg-white/5 rounded overflow-hidden flex-shrink-0">
+                      {(item.product.images as { url?: string })?.url ? (
+                        <Image
+                          src={(item.product.images as { url?: string }).url!}
+                          alt={item.product.name}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center w-full h-full text-[10px]">🖼️</div>
+                      )}
+                      <span className="absolute bottom-0 right-0 bg-blood-red text-bone text-[8px] w-3 h-3 flex items-center justify-center rounded-tl">
+                        {item.quantity}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-bone text-xs font-crimson truncate">{item.product.name}</p>
+                    </div>
+                    <span className="text-bone text-xs">₺{(item.price * item.quantity).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex justify-between items-center mt-3 px-1">
+                <span className="text-aged-silver text-sm">Total Paid</span>
+                <span className="text-blood-red font-cinzel text-lg">₺{lastOrder.total.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => router.push('/account/orders')}
+              className="w-full py-3 bg-blood-red text-bone font-cinzel hover:bg-accent transition-colors rounded-sm flex items-center justify-center gap-2"
+            >
+              <Package size={18} />
+              View Your Order
+            </button>
+            <button
+              onClick={() => router.push('/')}
+              className="w-full py-3 bg-transparent border border-white/20 text-aged-silver font-cinzel hover:bg-white/5 transition-colors rounded-sm"
+            >
+              Continue Rituals
+            </button>
+          </div>
         </div>
       </Modal>
       <div className='checkout-progress'>
